@@ -1,0 +1,56 @@
+Bảng Nguyên phụ liệu:
+
+id (khóa chính)
+tên_nguyên_phụ_liệu
+mã_nguyên_phụ_liệu
+đơn_vị_tính
+giá_nhập
+giá_bán
+số_lượng_tồn_kho
+tình_trạng
+hình_ảnh
+mô_tả
+supplier_id (khóa ngoại)
+
+Bảng Nhà cung cấp: //
+
+id (khóa chính)
+tên_nhà_cung_cấp
+địa_chỉ
+số_điện_thoại
+email
+
+
+Bảng Nhập kho: //
+
+id (khóa chính)
+ngày_nhập
+số_lượng_nhập
+giá_nhập
+tổng_tiền
+material_id (khóa ngoại)
+
+
+Bảng Xuất kho://
+
+id (khóa chính)
+ngày_xuất
+số_lượng_xuất
+giá_xuất
+tổng_tiền
+material_id (khóa ngoại)
+
+
+Bảng Phiếu đặt hàng: //
+
+id (khóa chính)
+ngày_đặt
+khách_hàng
+tổng_tiền
+
+
+Bảng Phiếu đặt hàng - Nguyên phụ liệu:
+
+material_id (khóa ngoại)
+order_id (khóa ngoại)
+số_lượng
