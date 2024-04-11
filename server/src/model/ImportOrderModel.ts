@@ -1,0 +1,58 @@
+import mongoose from "mongoose";
+const OrderPurchaseSchema = new mongoose.Schema(
+  {
+    code: {
+      type: String,
+      required: true,
+    },
+    inventory_number: {
+      type: Number,
+      required: true,
+    },
+    import_price: {
+      type: Number,
+      required: true,
+    },
+    total_price: {
+      type: Number,
+    },
+
+    order_status: {
+      type: String,
+      default: "not-entered",
+      enum: ["entered", "not-entered"],
+    },
+
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "products",
+    },
+    supplierId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "supplier",
+    },
+    payment_status: {
+      type: String,
+      enum: ["delivered", "pending"],
+      default: "pending",
+    },
+
+    received_date: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+OrderPurchaseSchema.pre("find", async function (next) {
+  this.populate({
+    path: "productId",
+    select: "name_product code import_price img",
+  });
+  next();
+});
+
+export default mongoose.model("order_suppliers", OrderPurchaseSchema);

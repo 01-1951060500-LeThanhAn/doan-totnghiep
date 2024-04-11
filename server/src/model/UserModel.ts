@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import isEmail from "validator";
+
 const UserSchema = new mongoose.Schema(
   {
     username: {
@@ -25,6 +26,14 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+    },
+    phone: {
+      type: Number,
+      default: 0,
+    },
+    address: {
+      type: String,
+      default: "",
     },
     picture: {
       type: String,

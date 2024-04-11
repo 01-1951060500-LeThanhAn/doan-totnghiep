@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import UserModel from "../model/UserModel";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+
+interface UserRequest extends Request {
+  user?: JwtPayload | (string & { userId?: string });
+}
 
 const loginUser = async (req: Request, res: Response) => {
   try {
@@ -84,16 +88,94 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-const getListUser = async (req: Request, res: Response) => {
-  const query = req.query.new;
+const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = query
-      ? await UserModel.find().sort({ _id: -1 }).limit(1)
-      : await UserModel.find();
-    res.status(200).json({ message: "Get user successfully", results: users });
+    const listusers = await UserModel.find().select(
+      "-passwword -confirmPassword"
+    );
+
+    return res.status(200).json(listusers);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json({
+      message: "Failed to get list user",
+    });
   }
 };
 
-export { loginUser, registerUser, getListUser };
+const getInfoUser = async (req: UserRequest, res: Response) => {
+  const userId = req?.user?.userId;
+
+  try {
+    const userInfo = await UserModel.findById(userId).select(
+      "-password -confirmPassword"
+    );
+    if (userInfo) {
+      return res.status(200).json({
+        success: true,
+        user: userInfo,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server not found!",
+    });
+  }
+};
+
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        error: "UserId not found",
+      });
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ msg: "Update failed" });
+  }
+};
+
+const deleteUser = async (req: Request, res: Response) => {
+  const userId = req.params.id;
+
+  try {
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(401).json({
+        message: "Mã người dùng không hợp lệ hoặc không tồn tại",
+      });
+    }
+
+    res.status(200).json({
+      message: "Xóa người dùng thành công",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Lỗi khi xóa danh mục sản phẩm",
+    });
+  }
+};
+
+export {
+  loginUser,
+  registerUser,
+  getAllUsers,
+  getInfoUser,
+  updateUser,
+  deleteUser,
+};
