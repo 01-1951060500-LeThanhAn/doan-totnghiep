@@ -159,15 +159,14 @@ const getIncomeOrders = async (req: Request, res: Response) => {
       OrderModel.aggregate([
         {
           $match: {
-            createdAt: { $gte: previousMonth },
+            createdAt: { $gte: previousMonth }, // Filter for orders created in the previous month
           },
         },
         {
           $project: {
-            _id: null,
-            month: { $month: "$createdAt" },
+            _id: { $month: "$createdAt" },
             total_price: "$total_price",
-            total_sold_products: { $sum: 1 },
+            total_sold_products: { $sum: 1 }, // Assuming quantity represents 1 product per order
           },
         },
         {
@@ -182,7 +181,7 @@ const getIncomeOrders = async (req: Request, res: Response) => {
       OrderModel.aggregate([
         {
           $match: {
-            createdAt: { $gte: previousMonth },
+            createdAt: { $gte: previousMonth }, // Filter for orders created in the previous month
           },
         },
         {
