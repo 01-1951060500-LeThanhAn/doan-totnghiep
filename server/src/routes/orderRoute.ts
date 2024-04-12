@@ -5,6 +5,7 @@ import {
   updateOrder,
   deleteOrder,
   getDetailOrder,
+  getIncomeOrders,
 } from "../controller/orderController";
 import {
   verifyTokenAndAdmin,
@@ -23,6 +24,6 @@ router.patch(`/:id`, verifyTokenAndAuthorization, updateOrder);
 
 router.delete("/:id", verifyTokenAndAuthorization, deleteOrder);
 
-// router.post("/:id/payment", processPayment);
+router.get("/income/total-orders", verifyTokenAndAdmin, getIncomeOrders);
 
 export default router;

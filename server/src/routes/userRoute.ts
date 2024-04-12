@@ -8,7 +8,7 @@ import {
   updateUser,
 } from "../controller/userController";
 import { verifyTokenAndAdmin } from "../middleware/auth";
-import checkLogin from "../database/checkLogin";
+import checkLogin from "../middleware/checkLogin";
 const router = express.Router();
 
 router.post(`/login`, loginUser);

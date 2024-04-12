@@ -27,14 +27,19 @@ const getListCustomer = async (req: Request, res: Response) => {
         },
       },
       {
-        $unwind: "$orders",
-      },
-      {
         $group: {
           _id: "$_id",
           customerData: { $first: "$$ROOT" },
-          totalSpending: { $sum: "$orders.total_price" },
-          totalOrders: { $sum: 1 },
+          totalSpending: {
+            $sum: {
+              $cond: {
+                if: { $isArray: "$orders" },
+                then: { $sum: "$orders.total_price" },
+                else: 0,
+              },
+            },
+          },
+          totalOrders: { $sum: { $size: "$orders" } },
         },
       },
       {
@@ -129,19 +134,29 @@ const getInfoCustomer = async (req: Request, res: Response) => {
 };
 
 const deleteCustomer = async (req: Request, res: Response) => {
+  const customerId = req.params.id;
+
+  if (!customerId) {
+    return res.status(400).json({
+      message: "Lỗi khi xóa khách hàng",
+    });
+  }
+
   try {
-    const customerId = req.params.id;
-
-    const customer = await CustomerModel.findByIdAndDelete(customerId);
-
-    if (!customer) {
-      return res.status(400).json({ message: "Customer not found" });
+    const customer = await CustomerModel.findById(customerId).populate(
+      "orderId"
+    );
+    if (customer?.orderId) {
+      return res.status(400).json({
+        message: "Không thể xóa khách hàng vì còn đơn hàng liên quan",
+      });
     }
 
-    res.status(200).json({
-      message: "Customer has been deleted",
-    });
-  } catch (error) {}
+    await CustomerModel.findByIdAndDelete(customerId);
+    res.status(200).json("Khách hàng đã được xóa.");
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 const getHistoryOrder = async (req: Request, res: Response) => {

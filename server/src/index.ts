@@ -10,6 +10,7 @@ import orderRoute from "./routes/orderRoute";
 import categoryRoute from "./routes/categoryRoute";
 import orderImportRoute from "./routes/orderImportRoute";
 import customerRoute from "./routes/customerRoute";
+import partnerRoute from "./routes/partnerRoute";
 
 dotenv.config();
 
@@ -38,6 +39,8 @@ app.use("/orders", orderRoute);
 app.use("/category", categoryRoute);
 app.use("/customer", customerRoute);
 app.use("/order-import", orderImportRoute);
+app.use("/partner", partnerRoute);
+
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);
 });

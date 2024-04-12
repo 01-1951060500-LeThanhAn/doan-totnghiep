@@ -34,7 +34,7 @@ const createOrder = async (req: Request, res: Response) => {
 
 const getAllOrder = async (req: Request, res: Response) => {
   try {
-    const carts = await OrderModel.find().populate("customerId products");
+    const carts = await OrderModel.find();
     res.status(200).json(carts);
   } catch (err) {
     res.status(500).json(err);
@@ -102,9 +102,29 @@ const deleteOrder = async (req: Request, res: Response) => {
       message: "Lỗi khi xóa giỏ hàng",
     });
   }
+
   try {
-    await OrderModel.findByIdAndDelete(cartId);
-    res.status(200).json("Sản phẩm đã được xóa khỏi giỏ hàng.");
+    const order = await OrderModel.findByIdAndDelete(cartId);
+    const customers = await CustomerModel.aggregate([
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "orders",
+        },
+      },
+      {
+        $match: {
+          "orders._id": { $in: [cartId] },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      message: "Sản phẩm đã được xóa khỏi giỏ hàng.",
+      customers,
+    });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -118,7 +138,7 @@ const getDetailOrder = async (req: Request, res: Response) => {
     }
 
     const order = await OrderModel.findById(orderId)
-      .populate("customerId products.productId")
+      .populate("customerId products.productId partnerId")
       .select("");
     if (!order) {
       return res.status(400).json({ message: "orderId not found" });
@@ -130,30 +150,70 @@ const getDetailOrder = async (req: Request, res: Response) => {
   }
 };
 
-// const processPayment = async (req: Request, res: Response) => {
-//   const { products } = req.body;
+const getIncomeOrders = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
 
-//   const itemPayment = products.map((item: any) => {
-//     return {
-//       price_data: {
-//         currency: "usd",
-//         productId: item.productId,
-//         quantity: item.quantity,
-//       },
+  try {
+    const [incomeData, statusData] = await Promise.all([
+      OrderModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: previousMonth },
+          },
+        },
+        {
+          $project: {
+            _id: null,
+            month: { $month: "$createdAt" },
+            total_price: "$total_price",
+            total_sold_products: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            month: { $first: "$month" },
+            total_income: { $sum: "$total_price" },
+            total_sold_products: { $sum: "$total_sold_products" },
+          },
+        },
+      ]),
+      OrderModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: previousMonth },
+          },
+        },
+        {
+          $group: {
+            _id: "$order_status",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
 
-//       customer: req.body.customerId,
-//     };
-//   });
+    const response = {
+      incomeData,
+      statusData: statusData.map((item) => ({
+        status: item._id,
+        count: item.count,
+      })),
+    };
 
-//   const session = await stripe.checkout.sessions.create({
-//     payment_method_types: ["card"],
-//     line_items: itemPayment,
-//     mode: "payment",
-//     success_url: `${req.protocol}://${req.get("host")}/success`,
-//     cancel_url: `${req.protocol}://${req.get("host")}/cancel`,
-//   });
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income and status data" }); // Send a user-friendly error message
+  }
+};
 
-//   res.json({ id: session.id });
-// };
-
-export { createOrder, getAllOrder, updateOrder, deleteOrder, getDetailOrder };
+export {
+  createOrder,
+  getAllOrder,
+  updateOrder,
+  deleteOrder,
+  getDetailOrder,
+  getIncomeOrders,
+};

@@ -4,7 +4,13 @@ const OrderSchema = new mongoose.Schema(
   {
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: "customer",
+    },
+    partnerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "partner",
     },
     products: [
       {
@@ -21,10 +27,12 @@ const OrderSchema = new mongoose.Schema(
     total_price: {
       type: Number,
       default: 0,
+      required: true,
     },
     code: {
       type: String,
     },
+
     payment_status: {
       type: String,
 
@@ -40,6 +48,19 @@ const OrderSchema = new mongoose.Schema(
 
       enum: ["pending", "delivered", "shipped"],
       default: "pending",
+    },
+    payment_method: {
+      type: String,
+      enum: ["online", "offline"],
+      default: "offline",
+    },
+    note: {
+      type: String,
+      default: "",
+    },
+    total_ship: {
+      type: Number,
+      default: 0,
     },
   },
   {
@@ -65,6 +86,22 @@ OrderSchema.pre("save", async function (next) {
     order.total_price += productDoc.import_price * product.quantity;
   }
 
+  next();
+});
+
+OrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "partnerId",
+    select: "username phone address",
+  });
+  next();
+});
+
+OrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "customerId",
+    select: "username createdAt",
+  });
   next();
 });
 
