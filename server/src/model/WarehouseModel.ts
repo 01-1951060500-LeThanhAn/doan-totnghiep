@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const WarehouseSchema = new mongoose.Schema(
   {
+    code: String,
     inventory_number: Number,
     import_price: Number,
     totalPrice: Number,
@@ -16,11 +17,6 @@ const WarehouseSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["delivered", "pending"],
-    },
-
-    orderId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "order_suppliers",
     },
   },
   {

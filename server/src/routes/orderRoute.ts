@@ -6,6 +6,7 @@ import {
   deleteOrder,
   getDetailOrder,
   getIncomeOrders,
+  searchOrder,
 } from "../controller/orderController";
 import {
   verifyTokenAndAdmin,
@@ -25,5 +26,7 @@ router.patch(`/:id`, verifyTokenAndAuthorization, updateOrder);
 router.delete("/:id", verifyTokenAndAuthorization, deleteOrder);
 
 router.get("/income/total-orders", verifyTokenAndAdmin, getIncomeOrders);
+
+router.get("/search/category-orders", searchOrder);
 
 export default router;

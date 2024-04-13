@@ -100,6 +100,7 @@ const getDetailProduct = async (req: Request, res: Response) => {
     });
   }
 };
+
 export {
   createProduct,
   getListProducts,

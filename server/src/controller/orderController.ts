@@ -206,6 +206,24 @@ const getIncomeOrders = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching income and status data" });
   }
 };
+const searchOrder = async (req: Request, res: Response) => {
+  const keyword = req.query.keyword as string;
+
+  try {
+    const titleReg = new RegExp(keyword, "i");
+
+    const results = await OrderModel.find({
+      order_status: titleReg,
+    });
+
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server not found!",
+    });
+  }
+};
 
 export {
   createOrder,
@@ -214,4 +232,5 @@ export {
   deleteOrder,
   getDetailOrder,
   getIncomeOrders,
+  searchOrder,
 };

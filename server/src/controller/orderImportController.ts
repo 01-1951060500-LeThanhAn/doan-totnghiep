@@ -73,7 +73,6 @@ const updateImportOrder = async (req: Request, res: Response) => {
       productId: order.productId,
       supplierId: order.supplierId,
       payment_status: order.payment_status,
-      orderId,
     });
 
     await newWarehouseEntry.save();
