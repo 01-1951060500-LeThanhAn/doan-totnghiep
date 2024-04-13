@@ -1,16 +1,16 @@
 import express, { Express, Request, Response, Application } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import db from "./database/index";
-import userRoutes from "./routes/userRoute";
-import supplierRoute from "./routes/supplierRoute";
-import productRoute from "./routes/productRoute";
-import wareHouseRoute from "./routes/warehouseRoute";
-import orderRoute from "./routes/orderRoute";
-import categoryRoute from "./routes/categoryRoute";
-import orderImportRoute from "./routes/orderImportRoute";
-import customerRoute from "./routes/customerRoute";
-import partnerRoute from "./routes/partnerRoute";
+import db from "./src/database/index";
+import userRoutes from "./src/routes/userRoute";
+import supplierRoute from "./src/routes/supplierRoute";
+import productRoute from "./src/routes/productRoute";
+import wareHouseRoute from "./src/routes/warehouseRoute";
+import orderRoute from "./src/routes/orderRoute";
+import categoryRoute from "./src/routes/categoryRoute";
+import orderImportRoute from "./src/routes/orderImportRoute";
+import customerRoute from "./src/routes/customerRoute";
+import partnerRoute from "./src/routes/partnerRoute";
 
 dotenv.config();
 
