@@ -6,7 +6,6 @@
   "engines": {
     "node": "18.x"
   },
-  "type": "module",
   "scripts": {
     "start": "node dist/index.js",
     "dev": "nodemon index.ts --exec ts-node",
