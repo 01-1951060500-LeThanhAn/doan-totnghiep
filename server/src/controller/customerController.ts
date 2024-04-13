@@ -212,10 +212,47 @@ const getHistoryOrder = async (req: Request, res: Response) => {
   }
 };
 
+const getTotalCustomer = async (req: Request, res: Response) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
+  try {
+    const incomeData = await CustomerModel.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: lastYear,
+          },
+        },
+      },
+      {
+        $project: {
+          month: {
+            $month: "$createdAt",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: {
+            $sum: 1,
+          },
+        },
+      },
+    ]);
+    res.status(200).json(incomeData);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "An error occurred" });
+  }
+};
+
 export {
   createCustomer,
   getListCustomer,
   getInfoCustomer,
   deleteCustomer,
   getHistoryOrder,
+  getTotalCustomer,
 };

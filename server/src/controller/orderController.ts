@@ -159,29 +159,28 @@ const getIncomeOrders = async (req: Request, res: Response) => {
       OrderModel.aggregate([
         {
           $match: {
-            createdAt: { $gte: previousMonth }, // Filter for orders created in the previous month
+            createdAt: { $gte: previousMonth },
           },
         },
         {
           $project: {
             _id: { $month: "$createdAt" },
             total_price: "$total_price",
-            total_sold_products: { $sum: 1 }, // Assuming quantity represents 1 product per order
+            total_products: { $sum: 1 },
           },
         },
         {
           $group: {
             _id: "$_id",
-            month: { $first: "$month" },
             total_income: { $sum: "$total_price" },
-            total_sold_products: { $sum: "$total_sold_products" },
+            total_products: { $sum: "$total_products" },
           },
         },
       ]),
       OrderModel.aggregate([
         {
           $match: {
-            createdAt: { $gte: previousMonth }, // Filter for orders created in the previous month
+            createdAt: { $gte: previousMonth },
           },
         },
         {
@@ -204,7 +203,7 @@ const getIncomeOrders = async (req: Request, res: Response) => {
     res.status(200).json(response);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching income and status data" }); // Send a user-friendly error message
+    res.status(500).json({ message: "Error fetching income and status data" });
   }
 };
 

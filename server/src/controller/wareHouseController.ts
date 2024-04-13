@@ -82,4 +82,156 @@ const deleteWarehouse = async (req: Request, res: Response) => {
   }
 };
 
-export { createWareHouse, getWareHouse, deleteWarehouse };
+const getIncomeWarehouse = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const [incomeData] = await Promise.all([
+      WarehouseModel.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: previousMonth },
+          },
+        },
+        {
+          $project: {
+            _id: { $month: "$createdAt" },
+            total_quantity: "$inventory_number",
+            total_sold_products: "$totalPrice",
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            total_income: { $sum: "$total_quantity" },
+            total_sold_products: { $sum: "$total_sold_products" },
+          },
+        },
+      ]),
+    ]);
+
+    res.status(200).json(incomeData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income and status data" });
+  }
+};
+
+const getWareHouseByProduct = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await WarehouseModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            product: "$products.name_product",
+          },
+          total_quantity: "$products.inventory_number",
+          total_price: {
+            $multiply: ["$products.inventory_number", "$products.import_price"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.product",
+
+          total_quantity: { $sum: "$total_quantity" },
+          total_income: { $sum: "$total_price" },
+        },
+      },
+    ]);
+
+    const response = {
+      incomeData,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income data by product" });
+  }
+};
+
+const getWareHouseBySupplier = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await WarehouseModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "suppliers",
+          localField: "supplierId",
+          foreignField: "_id",
+          as: "suppliers",
+        },
+      },
+      {
+        $unwind: "$suppliers",
+      },
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            supplier: "$suppliers.supplier_name",
+            code: "$suppliers.supplier_code",
+          },
+          total_quantity: "$inventory_number",
+          total_price: {
+            $multiply: ["$inventory_number", "$import_price"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.code",
+          total_quantity: { $sum: "$total_quantity" },
+          total_income: { $sum: "$total_price" },
+        },
+      },
+    ]);
+    const response = {
+      incomeData,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income data by supplier" });
+  }
+};
+
+export {
+  createWareHouse,
+  getWareHouseByProduct,
+  getWareHouse,
+  deleteWarehouse,
+  getIncomeWarehouse,
+  getWareHouseBySupplier,
+};
