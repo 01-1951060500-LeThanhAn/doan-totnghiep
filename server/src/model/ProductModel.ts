@@ -9,6 +9,10 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    generalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "general",
+    },
     type: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
@@ -30,6 +34,7 @@ const ProductSchema = new mongoose.Schema(
     inventory_number: {
       type: Number,
       required: true,
+      default: 0,
       ref: "purchase_orders",
     },
     status: {

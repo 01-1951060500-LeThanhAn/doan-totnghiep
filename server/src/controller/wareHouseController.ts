@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import ProductModel from "../model/ProductModel";
 import WarehouseModel from "../model/WarehouseModel";
+import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
@@ -9,6 +10,7 @@ const createWareHouse = async (req: Request, res: Response) => {
       inventory_number,
       import_price,
       supplierId,
+      generalId,
       payment_status,
     } = req.body;
 
@@ -37,6 +39,7 @@ const createWareHouse = async (req: Request, res: Response) => {
       totalPrice,
       payment_status,
       supplierId,
+      generalId,
     });
 
     await warehouse.save();
@@ -50,7 +53,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 const getWareHouse = async (req: Request, res: Response) => {
   try {
     const warehouse = await WarehouseModel.find().populate(
-      "supplierId productId"
+      "supplierId productId generalId"
     );
 
     return res.status(200).json(warehouse);
@@ -147,16 +150,18 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
             month: { $month: "$createdAt" },
             product: "$products.name_product",
           },
-          total_quantity: "$products.inventory_number",
+          code: "$products.code",
+          total_quantity: "$inventory_number",
           total_price: {
-            $multiply: ["$products.inventory_number", "$products.import_price"],
+            $multiply: ["$inventory_number", "$import_price"],
           },
         },
       },
       {
         $group: {
-          _id: "$_id.product",
-
+          _id: "$_id.month",
+          code: { $first: "$code" },
+          name: { $first: "$_id.product" },
           total_quantity: { $sum: "$total_quantity" },
           total_income: { $sum: "$total_price" },
         },
@@ -227,6 +232,85 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
   }
 };
 
+const getWareHouseByGeneral = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "purchase_orders",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "purchase_orders",
+        },
+      },
+      {
+        $unwind: "$purchase_orders",
+      },
+      {
+        $project: {
+          _id: {
+            general: "$purchase_orders.generalId",
+            month: { $month: "$createdAt" },
+          },
+
+          quantity: "$purchase_orders.inventory_number",
+          totalPrice: {
+            $multiply: [
+              "$purchase_orders.inventory_number",
+              "$purchase_orders.import_price",
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.general",
+          month: { $first: "$_id.month" },
+
+          total_products: { $sum: "$quantity" },
+          total_price: { $sum: "$totalPrice" },
+        },
+      },
+    ];
+
+    const results = await GeneralDepotModel.aggregate(pipeline);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const warehouseId = result._id;
+
+      const warehouse = await GeneralDepotModel.findById(warehouseId);
+
+      if (warehouse) {
+        const enrichedResult = {
+          ...result,
+          name: warehouse.name,
+          type: warehouse.type,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    const response = {
+      warehouseStats: enrichedResults,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching warehouse statistics" });
+  }
+};
+
 export {
   createWareHouse,
   getWareHouseByProduct,
@@ -234,4 +318,5 @@ export {
   deleteWarehouse,
   getIncomeWarehouse,
   getWareHouseBySupplier,
+  getWareHouseByGeneral,
 };

@@ -10,35 +10,45 @@ interface UserRequest extends Request {
 
 const loginUser = async (req: Request, res: Response) => {
   try {
-    const user = await UserModel.findOne({ email: req.body.email });
-    !user && res.status(404).json("user not found");
+    const user = await UserModel.findOne({ email: req.body.email }).populate(
+      "role"
+    );
+
+    if (!user) {
+      return res.status(403).json({ message: "Invalid user not found	" });
+    }
 
     const validPassword = await bcrypt.compare(
       req.body.password,
-      user?.password as string
+      user.password
     );
+
     if (!validPassword) {
-      res.status(400).json("wrong password");
-    } else {
-      const accessToken = jwt.sign(
-        {
-          userId: user?._id,
-          isAdmin: user?.isAdmin,
-          username: user?.username,
-        },
-        process.env.JWT_SECRET as Secret,
-        { expiresIn: "3h" }
-      );
-      res.status(200).json({
-        user: user,
-        token: accessToken,
-        success: true,
-      });
+      return res.status(403).json({ message: "Invalid password	" });
     }
+
+    const token = generateAccessToken({
+      user,
+      role: (user.role as any)?.name,
+    });
+    res.status(200).json({
+      user,
+      role: (user.role as any)?.name,
+      token: token,
+      success: true,
+    });
   } catch (err) {
-    res.status(500).json(err);
+    console.error(err);
+    throw new Error("Login failed");
   }
 };
+
+function generateAccessToken(userData: any) {
+  const accessToken = jwt.sign(userData, process.env.JWT_SECRET as Secret, {
+    expiresIn: "3h",
+  });
+  return accessToken;
+}
 
 const registerUser = async (req: Request, res: Response) => {
   try {
@@ -61,12 +71,13 @@ const registerUser = async (req: Request, res: Response) => {
       email: req.body.email,
       password: hashedPw,
       confirmPassword: hashedConfirmPw,
+      role: req.body.role,
     });
 
     const accessToken = jwt.sign(
       {
         userId: user._id,
-        isAdmin: user.isAdmin,
+        role: user.role,
         username: user.username,
       },
       process.env.JWT_SECRET as Secret,
@@ -77,6 +88,7 @@ const registerUser = async (req: Request, res: Response) => {
 
     res.status(201).json({
       results: savedUser,
+      role: user?.role,
       success: true,
       token: accessToken,
     });
@@ -90,9 +102,9 @@ const registerUser = async (req: Request, res: Response) => {
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const listusers = await UserModel.find().select(
-      "-passwword -confirmPassword"
-    );
+    const listusers = await UserModel.find()
+      .select("-password -confirmPassword")
+      .populate("role");
 
     return res.status(200).json(listusers);
   } catch (error) {

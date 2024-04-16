@@ -6,7 +6,7 @@ dotenv.config();
 
 declare global {
   interface UserRequest extends Request {
-    user?: JwtPayload | (string & { isAdmin?: boolean | undefined });
+    user?: JwtPayload | (string & { role?: string | undefined });
   }
 }
 
@@ -47,7 +47,11 @@ const verifyTokenAndAuthorization = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    if (req.url.replace("/", "") === req.params.id || req.user?.isAdmin) {
+    if (
+      req.url.replace("/", "") === req.params.id ||
+      req.user?.role === "admin" ||
+      req.user?.role === "manager"
+    ) {
       next();
     } else {
       res.status(403).json("You are not alowed to do that!");
@@ -61,7 +65,8 @@ const verifyTokenAndAdmin = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    if (req.user?.isAdmin) {
+    console.log(req.user);
+    if (req.user?.role === "admin") {
       next();
     } else {
       res.status(403).json("You are not as a admin!");

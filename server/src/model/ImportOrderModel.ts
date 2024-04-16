@@ -31,6 +31,10 @@ const OrderPurchaseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "supplier",
     },
+    generalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "general",
+    },
     payment_status: {
       type: String,
       enum: ["delivered", "pending"],

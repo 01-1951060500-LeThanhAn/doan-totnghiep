@@ -7,6 +7,7 @@ import {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  getIncomeOrdersGeneral,
 } from "../controller/orderController";
 import {
   verifyTokenAndAdmin,
@@ -15,9 +16,9 @@ import {
 
 const router = express.Router();
 
-router.post(`/`, verifyTokenAndAdmin, createOrder);
+router.post(`/`, verifyTokenAndAuthorization, createOrder);
 
-router.get(`/`, verifyTokenAndAdmin, getAllOrder);
+router.get(`/`, verifyTokenAndAuthorization, getAllOrder);
 
 router.get(`/:id`, getDetailOrder);
 
@@ -26,6 +27,12 @@ router.patch(`/:id`, verifyTokenAndAuthorization, updateOrder);
 router.delete("/:id", verifyTokenAndAuthorization, deleteOrder);
 
 router.get("/income/total-orders", verifyTokenAndAdmin, getIncomeOrders);
+
+router.get(
+  "/income/total-orders-general",
+  verifyTokenAndAdmin,
+  getIncomeOrdersGeneral
+);
 
 router.get("/search/category-orders", searchOrder);
 

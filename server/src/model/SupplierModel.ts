@@ -37,10 +37,6 @@ const SupplierSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    warehouseId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "purchase_orders",
-    },
   },
   {
     timestamps: true,

@@ -1,5 +1,8 @@
 import express from "express";
-import { verifyTokenAndAdmin } from "../middleware/auth";
+import {
+  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
+} from "../middleware/auth";
 import {
   createCustomer,
   deleteCustomer,
@@ -11,16 +14,20 @@ import {
 
 const router = express.Router();
 
-router.post("/", verifyTokenAndAdmin, createCustomer);
+router.post("/", verifyTokenAndAuthorization, createCustomer);
 
-router.get(`/`, verifyTokenAndAdmin, getListCustomer);
+router.get(`/`, verifyTokenAndAuthorization, getListCustomer);
 
 router.get("/:id", getInfoCustomer);
 
 router.delete("/:id", deleteCustomer);
 
-router.get("/history/:id", verifyTokenAndAdmin, getHistoryOrder);
+router.get("/history/:id", verifyTokenAndAuthorization, getHistoryOrder);
 
-router.get("/income/total-customer", verifyTokenAndAdmin, getTotalCustomer);
+router.get(
+  "/income/total-customer",
+  verifyTokenAndAuthorization,
+  getTotalCustomer
+);
 
 export default router;

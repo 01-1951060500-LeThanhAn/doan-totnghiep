@@ -12,6 +12,11 @@ const OrderSchema = new mongoose.Schema(
       required: true,
       ref: "partner",
     },
+    generalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "general",
+    },
     products: [
       {
         productId: {
@@ -101,6 +106,14 @@ OrderSchema.pre("find", async function (next) {
   this.populate({
     path: "customerId",
     select: "username createdAt",
+  });
+  next();
+});
+
+OrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "generalId",
+    select: "name address createdAt code",
   });
   next();
 });

@@ -39,9 +39,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
+    role: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "role",
+      required: true,
+    },
+    generalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "general",
     },
   },
   {

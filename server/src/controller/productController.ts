@@ -1,16 +1,23 @@
 import { Request, Response } from "express";
 import ProductModel from "../model/ProductModel";
+import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createProduct = async (req: Request, res: Response) => {
-  const products = new ProductModel({
+  const product = new ProductModel({
     ...req.body,
   });
 
   try {
-    await products.save();
-    res.status(200).json(products);
+    await product.save();
+
+    await GeneralDepotModel.findByIdAndUpdate(req.body.generalId, {
+      $push: { products: product._id },
+    });
+
+    res.status(200).json(product);
   } catch (error) {
-    res.status(500).json(error);
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 

@@ -7,6 +7,7 @@ import {
   getWareHouse,
   getWareHouseByProduct,
   getWareHouseBySupplier,
+  getWareHouseByGeneral,
 } from "../controller/wareHouseController";
 
 const router = express.Router();
@@ -27,6 +28,12 @@ router.get(
   `/income/total-warehouse-supplier`,
   verifyTokenAndAdmin,
   getWareHouseBySupplier
+);
+
+router.get(
+  `/income/total-warehouse-general`,
+  verifyTokenAndAdmin,
+  getWareHouseByGeneral
 );
 
 router.get(`/income/total-warehouse`, verifyTokenAndAdmin, getIncomeWarehouse);

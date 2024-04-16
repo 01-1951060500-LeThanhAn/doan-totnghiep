@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OrderModel from "../model/OrderModel";
 import CustomerModel from "../model/CustomerModel";
 import ProductModel from "../model/ProductModel";
+import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -155,41 +156,49 @@ const getIncomeOrders = async (req: Request, res: Response) => {
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
 
   try {
-    const [incomeData, statusData] = await Promise.all([
-      OrderModel.aggregate([
-        {
-          $match: {
-            createdAt: { $gte: previousMonth },
-          },
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          payment_status: "paid",
         },
-        {
-          $project: {
-            _id: { $month: "$createdAt" },
-            total_price: "$total_price",
-            total_products: { $sum: 1 },
+      },
+      {
+        $project: {
+          _id: {
+            $dateToString: { format: "%d/%m", date: "$createdAt" },
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
-            total_income: { $sum: "$total_price" },
-            total_products: { $sum: "$total_products" },
+          month: {
+            $month: "$createdAt",
           },
-        },
-      ]),
-      OrderModel.aggregate([
-        {
-          $match: {
-            createdAt: { $gte: previousMonth },
+          total_price: {
+            $cond: [{ $eq: ["$payment_status", "paid"] }, "$total_price", 0],
           },
+          total_orders: { $sum: 1 },
         },
-        {
-          $group: {
-            _id: "$order_status",
-            count: { $sum: 1 },
-          },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          month: { $first: "$month" },
+          total_income: { $sum: "$total_price" }, // Only sum total_price for paid orders
+          total_orders: { $sum: "$total_orders" },
         },
-      ]),
+      },
+    ]);
+
+    const statusData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $group: {
+          _id: "$order_status",
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     const response = {
@@ -206,6 +215,84 @@ const getIncomeOrders = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching income and status data" });
   }
 };
+
+const getIncomeOrdersGeneral = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+      {
+        $project: {
+          _id: {
+            general: "$orders.generalId",
+            month: { $month: "$createdAt" },
+          },
+          count: {
+            $first: "$orders.products.quantity",
+          },
+          total_price: {
+            $cond: [
+              { $eq: ["$orders.payment_status", "paid"] },
+              "$orders.total_price",
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.general",
+          month: { $first: "$_id.month" },
+          total_products: { $sum: "$count" },
+          total_price: { $sum: "$total_price" },
+        },
+      },
+    ];
+
+    const results = await GeneralDepotModel.aggregate(pipeline);
+
+    const enrichedResults = [];
+    for (const result of results) {
+      const warehouseId = result._id;
+      const warehouse = await GeneralDepotModel.findById(warehouseId);
+
+      if (warehouse) {
+        const enrichedResult = {
+          ...result,
+          name: warehouse.name,
+          type: warehouse.type,
+        };
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    const response = {
+      warehouseStats: enrichedResults,
+    };
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error fetching income data" });
+  }
+};
+
 const searchOrder = async (req: Request, res: Response) => {
   const keyword = req.query.keyword as string;
 
@@ -233,4 +320,5 @@ export {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  getIncomeOrdersGeneral,
 };

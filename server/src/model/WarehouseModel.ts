@@ -9,6 +9,10 @@ const WarehouseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "products",
     },
+    generalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "general",
+    },
     supplierId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "supplier",
