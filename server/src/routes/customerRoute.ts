@@ -18,16 +18,12 @@ router.post("/", verifyTokenAndAuthorization, createCustomer);
 
 router.get(`/`, verifyTokenAndAuthorization, getListCustomer);
 
-router.get("/:id", getInfoCustomer);
+router.get("/:id", verifyTokenAndAuthorization, getInfoCustomer);
 
-router.delete("/:id", deleteCustomer);
+router.delete("/:id", verifyTokenAndAuthorization, deleteCustomer);
 
 router.get("/history/:id", verifyTokenAndAuthorization, getHistoryOrder);
 
-router.get(
-  "/income/total-customer",
-  verifyTokenAndAuthorization,
-  getTotalCustomer
-);
+router.get("/income/total-customer", verifyTokenAndAdmin, getTotalCustomer);
 
 export default router;

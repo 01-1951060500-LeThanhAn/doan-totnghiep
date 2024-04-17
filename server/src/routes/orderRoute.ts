@@ -7,7 +7,9 @@ import {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
+  getIncomeOrdersProduct,
 } from "../controller/orderController";
 import {
   verifyTokenAndAdmin,
@@ -20,7 +22,7 @@ router.post(`/`, verifyTokenAndAuthorization, createOrder);
 
 router.get(`/`, verifyTokenAndAuthorization, getAllOrder);
 
-router.get(`/:id`, getDetailOrder);
+router.get(`/:id`, verifyTokenAndAuthorization, getDetailOrder);
 
 router.patch(`/:id`, verifyTokenAndAuthorization, updateOrder);
 
@@ -32,6 +34,18 @@ router.get(
   "/income/total-orders-general",
   verifyTokenAndAdmin,
   getIncomeOrdersGeneral
+);
+
+router.get(
+  "/income/total-orders-customer",
+  verifyTokenAndAdmin,
+  getIncomeOrdersCustomer
+);
+
+router.get(
+  "/income/total-orders-product",
+  verifyTokenAndAdmin,
+  getIncomeOrdersProduct
 );
 
 router.get("/search/category-orders", searchOrder);

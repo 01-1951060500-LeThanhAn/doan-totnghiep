@@ -12,6 +12,11 @@ const OrderSchema = new mongoose.Schema(
       required: true,
       ref: "partner",
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "users",
+    },
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

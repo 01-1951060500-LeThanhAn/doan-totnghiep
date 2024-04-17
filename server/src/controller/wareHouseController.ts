@@ -168,11 +168,7 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
       },
     ]);
 
-    const response = {
-      incomeData,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json(incomeData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching income data by product" });
@@ -222,10 +218,8 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
         },
       },
     ]);
-    const response = {
-      incomeData,
-    };
-    res.status(200).json(response);
+
+    res.status(200).json(incomeData);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching income data by supplier" });
@@ -301,10 +295,7 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
       }
     }
 
-    const response = {
-      warehouseStats: enrichedResults,
-    };
-    res.status(200).json(response);
+    res.status(200).json(enrichedResults);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching warehouse statistics" });

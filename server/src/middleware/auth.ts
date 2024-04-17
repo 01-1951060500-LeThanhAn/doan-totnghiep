@@ -47,11 +47,7 @@ const verifyTokenAndAuthorization = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    if (
-      req.url.replace("/", "") === req.params.id ||
-      req.user?.role === "admin" ||
-      req.user?.role === "manager"
-    ) {
+    if (req.user?.role === "admin" || req.user?.role === "manager") {
       next();
     } else {
       res.status(403).json("You are not alowed to do that!");

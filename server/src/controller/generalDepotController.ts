@@ -13,13 +13,30 @@ const createGeneralDepot = async (req: Request, res: Response) => {
   }
 };
 
-const getGeneralDepot = async (req: Request, res: Response) => {
+const getGeneralDepot = async (req: UserRequest, res: Response) => {
   try {
-    const generalDepot = await GeneralDepotModel.find().populate(
-      "manager products"
-    );
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    res.status(200).json(generalDepot);
+    const { user } = req.user as any;
+
+    if (!user || !user?.role) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    let generals: any[] = [];
+    if (user?.role?.name === "admin") {
+      generals = await GeneralDepotModel.find().populate("manager products");
+    } else if (user?.role?.name === "manager") {
+      generals = await GeneralDepotModel.find({ manager: user._id }).populate(
+        "manager products"
+      );
+    } else {
+      generals = [];
+    }
+
+    res.status(200).json(generals);
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);

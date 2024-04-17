@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post(`/`, verifyTokenAndAdmin, createGeneralDepot);
 
-router.get(`/`, verifyTokenAndAdmin, getGeneralDepot);
+router.get(`/`, verifyTokenAndAuthorization, getGeneralDepot);
 
 router.get(`/:id`, verifyTokenAndAuthorization, getDetailGeneralDepot);
 export default router;

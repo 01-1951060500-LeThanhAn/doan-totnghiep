@@ -7,9 +7,14 @@ import GeneralDepotModel from "../model/GeneralDepotModel";
 const createOrder = async (req: Request, res: Response) => {
   try {
     const customerId = req.body.customerId;
+    const userId = req.body.userId;
 
     if (!customerId) {
       return res.status(400).json({ message: "customerId is required" });
+    }
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
     }
 
     const customer = await CustomerModel.findById(customerId);
@@ -21,6 +26,7 @@ const createOrder = async (req: Request, res: Response) => {
     const newOrder = new OrderModel({
       ...req.body,
       customerId: customer._id,
+      userId,
       payment_status: "unpaid",
     });
 
@@ -33,12 +39,31 @@ const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-const getAllOrder = async (req: Request, res: Response) => {
+const getAllOrder = async (req: UserRequest, res: Response) => {
   try {
-    const carts = await OrderModel.find();
-    res.status(200).json(carts);
-  } catch (err) {
-    res.status(500).json(err);
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { user } = req.user as any;
+
+    if (!user || !user?.role) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    console.log(user._id);
+    let orders: any[] = [];
+    if (user?.role?.name === "admin") {
+      orders = await OrderModel.find().populate("userId");
+    } else if (user?.role?.name === "manager") {
+      orders = await OrderModel.find({ userId: user._id }).populate("userId");
+    } else {
+      orders = [];
+    }
+
+    res.status(200).json(orders);
+  } catch (err: any) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching orders", error: err });
   }
 };
 
@@ -283,13 +308,183 @@ const getIncomeOrdersGeneral = async (req: Request, res: Response) => {
       }
     }
 
-    const response = {
-      warehouseStats: enrichedResults,
-    };
-    res.status(200).json(response);
+    res.status(200).json(enrichedResults);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Error fetching income data" });
+  }
+};
+
+const getIncomeOrdersCustomer = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pineline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "orders.products.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            customer: "$orders.customerId",
+          },
+          quantity: {
+            $first: "$orders.products.quantity",
+          },
+
+          total_price: "$orders.total_price",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.customer",
+          total_quantity: { $sum: "$quantity" },
+          total_price: { $sum: "$total_price" },
+        },
+      },
+    ];
+
+    const results = await CustomerModel.aggregate(pineline);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const customerId = result._id;
+
+      const customer = await CustomerModel.findById(customerId);
+
+      if (customer) {
+        const enrichedResult = {
+          ...result,
+          name: customer.username,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    res.status(200).json(enrichedResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by customer" });
+  }
+};
+
+const getIncomeOrdersProduct = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pineline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "orders.products.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            customer: "$orders.customerId",
+          },
+          quantity: {
+            $first: "$orders.products.quantity",
+          },
+
+          total_price: "$orders.total_price",
+          productName: "$products.name_product",
+          productCode: "$products.code",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.customer",
+          total_quantity: { $sum: "$quantity" },
+          total_price: { $sum: "$total_price" },
+          product_name: { $first: "$productName" },
+          product_code: { $first: "$productCode" },
+        },
+      },
+    ];
+
+    const results = await CustomerModel.aggregate(pineline);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const customerId = result._id;
+
+      const customer = await CustomerModel.findById(customerId);
+
+      if (customer) {
+        const enrichedResult = {
+          ...result,
+          name: customer.username,
+          code: customer.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    res.status(200).json(enrichedResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by customer" });
   }
 };
 
@@ -321,4 +516,6 @@ export {
   getIncomeOrders,
   searchOrder,
   getIncomeOrdersGeneral,
+  getIncomeOrdersCustomer,
+  getIncomeOrdersProduct,
 };
