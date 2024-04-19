@@ -61,7 +61,6 @@ const verifyTokenAndAdmin = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    console.log(req.user);
     if (req.user?.role === "admin") {
       next();
     } else {

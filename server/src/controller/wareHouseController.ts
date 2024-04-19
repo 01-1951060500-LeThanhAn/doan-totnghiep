@@ -5,41 +5,38 @@ import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
-    const {
-      productId,
-      inventory_number,
-      import_price,
-      supplierId,
-      generalId,
-      payment_status,
-    } = req.body;
+    const { import_price, supplierId, products } = req.body;
 
-    if (!productId || !supplierId) {
+    if (!supplierId || !products || products.length === 0) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const product = await ProductModel.findById(productId);
+    const productUpdates = products.map(async (product: any) => {
+      const { productId, inventory_number } = product;
 
-    if (!product) {
-      return res.status(400).json({ message: "Invalid product ID" });
-    }
+      if (!productId || !inventory_number) {
+        return res.status(400).json({ message: "Missing product details" });
+      }
 
-    await ProductModel.findOneAndUpdate(
-      { _id: productId },
-      { $inc: { inventory_number: inventory_number } },
-      { upsert: true, new: true }
-    );
+      const existingProduct = await ProductModel.findById(productId);
+      if (!existingProduct) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
 
-    const totalPrice = inventory_number * import_price;
+      await ProductModel.findOneAndUpdate(
+        { _id: productId },
+        { $inc: { inventory_number } },
+        { upsert: true, new: true }
+      );
+    });
+
+    await Promise.all(productUpdates);
+
+    const totalPrice = import_price * products[0].inventory_number; // Assuming all products have the same import price
 
     const warehouse = new WarehouseModel({
-      productId: product._id,
-      inventory_number,
-      import_price,
+      ...req.body,
       totalPrice,
-      payment_status,
-      supplierId,
-      generalId,
     });
 
     await warehouse.save();
@@ -53,7 +50,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 const getWareHouse = async (req: Request, res: Response) => {
   try {
     const warehouse = await WarehouseModel.find().populate(
-      "supplierId productId generalId"
+      "supplierId products.productId generalId"
     );
 
     return res.status(200).json(warehouse);
@@ -100,7 +97,9 @@ const getIncomeWarehouse = async (req: Request, res: Response) => {
         {
           $project: {
             _id: { $month: "$createdAt" },
-            total_quantity: "$inventory_number",
+            total_quantity: {
+              $sum: "$products.inventory_number",
+            },
             total_sold_products: "$totalPrice",
           },
         },
@@ -132,37 +131,39 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
           createdAt: { $gte: previousMonth },
         },
       },
-
+      {
+        $unwind: "$products", // Unwind the products array
+      },
       {
         $lookup: {
           from: "products",
-          localField: "productId",
+          localField: "products.productId",
           foreignField: "_id",
-          as: "products",
+          as: "product",
         },
-      },
-      {
-        $unwind: "$products",
       },
       {
         $project: {
           _id: {
-            month: { $month: "$createdAt" },
-            product: "$products.name_product",
+            month: "$createdAt",
+            productId: "$products.productId",
           },
-          code: "$products.code",
-          total_quantity: "$inventory_number",
+          product_name: { $first: "$product.name_product" },
+          product_code: { $first: "$product.code" },
+          quantity: "$products.inventory_number",
+          price: "$import_price",
           total_price: {
-            $multiply: ["$inventory_number", "$import_price"],
+            $multiply: ["$products.inventory_number", "$import_price"],
           },
         },
       },
       {
         $group: {
-          _id: "$_id.month",
-          code: { $first: "$code" },
-          name: { $first: "$_id.product" },
-          total_quantity: { $sum: "$total_quantity" },
+          _id: "$_id.productId",
+          month: { $first: "$_id.month" },
+          name: { $first: "$product_name" },
+          code: { $first: "$product_code" },
+          total_quantity: { $sum: "$quantity" },
           total_income: { $sum: "$total_price" },
         },
       },
@@ -204,9 +205,9 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
             supplier: "$suppliers.supplier_name",
             code: "$suppliers.supplier_code",
           },
-          total_quantity: "$inventory_number",
+          total_quantity: { $sum: "$products.inventory_number" },
           total_price: {
-            $multiply: ["$inventory_number", "$import_price"],
+            $sum: "$totalPrice",
           },
         },
       },
@@ -214,7 +215,7 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
         $group: {
           _id: "$_id.code",
           total_quantity: { $sum: "$total_quantity" },
-          total_income: { $sum: "$total_price" },
+          total_price: { $sum: "$total_price" },
         },
       },
     ]);
@@ -255,12 +256,11 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
             month: { $month: "$createdAt" },
           },
 
-          quantity: "$purchase_orders.inventory_number",
-          totalPrice: {
-            $multiply: [
-              "$purchase_orders.inventory_number",
-              "$purchase_orders.import_price",
-            ],
+          quantity: {
+            $sum: "$purchase_orders.products.inventory_number",
+          },
+          total_price: {
+            $sum: "$purchase_orders.totalPrice",
           },
         },
       },
@@ -270,7 +270,7 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
           month: { $first: "$_id.month" },
 
           total_products: { $sum: "$quantity" },
-          total_price: { $sum: "$totalPrice" },
+          total_price: { $sum: "$total_price" },
         },
       },
     ];
@@ -301,7 +301,6 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching warehouse statistics" });
   }
 };
-
 export {
   createWareHouse,
   getWareHouseByProduct,

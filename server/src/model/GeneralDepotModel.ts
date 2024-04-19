@@ -20,13 +20,17 @@ const generalDepotSchema = new mongoose.Schema(
     manager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-      default: "",
+      default: null,
     },
 
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "products",
+        // ref: {
+        //  type: String,
+        //  enum: ["products", "shipping_warehouse"],
+        // default: "products",
+        // },
       },
     ],
   },
@@ -34,5 +38,19 @@ const generalDepotSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+generalDepotSchema.virtual("ProductSchema", {
+  ref: "products",
+  localField: "products",
+  foreignField: "_id",
+  justOne: true,
+});
+
+generalDepotSchema.virtual("ShippingWarehouseModel", {
+  ref: "shipping_warehouse",
+  localField: "products",
+  foreignField: "generalId",
+  justOne: true,
+});
 
 export default mongoose.model("general", generalDepotSchema);

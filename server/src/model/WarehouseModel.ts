@@ -2,13 +2,22 @@ import mongoose from "mongoose";
 const WarehouseSchema = new mongoose.Schema(
   {
     code: String,
-    inventory_number: Number,
+
     import_price: Number,
     totalPrice: Number,
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "products",
-    },
+    products: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "products",
+          required: true,
+        },
+        inventory_number: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "general",
@@ -27,13 +36,5 @@ const WarehouseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-WarehouseSchema.pre("find", async function (next) {
-  this.populate({
-    path: "productId",
-    select: "name_product code import_price img",
-  });
-  next();
-});
 
 export default mongoose.model("purchase_orders", WarehouseSchema);

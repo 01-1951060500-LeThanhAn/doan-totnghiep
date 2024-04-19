@@ -29,7 +29,7 @@ const getDetailSupplier = async (req: Request, res: Response) => {
 
   try {
     const supplier = await WarehouseModel.find({ supplierId }).populate(
-      "productId supplierId"
+      "products.productId supplierId"
     );
 
     if (!supplier) {

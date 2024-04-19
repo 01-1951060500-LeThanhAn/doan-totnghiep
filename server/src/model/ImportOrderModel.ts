@@ -5,14 +5,24 @@ const OrderPurchaseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    inventory_number: {
-      type: Number,
-      required: true,
-    },
+
     import_price: {
       type: Number,
       required: true,
     },
+    products: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "products",
+          required: true,
+        },
+        inventory_number: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     total_price: {
       type: Number,
     },
@@ -23,10 +33,6 @@ const OrderPurchaseSchema = new mongoose.Schema(
       enum: ["entered", "not-entered"],
     },
 
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "products",
-    },
     supplierId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "supplier",
@@ -53,7 +59,7 @@ const OrderPurchaseSchema = new mongoose.Schema(
 
 OrderPurchaseSchema.pre("find", async function (next) {
   this.populate({
-    path: "productId",
+    path: "products.productId",
     select: "name_product code import_price img",
   });
   next();
