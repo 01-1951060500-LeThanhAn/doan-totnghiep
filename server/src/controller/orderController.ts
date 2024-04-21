@@ -3,6 +3,7 @@ import OrderModel from "../model/OrderModel";
 import CustomerModel from "../model/CustomerModel";
 import ProductModel from "../model/ProductModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
+import TransactionModel from "../model/TransactionModel";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -111,6 +112,14 @@ const updateOrder = async (req: Request, res: Response) => {
           .status(400)
           .json({ message: "Lỗi: Không đủ số lượng sản phẩm trong kho" });
       }
+
+      const transactionHistory = new TransactionModel({
+        transaction_type: "order",
+        transaction_date: Date.now(),
+        orderId: updatedOrder._id,
+      });
+
+      await transactionHistory.save();
     }
 
     res.status(200).json(updatedOrder);

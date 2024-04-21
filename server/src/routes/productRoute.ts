@@ -23,6 +23,6 @@ router.patch(`/:id`, verifyTokenAndAdmin, updateProduct);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteProduct);
 
-router.get(`/search`, searchProduct);
+router.get(`/search/data`, verifyTokenAndAdmin, searchProduct);
 
 export default router;

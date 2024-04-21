@@ -85,24 +85,34 @@ const deleteProduct = async (req: Request, res: Response) => {
 };
 
 const searchProduct = async (req: Request, res: Response) => {
-  const query = req.query.keyword;
-  const name = req.query.name;
+  const keyword = req.query.keyword?.toString().trim();
+  const name = req.query.name?.toString().trim();
+
   try {
-    const products = await ProductModel.find({
-      $or: [
-        { material_name: { $regex: query, $options: "i" } },
-        { material_code: { $regex: name, $options: "i" } },
-      ],
-    });
-    if (!products.length) {
-      return res.status(401).json({
-        message: "Không tìm thấy sản phẩm",
+    const filters = [];
+
+    filters.push({});
+
+    if (keyword) {
+      filters.push({
+        $or: [
+          { name_product: { $regex: keyword, $options: "i" } },
+          { code: { $regex: name, $options: "i" } },
+        ],
       });
     }
+
+    const products = await ProductModel.find({ $and: filters });
+
+    if (!products.length) {
+      // If no products match the search criteria, return a 404
+      return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+    }
+
     res.status(200).json(products);
   } catch (error) {
     console.error("Error searching products:", error);
-    throw error;
+    res.status(500).json({ message: "Lỗi tìm kiếm sản phẩm" });
   }
 };
 

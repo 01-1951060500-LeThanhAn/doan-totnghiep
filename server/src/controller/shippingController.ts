@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ShippingWarehouseModel from "../model/ShippingWarehouseModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 import ProductModel from "../model/ProductModel";
+import TransactionModel from "../model/TransactionModel";
 
 async function createShippets(req: Request, res: Response) {
   try {
@@ -125,12 +126,13 @@ const updateShippets = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Shipping not found" });
     }
 
-    await ShippingWarehouseModel.findByIdAndUpdate(shippId, {
-      $set: {
-        ...req.body,
-      },
-      new: true,
-    });
+    const data = await ShippingWarehouseModel.findByIdAndUpdate(
+      shippId,
+      req.body,
+      {
+        new: true,
+      }
+    );
 
     const targetWarehouse = await GeneralDepotModel.findOne({
       type: "sub",
@@ -149,13 +151,35 @@ const updateShippets = async (req: Request, res: Response) => {
         generalId: targetWarehouse._id,
       });
 
-      if (!subProduct) {
+      const results = await ProductModel.findById(product.productId);
+
+      if (!subProduct || results) {
+        const newProduct = new ProductModel({
+          ...results,
+          name_product: results?.name_product,
+          desc: results?.desc,
+          img: results?.name_product,
+          export_price: results?.export_price,
+          import_price: results?.import_price,
+          unit: results?.unit,
+          code: results?.code,
+          inventory_number: inventory_number,
+          generalId: targetWarehouse._id,
+        });
+
+        await newProduct.save();
+      } else {
         return res.status(400).json({ message: "Product not found" });
       }
-
-      subProduct.inventory_number += +inventory_number;
-      await subProduct.save();
     }
+
+    const transactionHistory = new TransactionModel({
+      transaction_type: "order",
+      transaction_date: Date.now(),
+      shipId: data?._id,
+    });
+
+    await transactionHistory.save();
 
     res.status(200).json({ message: "Shipping updated" });
   } catch (error) {
