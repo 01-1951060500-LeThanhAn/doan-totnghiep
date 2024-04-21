@@ -40,4 +40,20 @@ const ShippingWarehouseModel = new mongoose.Schema({
   },
 });
 
+ShippingWarehouseModel.pre("find", async function (next) {
+  this.populate({
+    path: "toGeneralId",
+    select: "address name type manager",
+  });
+  next();
+});
+
+ShippingWarehouseModel.pre("find", async function (next) {
+  this.populate({
+    path: "fromGeneralId",
+    select: "address name type manager",
+  });
+  next();
+});
+
 export default mongoose.model("shipping_warehouse", ShippingWarehouseModel);

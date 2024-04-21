@@ -115,16 +115,20 @@ const getAllUsers = async (req: Request, res: Response) => {
 };
 
 const getInfoUser = async (req: UserRequest, res: Response) => {
-  const userId = req?.user?.userId;
-
   try {
-    const userInfo = await UserModel.findById(userId).select(
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { user } = req.user as any;
+
+    const data = await UserModel.findOne({ _id: user._id }).select(
       "-password -confirmPassword"
     );
-    if (userInfo) {
+
+    if (user) {
       return res.status(200).json({
         success: true,
-        user: userInfo,
+        results: data,
       });
     }
   } catch (error) {

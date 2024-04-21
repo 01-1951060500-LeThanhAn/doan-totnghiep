@@ -27,6 +27,7 @@ export default function checkLogin(
         res.status(403).json("Token is valid");
       }
       req.user = user;
+
       next();
     });
   } catch (error) {

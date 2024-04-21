@@ -7,15 +7,16 @@ import {
   createGeneralDepot,
   getDetailGeneralDepot,
   getGeneralDepot,
-  getAllGeneralDepot,
+  updateGeneralDepot,
 } from "../controller/generalDepotController";
 const router = express.Router();
 
 router.post(`/`, verifyTokenAndAdmin, createGeneralDepot);
 
-router.get(`/`, verifyTokenAndAdmin, getGeneralDepot);
+router.get(`/`, verifyTokenAndAuthorization, getGeneralDepot);
 
 router.get(`/:id`, verifyTokenAndAuthorization, getDetailGeneralDepot);
 
-router.get("/all/list-general", verifyTokenAndAdmin, getAllGeneralDepot);
+router.patch(`/:id`, verifyTokenAndAuthorization, updateGeneralDepot);
+
 export default router;

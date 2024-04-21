@@ -1,5 +1,8 @@
 import express from "express";
-import { verifyTokenAndAdmin } from "../middleware/auth";
+import {
+  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
+} from "../middleware/auth";
 import {
   createProduct,
   deleteProduct,
@@ -12,9 +15,9 @@ const router = express.Router();
 
 router.post(`/`, verifyTokenAndAdmin, createProduct);
 
-router.get(`/`, getListProducts);
+router.get(`/`, verifyTokenAndAuthorization, getListProducts);
 
-router.get(`/:id`, getDetailProduct);
+router.get(`/:id`, verifyTokenAndAuthorization, getDetailProduct);
 
 router.patch(`/:id`, verifyTokenAndAdmin, updateProduct);
 

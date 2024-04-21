@@ -32,8 +32,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 
     await Promise.all(productUpdates);
 
-    const totalPrice = import_price * products[0].inventory_number; // Assuming all products have the same import price
-
+    const totalPrice = import_price * products[0].inventory_number;
     const warehouse = new WarehouseModel({
       ...req.body,
       totalPrice,

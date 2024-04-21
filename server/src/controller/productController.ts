@@ -21,10 +21,28 @@ const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-const getListProducts = async (req: Request, res: Response) => {
+const getListProducts = async (req: UserRequest, res: Response) => {
   try {
-    const products = await ProductModel.find().populate("type");
-    res.status(200).json(products);
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { user } = req.user as any;
+
+    if (!user || !user?.role) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    let generals: any[] = [];
+    if (user?.role?.name === "admin") {
+      generals = await ProductModel.find().populate("type generalId manager");
+    } else if (user?.role?.name === "manager") {
+      generals = await ProductModel.find({ manager: user._id }).populate(
+        "generalId type manager"
+      );
+    } else {
+      generals = [];
+    }
+
+    res.status(200).json(generals);
   } catch (error) {
     res.status(500).json(error);
   }
@@ -34,7 +52,7 @@ const updateProduct = async (req: Request, res: Response) => {
   try {
     const products = await ProductModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { $set: req.body },
       { new: true }
     );
     res.status(200).json(products);
@@ -72,8 +90,8 @@ const searchProduct = async (req: Request, res: Response) => {
   try {
     const products = await ProductModel.find({
       $or: [
-        { material_name: { $regex: query, $options: "i" } }, // Case-insensitive search for material_name
-        { material_code: { $regex: name, $options: "i" } }, // Case-insensitive search for material_code
+        { material_name: { $regex: query, $options: "i" } },
+        { material_code: { $regex: name, $options: "i" } },
       ],
     });
     if (!products.length) {
@@ -84,7 +102,7 @@ const searchProduct = async (req: Request, res: Response) => {
     res.status(200).json(products);
   } catch (error) {
     console.error("Error searching products:", error);
-    throw error; // Re-throw the error for proper handling
+    throw error;
   }
 };
 

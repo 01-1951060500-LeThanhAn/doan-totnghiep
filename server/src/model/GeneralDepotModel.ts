@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 const generalDepotSchema = new mongoose.Schema(
   {
+    code: {
+      type: String,
+    },
     name: {
       type: String,
       required: true,
@@ -26,11 +29,6 @@ const generalDepotSchema = new mongoose.Schema(
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        // ref: {
-        //  type: String,
-        //  enum: ["products", "shipping_warehouse"],
-        // default: "products",
-        // },
       },
     ],
   },

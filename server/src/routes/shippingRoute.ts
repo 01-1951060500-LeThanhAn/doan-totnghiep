@@ -1,20 +1,25 @@
 import express from "express";
-import { verifyTokenAndAdmin } from "../middleware/auth";
+import {
+  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
+} from "../middleware/auth";
 import {
   createShippets,
   getShippets,
   deleteShippets,
   updateShippets,
+  getDetailShippets,
 } from "../controller/shippingController";
 
 const router = express.Router();
 
 router.post(`/`, verifyTokenAndAdmin, createShippets);
 
-router.get(`/`, verifyTokenAndAdmin, getShippets);
+router.get(`/`, verifyTokenAndAuthorization, getShippets);
 
 router.delete("/:id", verifyTokenAndAdmin, deleteShippets);
 
-router.patch("/:id", verifyTokenAndAdmin, updateShippets);
+router.patch("/:id", verifyTokenAndAuthorization, updateShippets);
 
+router.get("/:id", verifyTokenAndAuthorization, getDetailShippets);
 export default router;

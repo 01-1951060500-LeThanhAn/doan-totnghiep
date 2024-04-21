@@ -50,7 +50,7 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
     if (!user || !user?.role) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    console.log(user._id);
+
     let orders: any[] = [];
     if (user?.role?.name === "admin") {
       orders = await OrderModel.find().populate("userId");
@@ -206,7 +206,7 @@ const getIncomeOrders = async (req: Request, res: Response) => {
         $group: {
           _id: "$_id",
           month: { $first: "$month" },
-          total_income: { $sum: "$total_price" }, // Only sum total_price for paid orders
+          total_income: { $sum: "$total_price" },
           total_orders: { $sum: "$total_orders" },
         },
       },

@@ -11,15 +11,16 @@ async function createShippets(req: Request, res: Response) {
       res.status(403).json("Invalid transfer data provided");
     }
 
-    const mainWarehouse = await GeneralDepotModel.findById(fromGeneralId);
-    const subWarehouse = await GeneralDepotModel.findById(toGeneralId);
+    const mainWarehouse = await GeneralDepotModel.findOne({
+      type: "main",
+      _id: fromGeneralId,
+    });
+    const subWarehouse = await GeneralDepotModel.findOne({
+      type: "sub",
+      _id: toGeneralId,
+    });
 
-    if (
-      !mainWarehouse ||
-      !subWarehouse ||
-      mainWarehouse.type !== "main" ||
-      subWarehouse.type !== "sub"
-    ) {
+    if (!mainWarehouse || !subWarehouse) {
       throw new Error("Invalid warehouse selection for transfer");
     }
 
@@ -31,25 +32,17 @@ async function createShippets(req: Request, res: Response) {
         generalId: mainWarehouse._id,
       });
       const subProduct = await ProductModel.findOne({
-        _id: productId,
         generalId: subWarehouse._id,
+        _id: productId,
       });
 
-      if (!mainProduct) {
-        throw new Error(`Product ${productId} not found in main warehouse`);
+      if (mainProduct) {
+        mainProduct.inventory_number -= inventory_number;
+        await mainProduct.save();
       }
-
-      if (inventory_number > mainProduct.inventory_number) {
-        throw new Error(
-          `Insufficient inventory for product ${productId} in main warehouse`
-        );
-      }
-
-      mainProduct.inventory_number -= inventory_number;
 
       if (subProduct) {
-        subProduct.inventory_number += inventory_number;
-
+        subProduct.inventory_number += +inventory_number;
         await subProduct.save();
       } else {
         const transferredProduct = {
@@ -62,19 +55,17 @@ async function createShippets(req: Request, res: Response) {
           fromGeneralId: mainWarehouse._id,
           deliveryDate: new Date().toISOString(),
           transferDate,
+
           status: "pending",
         });
-
         await newSubProduct.save();
       }
-
-      await mainProduct.save();
     });
 
     await Promise.all(updatePromises);
 
     const newTransferOrder = new ShippingWarehouseModel({
-      fromGeneralId,
+      fromGeneralId: mainWarehouse._id,
       toGeneralId: subWarehouse._id,
       products,
       transferDate,
@@ -91,7 +82,10 @@ async function createShippets(req: Request, res: Response) {
 
 const getShippets = async (req: Request, res: Response) => {
   try {
-    const ships = await ShippingWarehouseModel.find();
+    const ships = await ShippingWarehouseModel.find().populate({
+      path: "toGeneralId.manager",
+      select: "username email address",
+    });
 
     return res.status(200).json(ships);
   } catch (error) {
@@ -123,46 +117,91 @@ const deleteShippets = async (req: Request, res: Response) => {
 };
 
 const updateShippets = async (req: Request, res: Response) => {
+  const shippId = req.params.id;
   try {
-    const shipId = req.params.id;
-    if (!shipId) {
-      return res
-        .status(400)
-        .json({ message: "Missing required data for transfer." });
-    }
-    const transferDoc = await ShippingWarehouseModel.findByIdAndUpdate(
-      shipId,
-      { $set: req.body },
-      { new: true }
-    );
+    const ships = await ShippingWarehouseModel.findById(shippId);
 
-    if (!transferDoc) {
-      res.status(404).json({ message: "Transfer document not found" });
-      return;
+    if (!ships) {
+      return res.status(404).json({ message: "Shipping not found" });
     }
 
-    const generalDoc = await GeneralDepotModel.findById(
-      transferDoc.toGeneralId
-    );
-    if (!generalDoc) {
-      res
-        .status(500)
-        .json({ message: "Error retrieving main warehouse document" });
-      return;
-    }
-    generalDoc.products.push(transferDoc._id);
-    await generalDoc.save();
-
-    res.status(200).json({
-      message: "Transfer status updated and added to general document",
-      generalDoc,
+    await ShippingWarehouseModel.findByIdAndUpdate(shippId, {
+      $set: {
+        ...req.body,
+      },
+      new: true,
     });
+
+    const targetWarehouse = await GeneralDepotModel.findOne({
+      type: "sub",
+      _id: ships.toGeneralId,
+    });
+
+    if (!targetWarehouse) {
+      return res.status(400).json({ message: "Warehouse not found" });
+    }
+
+    for (let product of ships.products) {
+      const { inventory_number, productId } = product;
+
+      const subProduct = await ProductModel.findOne({
+        _id: productId,
+        generalId: targetWarehouse._id,
+      });
+
+      if (!subProduct) {
+        return res.status(400).json({ message: "Product not found" });
+      }
+
+      subProduct.inventory_number += +inventory_number;
+      await subProduct.save();
+    }
+
+    res.status(200).json({ message: "Shipping updated" });
   } catch (error) {
-    console.error(
-      "Error updating transfer status and general document:",
-      error
-    );
-    res.status(500).json({ message: "Internal server error" });
+    console.error(error);
+    res.status(500).json(error);
   }
 };
-export { createShippets, getShippets, deleteShippets, updateShippets };
+
+const getDetailShippets = async (req: Request, res: Response) => {
+  const shipId = req.params.id;
+
+  if (!shipId) {
+    return res.status(400).json({ message: "Missing required data." });
+  }
+
+  try {
+    const results = await ShippingWarehouseModel.findById(shipId)
+      .populate({
+        path: "fromGeneralId",
+        select: "name type address manager",
+      })
+
+      .populate({
+        path: "toGeneralId",
+        select: "name type address manager",
+      })
+      .populate({
+        path: "products.productId",
+        select: "-_id name code", // Select specific product fields (exclude _id)
+      });
+
+    if (!results) {
+      return res.status(404).json({ message: "Shipping not found" });
+    }
+
+    return res.status(200).json(results);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+};
+
+export {
+  createShippets,
+  getShippets,
+  deleteShippets,
+  updateShippets,
+  getDetailShippets,
+};

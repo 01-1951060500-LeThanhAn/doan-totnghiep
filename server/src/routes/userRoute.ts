@@ -17,7 +17,7 @@ router.post(`/create-user`, verifyTokenAndAdmin, registerUser);
 
 router.get(`/list-user`, verifyTokenAndAdmin, getAllUsers);
 
-router.get(`/info`, checkLogin, getInfoUser);
+router.get(`/info-user`, checkLogin, getInfoUser);
 
 router.patch(`/update-user/:id`, updateUser);
 

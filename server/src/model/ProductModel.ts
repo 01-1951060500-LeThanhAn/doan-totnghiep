@@ -9,9 +9,14 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "general",
+    },
+    manager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
     },
     type: {
       type: mongoose.Schema.Types.ObjectId,
@@ -62,6 +67,22 @@ ProductSchema.pre("find", async function (next) {
   this.populate({
     path: "type",
     select: "name",
+  });
+  next();
+});
+
+ProductSchema.pre("find", async function (next) {
+  this.populate({
+    path: "manager",
+    select: "username email phone address picture role",
+  });
+  next();
+});
+
+ProductSchema.pre("find", async function (next) {
+  this.populate({
+    path: "generalId",
+    select: "name type phone address manager",
   });
   next();
 });
