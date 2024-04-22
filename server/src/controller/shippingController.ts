@@ -174,7 +174,7 @@ const updateShippets = async (req: Request, res: Response) => {
     }
 
     const transactionHistory = new TransactionModel({
-      transaction_type: "order",
+      transaction_type: "export",
       transaction_date: Date.now(),
       shipId: data?._id,
     });

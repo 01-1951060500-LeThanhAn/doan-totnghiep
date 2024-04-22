@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { query, Request, Response } from "express";
 import ProductModel from "../model/ProductModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 
@@ -22,6 +22,8 @@ const createProduct = async (req: Request, res: Response) => {
 };
 
 const getListProducts = async (req: UserRequest, res: Response) => {
+  const status = req.query.status;
+
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -33,11 +35,46 @@ const getListProducts = async (req: UserRequest, res: Response) => {
     }
     let generals: any[] = [];
     if (user?.role?.name === "admin") {
-      generals = await ProductModel.find().populate("type generalId manager");
+      generals = await ProductModel.find({
+        status: status ? status : { $exists: true },
+      }).populate("type generalId manager");
     } else if (user?.role?.name === "manager") {
-      generals = await ProductModel.find({ manager: user._id }).populate(
-        "generalId type manager"
-      );
+      generals = await ProductModel.find({
+        manager: user._id,
+        status: status ? status : { $exists: true },
+      }).populate("generalId type manager");
+    } else {
+      generals = [];
+    }
+
+    res.status(200).json(generals);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const getTypeProducts = async (req: UserRequest, res: Response) => {
+  const status = req.query.status;
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { user } = req.user as any;
+
+    if (!user || !user?.role) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    let generals: any[] = [];
+    if (user?.role?.name === "admin") {
+      generals = await ProductModel.find({
+        manager: user._id,
+        status: status ? status : { $exists: true },
+      }).populate("type generalId manager");
+    } else if (user?.role?.name === "manager") {
+      generals = await ProductModel.find({
+        manager: user._id,
+        status: status ? status : { $exists: true },
+      }).populate("generalId type manager");
     } else {
       generals = [];
     }
@@ -84,32 +121,32 @@ const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-const searchProduct = async (req: Request, res: Response) => {
-  const keyword = req.query.keyword?.toString().trim();
-  const name = req.query.name?.toString().trim();
-
+const searchProduct = async (req: UserRequest, res: Response) => {
+  const keyword = req.query.keyword as string;
+  if (!keyword.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing paramaters!",
+    });
+  }
   try {
-    const filters = [];
-
-    filters.push({});
-
-    if (keyword) {
-      filters.push({
-        $or: [
-          { name_product: { $regex: keyword, $options: "i" } },
-          { code: { $regex: name, $options: "i" } },
-        ],
-      });
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+    const { user } = req.user as any;
 
-    const products = await ProductModel.find({ $and: filters });
+    const nameProduct = new RegExp(keyword, "i");
 
-    if (!products.length) {
-      // If no products match the search criteria, return a 404
+    const results = await ProductModel.find({
+      name_product: nameProduct,
+      manager: user._id,
+    });
+
+    if (!results.length) {
       return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
     }
 
-    res.status(200).json(products);
+    res.status(200).json(results);
   } catch (error) {
     console.error("Error searching products:", error);
     res.status(500).json({ message: "Lỗi tìm kiếm sản phẩm" });
@@ -143,4 +180,5 @@ export {
   deleteProduct,
   searchProduct,
   getDetailProduct,
+  getTypeProducts,
 };

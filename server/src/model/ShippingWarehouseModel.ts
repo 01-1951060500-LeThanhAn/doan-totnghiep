@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const ShippingWarehouseModel = new mongoose.Schema({
+  code: {
+    type: String,
+  },
   fromGeneralId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "general",

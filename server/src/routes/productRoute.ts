@@ -10,6 +10,7 @@ import {
   getListProducts,
   searchProduct,
   updateProduct,
+  getTypeProducts,
 } from "../controller/productController";
 const router = express.Router();
 
@@ -17,12 +18,14 @@ router.post(`/`, verifyTokenAndAdmin, createProduct);
 
 router.get(`/`, verifyTokenAndAuthorization, getListProducts);
 
+router.get(`/type`, verifyTokenAndAuthorization, getTypeProducts);
+
 router.get(`/:id`, verifyTokenAndAuthorization, getDetailProduct);
 
 router.patch(`/:id`, verifyTokenAndAdmin, updateProduct);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteProduct);
 
-router.get(`/search/data`, verifyTokenAndAdmin, searchProduct);
+router.get(`/api/search`, verifyTokenAndAuthorization, searchProduct);
 
 export default router;
