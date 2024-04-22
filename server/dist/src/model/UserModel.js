@@ -42,9 +42,14 @@ const UserSchema = new mongoose_1.default.Schema({
         type: String,
         default: "",
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
+    role: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "role",
+        enum: ["admin", "manager"],
+    },
+    generalId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "general",
     },
 }, {
     timestamps: true,

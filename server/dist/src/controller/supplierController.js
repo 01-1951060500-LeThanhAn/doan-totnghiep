@@ -39,7 +39,7 @@ exports.getListSuppliers = getListSuppliers;
 const getDetailSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const supplierId = req.params.id;
     try {
-        const supplier = yield WarehouseModel_1.default.find({ supplierId }).populate("productId supplierId");
+        const supplier = yield WarehouseModel_1.default.find({ supplierId }).populate("products.productId supplierId");
         if (!supplier) {
             return res.status(404).json({
                 message: "Supplier not found",

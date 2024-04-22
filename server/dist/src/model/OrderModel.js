@@ -24,6 +24,16 @@ const OrderSchema = new mongoose_1.default.Schema({
         required: true,
         ref: "partner",
     },
+    userId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        required: true,
+        ref: "users",
+    },
+    generalId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        required: true,
+        ref: "general",
+    },
     products: [
         {
             productId: {
@@ -105,6 +115,15 @@ OrderSchema.pre("find", function (next) {
         this.populate({
             path: "customerId",
             select: "username createdAt",
+        });
+        next();
+    });
+});
+OrderSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "generalId",
+            select: "name address createdAt code",
         });
         next();
     });

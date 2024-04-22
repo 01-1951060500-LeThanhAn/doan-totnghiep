@@ -39,8 +39,8 @@ function checkToken(req, res, next) {
 exports.checkToken = checkToken;
 const verifyTokenAndAuthorization = (req, res, next) => {
     checkToken(req, res, () => {
-        var _a;
-        if (req.url.replace("/", "") === req.params.id || ((_a = req.user) === null || _a === void 0 ? void 0 : _a.isAdmin)) {
+        var _a, _b;
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) === "admin" || ((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === "manager") {
             next();
         }
         else {
@@ -52,7 +52,7 @@ exports.verifyTokenAndAuthorization = verifyTokenAndAuthorization;
 const verifyTokenAndAdmin = (req, res, next) => {
     checkToken(req, res, () => {
         var _a;
-        if ((_a = req.user) === null || _a === void 0 ? void 0 : _a.isAdmin) {
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) === "admin") {
             next();
         }
         else {

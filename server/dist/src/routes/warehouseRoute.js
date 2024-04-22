@@ -12,5 +12,6 @@ router.get(`/`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouse);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.deleteWarehouse);
 router.get("/income/total-warehouse-products", auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByProduct);
 router.get(`/income/total-warehouse-supplier`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseBySupplier);
+router.get(`/income/total-warehouse-general`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByGeneral);
 router.get(`/income/total-warehouse`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getIncomeWarehouse);
 exports.default = router;

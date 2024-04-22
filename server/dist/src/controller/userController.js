@@ -18,31 +18,39 @@ const express_validator_1 = require("express-validator");
 const UserModel_1 = __importDefault(require("../model/UserModel"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        const user = yield UserModel_1.default.findOne({ email: req.body.email });
-        !user && res.status(404).json("user not found");
-        const validPassword = yield bcrypt_1.default.compare(req.body.password, user === null || user === void 0 ? void 0 : user.password);
+        const user = yield UserModel_1.default.findOne({ email: req.body.email }).populate("role");
+        if (!user) {
+            return res.status(403).json({ message: "Invalid user not found	" });
+        }
+        const validPassword = yield bcrypt_1.default.compare(req.body.password, user.password);
         if (!validPassword) {
-            res.status(400).json("wrong password");
+            return res.status(403).json({ message: "Invalid password	" });
         }
-        else {
-            const accessToken = jsonwebtoken_1.default.sign({
-                userId: user === null || user === void 0 ? void 0 : user._id,
-                isAdmin: user === null || user === void 0 ? void 0 : user.isAdmin,
-                username: user === null || user === void 0 ? void 0 : user.username,
-            }, process.env.JWT_SECRET, { expiresIn: "3h" });
-            res.status(200).json({
-                user: user,
-                token: accessToken,
-                success: true,
-            });
-        }
+        const token = generateAccessToken({
+            user,
+            role: (_a = user.role) === null || _a === void 0 ? void 0 : _a.name,
+        });
+        res.status(200).json({
+            user,
+            role: (_b = user.role) === null || _b === void 0 ? void 0 : _b.name,
+            token: token,
+            success: true,
+        });
     }
     catch (err) {
-        res.status(500).json(err);
+        res.status(500).json({ message: "Login failed" });
+        throw new Error("Login failed");
     }
 });
 exports.loginUser = loginUser;
+function generateAccessToken(userData) {
+    const accessToken = jsonwebtoken_1.default.sign(userData, process.env.JWT_SECRET, {
+        expiresIn: "3h",
+    });
+    return accessToken;
+}
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const salt = yield bcrypt_1.default.genSalt(10);
@@ -62,15 +70,17 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             email: req.body.email,
             password: hashedPw,
             confirmPassword: hashedConfirmPw,
+            role: req.body.role,
         });
         const accessToken = jsonwebtoken_1.default.sign({
             userId: user._id,
-            isAdmin: user.isAdmin,
+            role: user.role,
             username: user.username,
         }, process.env.JWT_SECRET, { expiresIn: "3h" });
         const savedUser = yield user.save();
         res.status(201).json({
             results: savedUser,
+            role: user === null || user === void 0 ? void 0 : user.role,
             success: true,
             token: accessToken,
         });
@@ -85,7 +95,9 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.registerUser = registerUser;
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listusers = yield UserModel_1.default.find().select("-passwword -confirmPassword");
+        const listusers = yield UserModel_1.default.find()
+            .select("-password -confirmPassword")
+            .populate("role");
         return res.status(200).json(listusers);
     }
     catch (error) {
@@ -96,14 +108,16 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getAllUsers = getAllUsers;
 const getInfoUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const userId = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.userId;
     try {
-        const userInfo = yield UserModel_1.default.findById(userId).select("-password -confirmPassword");
-        if (userInfo) {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const { user } = req.user;
+        const data = yield UserModel_1.default.findOne({ _id: user._id }).select("-password -confirmPassword");
+        if (user) {
             return res.status(200).json({
                 success: true,
-                user: userInfo,
+                results: data,
             });
         }
     }

@@ -13,63 +13,63 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const OrderPurchaseSchema = new mongoose_1.default.Schema({
+const ShippingWarehouseModel = new mongoose_1.default.Schema({
     code: {
         type: String,
+    },
+    fromGeneralId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "general",
         required: true,
     },
-    import_price: {
-        type: Number,
+    toGeneralId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "general",
         required: true,
     },
     products: [
         {
-            productId: {
-                type: mongoose_1.default.Schema.Types.ObjectId,
-                ref: "products",
-                required: true,
-            },
             inventory_number: {
                 type: Number,
                 required: true,
+                default: 0,
+            },
+            productId: {
+                type: mongoose_1.default.Schema.Types.ObjectId,
+                ref: "products",
             },
         },
     ],
-    total_price: {
-        type: Number,
-    },
-    order_status: {
-        type: String,
-        default: "not-entered",
-        enum: ["entered", "not-entered"],
-    },
-    supplierId: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "supplier",
-    },
-    generalId: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "general",
-    },
-    payment_status: {
-        type: String,
-        enum: ["delivered", "pending"],
-        default: "pending",
-    },
-    received_date: {
+    transferDate: {
         type: String,
         required: true,
     },
-}, {
-    timestamps: true,
+    deliveryDate: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ["pending", "inTransit", "completed", "failed"],
+        default: "pending",
+    },
 });
-OrderPurchaseSchema.pre("find", function (next) {
+ShippingWarehouseModel.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
-            path: "products.productId",
-            select: "name_product code import_price img",
+            path: "toGeneralId",
+            select: "address name type manager",
         });
         next();
     });
 });
-exports.default = mongoose_1.default.model("order_suppliers", OrderPurchaseSchema);
+ShippingWarehouseModel.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "fromGeneralId",
+            select: "address name type manager",
+        });
+        next();
+    });
+});
+exports.default = mongoose_1.default.model("shipping_warehouse", ShippingWarehouseModel);

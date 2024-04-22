@@ -38,10 +38,6 @@ const SupplierSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    warehouseId: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "purchase_orders",
-    },
 }, {
     timestamps: true,
 });

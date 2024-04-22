@@ -22,6 +22,14 @@ const ProductSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    generalId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "general",
+    },
+    manager: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "users",
+    },
     type: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "category",
@@ -42,12 +50,13 @@ const ProductSchema = new mongoose_1.default.Schema({
     inventory_number: {
         type: Number,
         required: true,
+        default: 0,
         ref: "purchase_orders",
     },
     status: {
         type: String,
         required: true,
-        enum: ["stocking", "out of stock"],
+        enum: ["stocking", "out-of-stock"],
         default: "stocking",
     },
     img: {
@@ -66,6 +75,24 @@ ProductSchema.pre("find", function (next) {
         this.populate({
             path: "type",
             select: "name",
+        });
+        next();
+    });
+});
+ProductSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "manager",
+            select: "username email phone address picture role",
+        });
+        next();
+    });
+});
+ProductSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "generalId",
+            select: "name type phone address manager",
         });
         next();
     });

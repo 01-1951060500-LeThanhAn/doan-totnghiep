@@ -12,29 +12,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
+const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { productId, inventory_number, import_price, supplierId, payment_status, } = req.body;
-        if (!productId || !supplierId) {
+        const { import_price, supplierId, products } = req.body;
+        if (!supplierId || !products || products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-        const product = yield ProductModel_1.default.findById(productId);
-        if (!product) {
-            return res.status(400).json({ message: "Invalid product ID" });
-        }
-        yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number: inventory_number } }, { upsert: true, new: true });
-        const totalPrice = inventory_number * import_price;
-        const warehouse = new WarehouseModel_1.default({
-            productId: product._id,
-            inventory_number,
-            import_price,
-            totalPrice,
-            payment_status,
-            supplierId,
-        });
+        const productUpdates = products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const { productId, inventory_number } = product;
+            if (!productId || !inventory_number) {
+                return res.status(400).json({ message: "Missing product details" });
+            }
+            const existingProduct = yield ProductModel_1.default.findById(productId);
+            if (!existingProduct) {
+                return res.status(400).json({ message: "Invalid product ID" });
+            }
+            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+        }));
+        yield Promise.all(productUpdates);
+        const totalPrice = import_price * products[0].inventory_number;
+        const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice }));
         yield warehouse.save();
         res.status(200).json(warehouse);
     }
@@ -46,7 +47,7 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.createWareHouse = createWareHouse;
 const getWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const warehouse = yield WarehouseModel_1.default.find().populate("supplierId productId");
+        const warehouse = yield WarehouseModel_1.default.find().populate("supplierId products.productId generalId");
         return res.status(200).json(warehouse);
     }
     catch (error) {
@@ -89,7 +90,9 @@ const getIncomeWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 {
                     $project: {
                         _id: { $month: "$createdAt" },
-                        total_quantity: "$inventory_number",
+                        total_quantity: {
+                            $sum: "$products.inventory_number",
+                        },
                         total_sold_products: "$totalPrice",
                     },
                 },
@@ -121,40 +124,43 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             {
-                $lookup: {
-                    from: "products",
-                    localField: "productId",
-                    foreignField: "_id",
-                    as: "products",
-                },
+                $unwind: "$products", // Unwind the products array
             },
             {
-                $unwind: "$products",
+                $lookup: {
+                    from: "products",
+                    localField: "products.productId",
+                    foreignField: "_id",
+                    as: "product",
+                },
             },
             {
                 $project: {
                     _id: {
-                        month: { $month: "$createdAt" },
-                        product: "$products.name_product",
+                        month: "$createdAt",
+                        productId: "$products.productId",
                     },
-                    total_quantity: "$products.inventory_number",
+                    product_name: { $first: "$product.name_product" },
+                    product_code: { $first: "$product.code" },
+                    quantity: "$products.inventory_number",
+                    price: "$import_price",
                     total_price: {
-                        $multiply: ["$products.inventory_number", "$products.import_price"],
+                        $multiply: ["$products.inventory_number", "$import_price"],
                     },
                 },
             },
             {
                 $group: {
-                    _id: "$_id.product",
-                    total_quantity: { $sum: "$total_quantity" },
+                    _id: "$_id.productId",
+                    month: { $first: "$_id.month" },
+                    name: { $first: "$product_name" },
+                    code: { $first: "$product_code" },
+                    total_quantity: { $sum: "$quantity" },
                     total_income: { $sum: "$total_price" },
                 },
             },
         ]);
-        const response = {
-            incomeData,
-        };
-        res.status(200).json(response);
+        res.status(200).json(incomeData);
     }
     catch (err) {
         console.error(err);
@@ -190,9 +196,9 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                         supplier: "$suppliers.supplier_name",
                         code: "$suppliers.supplier_code",
                     },
-                    total_quantity: "$inventory_number",
+                    total_quantity: { $sum: "$products.inventory_number" },
                     total_price: {
-                        $multiply: ["$inventory_number", "$import_price"],
+                        $sum: "$totalPrice",
                     },
                 },
             },
@@ -200,14 +206,11 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                 $group: {
                     _id: "$_id.code",
                     total_quantity: { $sum: "$total_quantity" },
-                    total_income: { $sum: "$total_price" },
+                    total_price: { $sum: "$total_price" },
                 },
             },
         ]);
-        const response = {
-            incomeData,
-        };
-        res.status(200).json(response);
+        res.status(200).json(incomeData);
     }
     catch (err) {
         console.error(err);
@@ -215,3 +218,65 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getWareHouseBySupplier = getWareHouseBySupplier;
+const getWareHouseByGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "generalId",
+                    as: "purchase_orders",
+                },
+            },
+            {
+                $unwind: "$purchase_orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        general: "$purchase_orders.generalId",
+                        month: { $month: "$createdAt" },
+                    },
+                    quantity: {
+                        $sum: "$purchase_orders.products.inventory_number",
+                    },
+                    total_price: {
+                        $sum: "$purchase_orders.totalPrice",
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.general",
+                    month: { $first: "$_id.month" },
+                    total_products: { $sum: "$quantity" },
+                    total_price: { $sum: "$total_price" },
+                },
+            },
+        ];
+        const results = yield GeneralDepotModel_1.default.aggregate(pipeline);
+        const enrichedResults = [];
+        for (const result of results) {
+            const warehouseId = result._id;
+            const warehouse = yield GeneralDepotModel_1.default.findById(warehouseId);
+            if (warehouse) {
+                const enrichedResult = Object.assign(Object.assign({}, result), { name: warehouse.name, type: warehouse.type });
+                enrichedResults.push(enrichedResult);
+            }
+        }
+        res.status(200).json(enrichedResults);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching warehouse statistics" });
+    }
+});
+exports.getWareHouseByGeneral = getWareHouseByGeneral;
