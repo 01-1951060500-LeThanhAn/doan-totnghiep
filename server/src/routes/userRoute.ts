@@ -7,7 +7,10 @@ import {
   registerUser,
   updateUser,
 } from "../controller/userController";
-import { verifyTokenAndAdmin } from "../middleware/auth";
+import {
+  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
+} from "../middleware/auth";
 import checkLogin from "../middleware/checkLogin";
 const router = express.Router();
 
@@ -17,7 +20,7 @@ router.post(`/create-user`, verifyTokenAndAdmin, registerUser);
 
 router.get(`/list-user`, verifyTokenAndAdmin, getAllUsers);
 
-router.get(`/info-user`, checkLogin, getInfoUser);
+router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
 router.patch(`/update-user/:id`, updateUser);
 
