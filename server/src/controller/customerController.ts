@@ -67,6 +67,8 @@ const getInfoCustomer = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Customer not found" });
     }
 
+    const results = await CustomerModel.findById(customerId);
+
     const customer = await CustomerModel.aggregate([
       {
         $match: {
@@ -117,7 +119,7 @@ const getInfoCustomer = async (req: Request, res: Response) => {
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
 
           totalSpending: 1,
           totalOrders: 1,
@@ -126,7 +128,10 @@ const getInfoCustomer = async (req: Request, res: Response) => {
       },
     ]);
 
-    return res.status(200).json(customer);
+    return res.status(200).json({
+      results,
+      orders: customer,
+    });
   } catch (error) {
     console.error("Error fetching total spending:", error);
     return res.status(500).json({ message: "An error occurred" });
