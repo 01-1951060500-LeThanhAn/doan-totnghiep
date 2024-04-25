@@ -76,6 +76,7 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!customerId) {
             return res.status(400).json({ message: "Customer not found" });
         }
+        const results = yield CustomerModel_1.default.findById(customerId);
         const customer = yield CustomerModel_1.default.aggregate([
             {
                 $match: {
@@ -126,14 +127,17 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
             },
             {
                 $project: {
-                    _id: 0,
+                    _id: 1,
                     totalSpending: 1,
                     totalOrders: 1,
                     orders: 1,
                 },
             },
         ]);
-        return res.status(200).json(customer);
+        return res.status(200).json({
+            results,
+            orders: customer,
+        });
     }
     catch (error) {
         console.error("Error fetching total spending:", error);
