@@ -10,6 +10,10 @@ const SupplierSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    userId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "users",
+    },
     supplier_code: {
         type: String,
         required: true,
@@ -31,6 +35,10 @@ const SupplierSchema = new mongoose_1.default.Schema({
         required: true,
     },
     website: {
+        type: String,
+        required: true,
+    },
+    tax_code: {
         type: String,
         required: true,
     },
