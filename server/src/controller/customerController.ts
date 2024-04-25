@@ -83,6 +83,7 @@ const getInfoCustomer = async (req: Request, res: Response) => {
           as: "orders",
         },
       },
+
       {
         $project: {
           _id: 1,
@@ -92,14 +93,29 @@ const getInfoCustomer = async (req: Request, res: Response) => {
             products: 1,
             total_price: 1,
             code: 1,
+            generalId: 1,
             payment_status: 1,
             received_date: 1,
             order_status: 1,
           },
         },
       },
+
       {
-        $unwind: "$orders",
+        $project: {
+          _id: 1,
+          generalId: 1,
+          orders: {
+            _id: 1,
+            products: 1,
+            total_price: 1,
+            code: 1,
+            generalId: 1,
+            payment_status: 1,
+            received_date: 1,
+            order_status: 1,
+          },
+        },
       },
       {
         $group: {
@@ -121,7 +137,6 @@ const getInfoCustomer = async (req: Request, res: Response) => {
       {
         $project: {
           _id: 1,
-
           totalSpending: 1,
           totalOrders: 1,
           orders: 1,

@@ -100,6 +100,7 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         products: 1,
                         total_price: 1,
                         code: 1,
+                        generalId: 1,
                         payment_status: 1,
                         received_date: 1,
                         order_status: 1,
@@ -107,7 +108,20 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
             },
             {
-                $unwind: "$orders",
+                $project: {
+                    _id: 1,
+                    generalId: 1,
+                    orders: {
+                        _id: 1,
+                        products: 1,
+                        total_price: 1,
+                        code: 1,
+                        generalId: 1,
+                        payment_status: 1,
+                        received_date: 1,
+                        order_status: 1,
+                    },
+                },
             },
             {
                 $group: {
