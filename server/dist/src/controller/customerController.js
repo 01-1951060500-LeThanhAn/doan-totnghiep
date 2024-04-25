@@ -101,6 +101,7 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         generalId: 1,
                         total_price: 1,
                         payment_status: 1,
+                        code: 1,
                         received_date: 1,
                         order_status: 1,
                     },
