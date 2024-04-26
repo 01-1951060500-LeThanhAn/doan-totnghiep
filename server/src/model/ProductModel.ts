@@ -29,11 +29,11 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
     import_price: {
-      type: Number,
+      type: String,
       required: true,
     },
     export_price: {
-      type: Number,
+      type: String,
       required: true,
     },
     inventory_number: {

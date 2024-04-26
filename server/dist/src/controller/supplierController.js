@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDetailSupplier = exports.deleteSupplier = exports.updateSupplier = exports.getListSuppliers = exports.createSupplier = void 0;
 const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
-const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const suppliers = new SupplierModel_1.default(Object.assign({}, req.body));
     try {
@@ -37,22 +37,84 @@ const getListSuppliers = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.getListSuppliers = getListSuppliers;
 const getDetailSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     const supplierId = req.params.id;
+    if (!supplierId) {
+        return res.status(400).json({ message: "Supplier not found" });
+    }
     try {
-        const supplier = yield WarehouseModel_1.default.find({ supplierId }).populate("products.productId supplierId");
-        if (!supplier) {
-            return res.status(404).json({
-                message: "Supplier not found",
-            });
-        }
-        res.status(200).json(supplier);
+        const incomeData = yield SupplierModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                    _id: new mongoose_1.default.Types.ObjectId(supplierId),
+                },
+            },
+            {
+                $lookup: {
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "supplierId",
+                    as: "purchase_orders",
+                },
+            },
+            {
+                $unwind: "$purchase_orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        supplier: "$purchase_orders.supplierId",
+                    },
+                    payment_status: "$purchase_orders.payment_status",
+                    code: "$purchase_orders.code",
+                    quantity: {
+                        $first: "$purchase_orders.products.inventory_number",
+                    },
+                    total_price: "$purchase_orders.totalPrice",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.supplier",
+                    code: {
+                        $first: "$code",
+                    },
+                    payment_status: {
+                        $first: "$payment_status",
+                    },
+                    total_quantity: { $sum: "$quantity" },
+                    total_price: { $sum: "$total_price" },
+                },
+            },
+        ]);
+        return res.status(200).json(incomeData);
     }
     catch (error) {
-        console.error("Error fetching supplier details:", error);
-        res.status(500).json({ message: "Error fetching supplier details" });
+        console.error(error);
+        res.status(500).json({ message: "Error fetching income and status data" });
     }
 });
 exports.getDetailSupplier = getDetailSupplier;
+// const getDetailSupplier = async (req: Request, res: Response) => {
+//   const supplierId = req.params.id;
+//   try {
+//     const supplier = await WarehouseModel.find({ supplierId }).populate(
+//       "products.productId supplierId"
+//     );
+//     if (!supplier) {
+//       return res.status(404).json({
+//         message: "Supplier not found",
+//       });
+//     }
+//     res.status(200).json(supplier);
+//   } catch (error) {
+//     console.error("Error fetching supplier details:", error);
+//     res.status(500).json({ message: "Error fetching supplier details" });
+//   }
+// };
 const updateSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;

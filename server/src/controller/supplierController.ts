@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import SupplierModel from "../model/SupplierModel";
 import WarehouseModel from "../model/WarehouseModel";
+import mongoose from "mongoose";
 
 const createSupplier = async (req: Request, res: Response) => {
   const suppliers = new SupplierModel({
@@ -25,25 +26,91 @@ const getListSuppliers = async (req: Request, res: Response) => {
 };
 
 const getDetailSupplier = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
   const supplierId = req.params.id;
+  if (!supplierId) {
+    return res.status(400).json({ message: "Supplier not found" });
+  }
 
   try {
-    const supplier = await WarehouseModel.find({ supplierId }).populate(
-      "products.productId supplierId"
-    );
+    const incomeData = await SupplierModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          _id: new mongoose.Types.ObjectId(supplierId),
+        },
+      },
+      {
+        $lookup: {
+          from: "purchase_orders",
+          localField: "_id",
+          foreignField: "supplierId",
+          as: "purchase_orders",
+        },
+      },
 
-    if (!supplier) {
-      return res.status(404).json({
-        message: "Supplier not found",
-      });
-    }
+      {
+        $unwind: "$purchase_orders",
+      },
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            supplier: "$purchase_orders.supplierId",
+          },
 
-    res.status(200).json(supplier);
+          payment_status: "$purchase_orders.payment_status",
+          code: "$purchase_orders.code",
+          quantity: {
+            $first: "$purchase_orders.products.inventory_number",
+          },
+
+          total_price: "$purchase_orders.totalPrice",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.supplier",
+          code: {
+            $first: "$code",
+          },
+          payment_status: {
+            $first: "$payment_status",
+          },
+          total_quantity: { $sum: "$quantity" },
+          total_price: { $sum: "$total_price" },
+        },
+      },
+    ]);
+
+    return res.status(200).json(incomeData);
   } catch (error) {
-    console.error("Error fetching supplier details:", error);
-    res.status(500).json({ message: "Error fetching supplier details" });
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income and status data" });
   }
 };
+
+// const getDetailSupplier = async (req: Request, res: Response) => {
+//   const supplierId = req.params.id;
+
+//   try {
+//     const supplier = await WarehouseModel.find({ supplierId }).populate(
+//       "products.productId supplierId"
+//     );
+
+//     if (!supplier) {
+//       return res.status(404).json({
+//         message: "Supplier not found",
+//       });
+//     }
+
+//     res.status(200).json(supplier);
+//   } catch (error) {
+//     console.error("Error fetching supplier details:", error);
+//     res.status(500).json({ message: "Error fetching supplier details" });
+//   }
+// };
 
 const updateSupplier = async (req: Request, res: Response) => {
   try {
