@@ -160,7 +160,13 @@ exports.searchProduct = searchProduct;
 const getDetailProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const productId = req.params.id;
     try {
-        const product = yield ProductModel_1.default.findById(productId);
+        const product = yield ProductModel_1.default.findById(productId)
+            .populate("type generalId manager")
+            .select({
+            path: "manager",
+            select: "-password -confirmPassword createdAt updatedAt role",
+        })
+            .lean();
         if (!product) {
             return res.status(404).json({
                 message: "Sản phẩm không tồn tại",

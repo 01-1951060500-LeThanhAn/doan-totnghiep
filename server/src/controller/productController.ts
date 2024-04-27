@@ -157,7 +157,13 @@ const getDetailProduct = async (req: Request, res: Response) => {
   const productId = req.params.id;
 
   try {
-    const product = await ProductModel.findById(productId);
+    const product = await ProductModel.findById(productId)
+      .populate("type generalId manager")
+      .select({
+        path: "manager",
+        select: "-password -confirmPassword createdAt updatedAt role",
+      })
+      .lean();
 
     if (!product) {
       return res.status(404).json({
