@@ -5,7 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const WarehouseSchema = new mongoose_1.default.Schema({
-    code: String,
+    code: {
+        type: String,
+        required: true,
+    },
     import_price: Number,
     totalPrice: Number,
     products: [

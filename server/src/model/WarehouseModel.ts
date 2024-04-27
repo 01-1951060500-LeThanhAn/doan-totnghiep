@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 const WarehouseSchema = new mongoose.Schema(
   {
-    code: String,
+    code: {
+      type: String,
+      required: true,
+    },
     import_price: Number,
     totalPrice: Number,
     products: [
