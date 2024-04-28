@@ -28,9 +28,9 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
     let query: any = {};
 
     if (user?.role?.name === "admin") {
-      query = {}; // All depots for admins
+      query = {};
     } else if (user?.role?.name === "manager") {
-      query = { manager: user._id }; // Depots managed by the user
+      query = { manager: user._id };
     }
 
     const generals = await GeneralDepotModel.find(query)

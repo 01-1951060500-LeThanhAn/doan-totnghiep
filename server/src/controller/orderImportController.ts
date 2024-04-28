@@ -45,9 +45,9 @@ const updateImportOrder = async (req: Request, res: Response) => {
     }
 
     const productUpdates = order.products.map(async (product: any) => {
-      const { productId, inventory_number } = product;
+      const { productId, inventory_number, import_price } = product;
 
-      if (!productId || !inventory_number) {
+      if (!productId || !inventory_number || !import_price) {
         return res.status(400).json({ message: "Missing product details" });
       }
 
@@ -60,11 +60,12 @@ const updateImportOrder = async (req: Request, res: Response) => {
 
     await Promise.all(productUpdates);
 
-    const totalPrice = order.import_price * order.products[0].inventory_number; // Assuming all products have the same import price
+    const totalPrice =
+      order.products[0].import_price * order.products[0].inventory_number;
 
     const newWarehouseEntry = new WarehouseModel({
       inventory_number: order.products[0].inventory_number,
-      import_price: order.import_price,
+      import_price: order.products[0].import_price,
       totalPrice,
       productId: order.products[0].productId,
       supplierId: order.supplierId,

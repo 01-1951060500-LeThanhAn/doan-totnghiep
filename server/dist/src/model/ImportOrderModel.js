@@ -18,10 +18,6 @@ const OrderPurchaseSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    import_price: {
-        type: Number,
-        required: true,
-    },
     products: [
         {
             productId: {
@@ -30,6 +26,10 @@ const OrderPurchaseSchema = new mongoose_1.default.Schema({
                 required: true,
             },
             inventory_number: {
+                type: Number,
+                required: true,
+            },
+            import_price: {
                 type: Number,
                 required: true,
             },

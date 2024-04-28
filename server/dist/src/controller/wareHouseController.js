@@ -18,13 +18,13 @@ const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { import_price, supplierId, products } = req.body;
+        const { supplierId, products } = req.body;
         if (!supplierId || !products || products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
         }
         const productUpdates = products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
-            const { productId, inventory_number } = product;
-            if (!productId || !inventory_number) {
+            const { productId, inventory_number, import_price } = product;
+            if (!productId || !inventory_number || !import_price) {
                 return res.status(400).json({ message: "Missing product details" });
             }
             const existingProduct = yield ProductModel_1.default.findById(productId);
@@ -34,8 +34,10 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
         }));
         yield Promise.all(productUpdates);
-        const totalPrice = import_price * products[0].inventory_number;
-        const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice }));
+        const totalPrice = products.reduce((acc, product) => product.inventory_number * product.import_price, 0);
+        const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice,
+            totalQuantity }));
         yield warehouse.save();
         res.status(200).json(warehouse);
     }
@@ -124,7 +126,7 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             {
-                $unwind: "$products", // Unwind the products array
+                $unwind: "$products",
             },
             {
                 $lookup: {
@@ -145,7 +147,7 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     quantity: "$products.inventory_number",
                     price: "$import_price",
                     total_price: {
-                        $multiply: ["$products.inventory_number", "$import_price"],
+                        $multiply: ["$products.inventory_number", "$products.import_price"],
                     },
                 },
             },

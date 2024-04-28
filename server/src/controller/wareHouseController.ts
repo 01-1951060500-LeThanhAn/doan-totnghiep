@@ -5,16 +5,16 @@ import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
-    const { import_price, supplierId, products } = req.body;
+    const { supplierId, products } = req.body;
 
     if (!supplierId || !products || products.length === 0) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     const productUpdates = products.map(async (product: any) => {
-      const { productId, inventory_number } = product;
+      const { productId, inventory_number, import_price } = product;
 
-      if (!productId || !inventory_number) {
+      if (!productId || !inventory_number || !import_price) {
         return res.status(400).json({ message: "Missing product details" });
       }
 
@@ -32,10 +32,19 @@ const createWareHouse = async (req: Request, res: Response) => {
 
     await Promise.all(productUpdates);
 
-    const totalPrice = import_price * products[0].inventory_number;
+    const totalPrice = products.reduce(
+      (acc: number, product: any) =>
+        product.inventory_number * product.import_price,
+      0
+    );
+    const totalQuantity = products.reduce(
+      (acc: number, product: any) => acc + Number(product.inventory_number),
+      0
+    );
     const warehouse = new WarehouseModel({
       ...req.body,
       totalPrice,
+      totalQuantity,
     });
 
     await warehouse.save();
@@ -131,7 +140,7 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
         },
       },
       {
-        $unwind: "$products", // Unwind the products array
+        $unwind: "$products",
       },
       {
         $lookup: {
@@ -152,7 +161,7 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
           quantity: "$products.inventory_number",
           price: "$import_price",
           total_price: {
-            $multiply: ["$products.inventory_number", "$import_price"],
+            $multiply: ["$products.inventory_number", "$products.import_price"],
           },
         },
       },

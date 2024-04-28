@@ -9,8 +9,8 @@ const WarehouseSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    import_price: Number,
     totalPrice: Number,
+    totalQuantity: Number,
     products: [
         {
             productId: {
@@ -19,6 +19,10 @@ const WarehouseSchema = new mongoose_1.default.Schema({
                 required: true,
             },
             inventory_number: {
+                type: Number,
+                required: true,
+            },
+            import_price: {
                 type: Number,
                 required: true,
             },

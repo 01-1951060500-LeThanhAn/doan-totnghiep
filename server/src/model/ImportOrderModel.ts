@@ -6,10 +6,6 @@ const OrderPurchaseSchema = new mongoose.Schema(
       required: true,
     },
 
-    import_price: {
-      type: Number,
-      required: true,
-    },
     products: [
       {
         productId: {
@@ -18,6 +14,10 @@ const OrderPurchaseSchema = new mongoose.Schema(
           required: true,
         },
         inventory_number: {
+          type: Number,
+          required: true,
+        },
+        import_price: {
           type: Number,
           required: true,
         },

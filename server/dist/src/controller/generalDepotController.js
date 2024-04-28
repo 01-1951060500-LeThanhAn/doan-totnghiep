@@ -38,10 +38,10 @@ const getGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
         let query = {};
         if (((_a = user === null || user === void 0 ? void 0 : user.role) === null || _a === void 0 ? void 0 : _a.name) === "admin") {
-            query = {}; // All depots for admins
+            query = {};
         }
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
-            query = { manager: user._id }; // Depots managed by the user
+            query = { manager: user._id };
         }
         const generals = yield GeneralDepotModel_1.default.find(query)
             .populate({

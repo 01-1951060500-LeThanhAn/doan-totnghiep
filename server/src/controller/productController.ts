@@ -1,4 +1,4 @@
-import { query, Request, Response } from "express";
+import { Request, Response } from "express";
 import ProductModel from "../model/ProductModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 

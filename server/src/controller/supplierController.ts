@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import SupplierModel from "../model/SupplierModel";
 import WarehouseModel from "../model/WarehouseModel";
-import mongoose from "mongoose";
 
 const createSupplier = async (req: Request, res: Response) => {
   const suppliers = new SupplierModel({
