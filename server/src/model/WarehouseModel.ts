@@ -34,8 +34,8 @@ const WarehouseSchema = new mongoose.Schema(
     },
     payment_status: {
       type: String,
-      required: true,
       enum: ["delivered", "pending"],
+      default: "pending",
     },
   },
   {

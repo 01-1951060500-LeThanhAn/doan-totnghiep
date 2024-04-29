@@ -38,8 +38,8 @@ const WarehouseSchema = new mongoose_1.default.Schema({
     },
     payment_status: {
         type: String,
-        required: true,
         enum: ["delivered", "pending"],
+        default: "pending",
     },
 }, {
     timestamps: true,
