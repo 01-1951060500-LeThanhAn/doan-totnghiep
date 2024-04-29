@@ -67,6 +67,41 @@ const getWareHouse = async (req: Request, res: Response) => {
   }
 };
 
+const getInfoWareHouse = async (req: Request, res: Response) => {
+  const warehouseId = req.params.id;
+  if (!warehouseId) {
+    return res.status(400).json({
+      message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+    });
+  }
+  try {
+    const detailWarehouse = await WarehouseModel.findById(warehouseId)
+      .populate({
+        path: "generalId",
+        select: "-products -createdAt -updatedAt",
+      })
+      .populate({
+        path: "supplierId",
+        select: "-createdAt -updatedAt -userId -website -desc -tax_code",
+      })
+      .populate({
+        path: "products.productId",
+      });
+    if (!detailWarehouse) {
+      return res.status(401).json({
+        message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+      });
+    }
+
+    res.status(200).json(detailWarehouse);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Lỗi khi hiển thị đơn nhập hàng",
+    });
+  }
+};
+
 const deleteWarehouse = async (req: Request, res: Response) => {
   const warehouseId = req.params.id;
 
@@ -317,4 +352,5 @@ export {
   getIncomeWarehouse,
   getWareHouseBySupplier,
   getWareHouseByGeneral,
+  getInfoWareHouse,
 };

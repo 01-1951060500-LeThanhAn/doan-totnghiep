@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -57,6 +57,41 @@ const getWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getWareHouse = getWareHouse;
+const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const warehouseId = req.params.id;
+    if (!warehouseId) {
+        return res.status(400).json({
+            message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+        });
+    }
+    try {
+        const detailWarehouse = yield WarehouseModel_1.default.findById(warehouseId)
+            .populate({
+            path: "generalId",
+            select: "-products -createdAt -updatedAt",
+        })
+            .populate({
+            path: "supplierId",
+            select: "-createdAt -updatedAt -userId -website -desc -tax_code",
+        })
+            .populate({
+            path: "products.productId",
+        });
+        if (!detailWarehouse) {
+            return res.status(401).json({
+                message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+            });
+        }
+        res.status(200).json(detailWarehouse);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Lỗi khi hiển thị đơn nhập hàng",
+        });
+    }
+});
+exports.getInfoWareHouse = getInfoWareHouse;
 const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const warehouseId = req.params.id;
     try {

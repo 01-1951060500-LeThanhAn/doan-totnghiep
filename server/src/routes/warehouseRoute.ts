@@ -7,6 +7,7 @@ import {
   getWareHouse,
   getWareHouseByProduct,
   getWareHouseBySupplier,
+  getInfoWareHouse,
   getWareHouseByGeneral,
 } from "../controller/wareHouseController";
 
@@ -15,6 +16,8 @@ const router = express.Router();
 router.post(`/`, verifyTokenAndAdmin, createWareHouse);
 
 router.get(`/`, verifyTokenAndAdmin, getWareHouse);
+
+router.get(`/:id`, verifyTokenAndAdmin, getInfoWareHouse);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteWarehouse);
 

@@ -9,6 +9,7 @@ const wareHouseController_1 = require("../controller/wareHouseController");
 const router = express_1.default.Router();
 router.post(`/`, auth_1.verifyTokenAndAdmin, wareHouseController_1.createWareHouse);
 router.get(`/`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouse);
+router.get(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getInfoWareHouse);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.deleteWarehouse);
 router.get("/income/total-warehouse-products", auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByProduct);
 router.get(`/income/total-warehouse-supplier`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseBySupplier);
