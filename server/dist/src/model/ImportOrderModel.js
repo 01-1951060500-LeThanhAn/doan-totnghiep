@@ -75,4 +75,22 @@ OrderPurchaseSchema.pre("find", function (next) {
         next();
     });
 });
+OrderPurchaseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "supplierId",
+            select: "supplier_name supplier_code address_supplier",
+        });
+        next();
+    });
+});
+OrderPurchaseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "generalId",
+            select: "name",
+        });
+        next();
+    });
+});
 exports.default = mongoose_1.default.model("order_suppliers", OrderPurchaseSchema);
