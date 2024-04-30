@@ -96,12 +96,12 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
     }
     try {
-        const updatedWarehouse = yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
+        const updatedWarehouseData = yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
             $set: req.body,
         }, {
             new: true,
         });
-        const productUpdates = (_a = updatedWarehouse === null || updatedWarehouse === void 0 ? void 0 : updatedWarehouse.products) === null || _a === void 0 ? void 0 : _a.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+        const productUpdates = (_a = updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.products) === null || _a === void 0 ? void 0 : _a.map((product) => __awaiter(void 0, void 0, void 0, function* () {
             const { productId, inventory_number, import_price } = product;
             if (!productId || !inventory_number || !import_price) {
                 return res.status(400).json({ message: "Missing product details" });
@@ -112,7 +112,8 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             }
             yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
         }));
-        res.status(200).json(updatedWarehouse);
+        yield (updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.save());
+        res.status(200).json(updatedWarehouseData);
     }
     catch (error) {
         console.log(error);

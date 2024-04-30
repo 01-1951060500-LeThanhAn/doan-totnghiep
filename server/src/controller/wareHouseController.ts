@@ -106,7 +106,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
   }
 
   try {
-    const updatedWarehouse = await WarehouseModel.findByIdAndUpdate(
+    const updatedWarehouseData = await WarehouseModel.findByIdAndUpdate(
       warehouseId,
       {
         $set: req.body,
@@ -116,7 +116,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
       }
     );
 
-    const productUpdates = updatedWarehouse?.products?.map(
+    const productUpdates = updatedWarehouseData?.products?.map(
       async (product: any) => {
         const { productId, inventory_number, import_price } = product;
 
@@ -137,7 +137,9 @@ const updateWarehouse = async (req: Request, res: Response) => {
       }
     );
 
-    res.status(200).json(updatedWarehouse);
+    await updatedWarehouseData?.save();
+
+    res.status(200).json(updatedWarehouseData);
   } catch (error) {
     console.log(error);
     res.status(500).json("Server not found");
