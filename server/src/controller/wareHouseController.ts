@@ -109,7 +109,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
     const updatedWarehouseData = await WarehouseModel.findByIdAndUpdate(
       warehouseId,
       {
-        $set: req.body,
+        payment_status: "delivered",
       },
       {
         new: true,

@@ -97,7 +97,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     try {
         const updatedWarehouseData = yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
-            $set: req.body,
+            payment_status: "delivered",
         }, {
             new: true,
         });
