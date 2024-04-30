@@ -34,7 +34,7 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
         }));
         yield Promise.all(productUpdates);
-        const totalPrice = products.reduce((acc, product) => product.inventory_number * product.import_price, 0);
+        const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice,
             totalQuantity }));
@@ -82,6 +82,14 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
             });
         }
+        console.log(detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.map((item) => item === null || item === void 0 ? void 0 : item.import_price));
+        const totalPrice = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
+        const totalQuantity = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        const results = {
+            detailWarehouse,
+            totalPrice,
+            totalQuantity,
+        };
         res.status(200).json(detailWarehouse);
     }
     catch (error) {

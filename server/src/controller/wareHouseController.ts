@@ -34,7 +34,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 
     const totalPrice = products.reduce(
       (acc: number, product: any) =>
-        product.inventory_number * product.import_price,
+        acc + product.inventory_number * product.import_price,
       0
     );
     const totalQuantity = products.reduce(
@@ -92,6 +92,24 @@ const getInfoWareHouse = async (req: Request, res: Response) => {
         message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
       });
     }
+
+    console.log(detailWarehouse?.products.map((item) => item?.import_price));
+
+    const totalPrice = detailWarehouse?.products.reduce(
+      (acc: number, product: any) =>
+        acc + product.inventory_number * product.import_price,
+      0
+    );
+    const totalQuantity = detailWarehouse?.products.reduce(
+      (acc: number, product: any) => acc + Number(product.inventory_number),
+      0
+    );
+
+    const results = {
+      detailWarehouse,
+      totalPrice,
+      totalQuantity,
+    };
 
     res.status(200).json(detailWarehouse);
   } catch (error) {
