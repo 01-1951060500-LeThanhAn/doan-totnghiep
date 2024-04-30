@@ -103,9 +103,16 @@ const getDetailImportOrder = async (req: Request, res: Response) => {
   }
 
   try {
-    const data = await ImportOrderModel.findById(orderImportId).populate(
-      "products.productId supplierId"
-    );
+    const data = await ImportOrderModel.findById(orderImportId)
+      .populate("products.productId")
+      .populate({
+        path: "generalId",
+        select: "-createdAt -updatedAt -manager -products -type",
+      })
+      .populate({
+        path: "supplierId",
+        select: "-createdAt -updatedAt -desc -userId -tax_code -website",
+      });
     if (!data) {
       return res.status(404).json({
         message: "Đơn đặt hàng này không tồn tại",
