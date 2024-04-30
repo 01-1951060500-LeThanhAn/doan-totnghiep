@@ -5,6 +5,7 @@ import {
   getAllOrderImport,
   getDetailImportOrder,
   updateImportOrder,
+  deleteImportOrder,
 } from "../controller/orderImportController";
 const router = express.Router();
 
@@ -15,5 +16,7 @@ router.get(`/`, verifyTokenAndAdmin, getAllOrderImport);
 router.patch(`/:id`, verifyTokenAndAdmin, updateImportOrder);
 
 router.get(`/:id`, verifyTokenAndAdmin, getDetailImportOrder);
+
+router.delete(`/:id`, verifyTokenAndAdmin, deleteImportOrder);
 
 export default router;

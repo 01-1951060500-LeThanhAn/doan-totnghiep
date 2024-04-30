@@ -26,7 +26,9 @@ const OrderPurchaseSchema = new mongoose.Schema(
     total_price: {
       type: Number,
     },
-
+    totalQuantity: {
+      type: Number,
+    },
     order_status: {
       type: String,
       default: "not-entered",

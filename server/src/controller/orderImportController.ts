@@ -5,8 +5,17 @@ import ProductModel from "../model/ProductModel";
 
 const createImportOrder = async (req: Request, res: Response) => {
   try {
+    const { supplierId, products } = req.body;
+    if (!supplierId || !products || products.length === 0) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+    const totalQuantity = products.reduce(
+      (acc: number, product: any) => acc + Number(product.inventory_number),
+      0
+    );
     const newImportOrder = new ImportOrderModel({
       ...req.body,
+      totalQuantity,
     });
     await newImportOrder.save();
     res.status(200).json(newImportOrder);
@@ -110,9 +119,28 @@ const getDetailImportOrder = async (req: Request, res: Response) => {
   }
 };
 
+const deleteImportOrder = async (req: Request, res: Response) => {
+  const orderImportId = req.params.id;
+  if (!orderImportId) {
+    return res.status(404).json("Đơn đặt hàng này không tồn tại");
+  }
+
+  try {
+    const order = await ImportOrderModel.findByIdAndDelete(orderImportId);
+    if (!order) {
+      return res.status(404).json("Đơn đặt hàng này không tồn tại");
+    }
+    res.status(200).json("Đã xóa đơn đặt hàng thành công");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+};
+
 export {
   createImportOrder,
   getAllOrderImport,
   updateImportOrder,
   getDetailImportOrder,
+  deleteImportOrder,
 };

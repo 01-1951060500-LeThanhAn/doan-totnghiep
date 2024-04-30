@@ -12,13 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailImportOrder = exports.updateImportOrder = exports.getAllOrderImport = exports.createImportOrder = void 0;
+exports.deleteImportOrder = exports.getDetailImportOrder = exports.updateImportOrder = exports.getAllOrderImport = exports.createImportOrder = void 0;
 const ImportOrderModel_1 = __importDefault(require("../model/ImportOrderModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const newImportOrder = new ImportOrderModel_1.default(Object.assign({}, req.body));
+        const { supplierId, products } = req.body;
+        if (!supplierId || !products || products.length === 0) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
         yield newImportOrder.save();
         res.status(200).json(newImportOrder);
     }
@@ -100,3 +105,21 @@ const getDetailImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getDetailImportOrder = getDetailImportOrder;
+const deleteImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const orderImportId = req.params.id;
+    if (!orderImportId) {
+        return res.status(404).json("Đơn đặt hàng này không tồn tại");
+    }
+    try {
+        const order = yield ImportOrderModel_1.default.findByIdAndDelete(orderImportId);
+        if (!order) {
+            return res.status(404).json("Đơn đặt hàng này không tồn tại");
+        }
+        res.status(200).json("Đã xóa đơn đặt hàng thành công");
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json(error);
+    }
+});
+exports.deleteImportOrder = deleteImportOrder;
