@@ -5,6 +5,9 @@ const WarehouseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    delivery_date: {
+      type: String,
+    },
     totalPrice: Number,
     totalQuantity: Number,
     products: [

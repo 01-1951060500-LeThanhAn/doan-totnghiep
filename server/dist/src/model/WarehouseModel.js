@@ -9,6 +9,9 @@ const WarehouseSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    delivery_date: {
+        type: String,
+    },
     totalPrice: Number,
     totalQuantity: Number,
     products: [

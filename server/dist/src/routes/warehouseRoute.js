@@ -11,6 +11,7 @@ router.post(`/`, auth_1.verifyTokenAndAdmin, wareHouseController_1.createWareHou
 router.get(`/`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouse);
 router.get(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getInfoWareHouse);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.deleteWarehouse);
+router.patch(`/:id`, auth_1.verifyTokenAndAdmin, wareHouseController_1.updateWarehouse);
 router.get("/income/total-warehouse-products", auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByProduct);
 router.get(`/income/total-warehouse-supplier`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseBySupplier);
 router.get(`/income/total-warehouse-general`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByGeneral);

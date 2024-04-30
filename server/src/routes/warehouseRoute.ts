@@ -8,6 +8,7 @@ import {
   getWareHouseByProduct,
   getWareHouseBySupplier,
   getInfoWareHouse,
+  updateWarehouse,
   getWareHouseByGeneral,
 } from "../controller/wareHouseController";
 
@@ -20,6 +21,8 @@ router.get(`/`, verifyTokenAndAdmin, getWareHouse);
 router.get(`/:id`, verifyTokenAndAdmin, getInfoWareHouse);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteWarehouse);
+
+router.patch(`/:id`, verifyTokenAndAdmin, updateWarehouse);
 
 router.get(
   "/income/total-warehouse-products",

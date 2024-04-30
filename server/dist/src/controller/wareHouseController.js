@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -22,18 +22,6 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!supplierId || !products || products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-        const productUpdates = products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
-            const { productId, inventory_number, import_price } = product;
-            if (!productId || !inventory_number || !import_price) {
-                return res.status(400).json({ message: "Missing product details" });
-            }
-            const existingProduct = yield ProductModel_1.default.findById(productId);
-            if (!existingProduct) {
-                return res.status(400).json({ message: "Invalid product ID" });
-            }
-            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
-        }));
-        yield Promise.all(productUpdates);
         const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice,
@@ -82,7 +70,6 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
             });
         }
-        console.log(detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.map((item) => item === null || item === void 0 ? void 0 : item.import_price));
         const totalPrice = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
         const totalQuantity = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const results = {
@@ -100,6 +87,39 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getInfoWareHouse = getInfoWareHouse;
+const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const warehouseId = req.params.id;
+    if (!warehouseId) {
+        return res.status(400).json({
+            message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+        });
+    }
+    try {
+        const updatedWarehouse = yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
+            $set: req.body,
+        }, {
+            new: true,
+        });
+        const productUpdates = (_a = updatedWarehouse === null || updatedWarehouse === void 0 ? void 0 : updatedWarehouse.products) === null || _a === void 0 ? void 0 : _a.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const { productId, inventory_number, import_price } = product;
+            if (!productId || !inventory_number || !import_price) {
+                return res.status(400).json({ message: "Missing product details" });
+            }
+            const existingProduct = yield ProductModel_1.default.findById(productId);
+            if (!existingProduct) {
+                return res.status(400).json({ message: "Invalid product ID" });
+            }
+            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+        }));
+        res.status(200).json(updatedWarehouse);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json("Server not found");
+    }
+});
+exports.updateWarehouse = updateWarehouse;
 const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const warehouseId = req.params.id;
     try {

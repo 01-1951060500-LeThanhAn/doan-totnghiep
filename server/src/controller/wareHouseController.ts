@@ -11,27 +11,6 @@ const createWareHouse = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const productUpdates = products.map(async (product: any) => {
-      const { productId, inventory_number, import_price } = product;
-
-      if (!productId || !inventory_number || !import_price) {
-        return res.status(400).json({ message: "Missing product details" });
-      }
-
-      const existingProduct = await ProductModel.findById(productId);
-      if (!existingProduct) {
-        return res.status(400).json({ message: "Invalid product ID" });
-      }
-
-      await ProductModel.findOneAndUpdate(
-        { _id: productId },
-        { $inc: { inventory_number } },
-        { upsert: true, new: true }
-      );
-    });
-
-    await Promise.all(productUpdates);
-
     const totalPrice = products.reduce(
       (acc: number, product: any) =>
         acc + product.inventory_number * product.import_price,
@@ -93,8 +72,6 @@ const getInfoWareHouse = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(detailWarehouse?.products.map((item) => item?.import_price));
-
     const totalPrice = detailWarehouse?.products.reduce(
       (acc: number, product: any) =>
         acc + product.inventory_number * product.import_price,
@@ -117,6 +94,53 @@ const getInfoWareHouse = async (req: Request, res: Response) => {
     res.status(500).json({
       message: "Lỗi khi hiển thị đơn nhập hàng",
     });
+  }
+};
+
+const updateWarehouse = async (req: Request, res: Response) => {
+  const warehouseId = req.params.id;
+  if (!warehouseId) {
+    return res.status(400).json({
+      message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
+    });
+  }
+
+  try {
+    const updatedWarehouse = await WarehouseModel.findByIdAndUpdate(
+      warehouseId,
+      {
+        $set: req.body,
+      },
+      {
+        new: true,
+      }
+    );
+
+    const productUpdates = updatedWarehouse?.products?.map(
+      async (product: any) => {
+        const { productId, inventory_number, import_price } = product;
+
+        if (!productId || !inventory_number || !import_price) {
+          return res.status(400).json({ message: "Missing product details" });
+        }
+
+        const existingProduct = await ProductModel.findById(productId);
+        if (!existingProduct) {
+          return res.status(400).json({ message: "Invalid product ID" });
+        }
+
+        await ProductModel.findOneAndUpdate(
+          { _id: productId },
+          { $inc: { inventory_number } },
+          { upsert: true, new: true }
+        );
+      }
+    );
+
+    res.status(200).json(updatedWarehouse);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Server not found");
   }
 };
 
@@ -371,4 +395,5 @@ export {
   getWareHouseBySupplier,
   getWareHouseByGeneral,
   getInfoWareHouse,
+  updateWarehouse,
 };
