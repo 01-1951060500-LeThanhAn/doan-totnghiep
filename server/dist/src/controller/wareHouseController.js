@@ -75,7 +75,7 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
             select: "-createdAt -updatedAt -userId -website -desc -tax_code",
         })
             .populate({
-            path: "products",
+            path: "products.productId",
         });
         if (!detailWarehouse) {
             return res.status(401).json({
