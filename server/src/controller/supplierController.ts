@@ -98,6 +98,14 @@ const getDetailSupplier = async (req: Request, res: Response) => {
       supplierId,
     }).populate("products.productId supplierId generalId");
 
+    for (const warehouseEntry of history_warehouse) {
+      let totalQuantity = 0;
+      for (const product of warehouseEntry.products) {
+        totalQuantity += product.inventory_number;
+      }
+      warehouseEntry.totalQuantity = totalQuantity;
+    }
+
     const suppliers = await SupplierModel.findById(supplierId);
 
     if (!suppliers) {
