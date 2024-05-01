@@ -13,9 +13,17 @@ const createImportOrder = async (req: Request, res: Response) => {
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
+
+    const totalPrice = products.reduce(
+      (acc: number, product: any) =>
+        acc + product.inventory_number * product.import_price,
+      0
+    );
+
     const newImportOrder = new ImportOrderModel({
       ...req.body,
       totalQuantity,
+      totalPrice,
     });
     await newImportOrder.save();
     res.status(200).json(newImportOrder);
@@ -72,11 +80,15 @@ const updateImportOrder = async (req: Request, res: Response) => {
     const totalPrice =
       order.products[0].import_price * order.products[0].inventory_number;
 
+    const totalQuantity = order.products.reduce(
+      (acc: number, product: any) => acc + Number(product.inventory_number),
+      0
+    );
     const newWarehouseEntry = new WarehouseModel({
       code: order.code,
-
       import_price: order.products[0].import_price,
       totalPrice,
+      totalQuantity,
       products: order.products,
       delivery_date: order.received_date,
       supplierId: order.supplierId,

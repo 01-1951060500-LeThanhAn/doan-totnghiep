@@ -23,7 +23,7 @@ const OrderPurchaseSchema = new mongoose.Schema(
         },
       },
     ],
-    total_price: {
+    totalPrice: {
       type: Number,
     },
     totalQuantity: {
