@@ -73,6 +73,7 @@ const updateImportOrder = async (req: Request, res: Response) => {
       order.products[0].import_price * order.products[0].inventory_number;
 
     const newWarehouseEntry = new WarehouseModel({
+      code: order.code,
       inventory_number: order.products[0].inventory_number,
       import_price: order.products[0].import_price,
       totalPrice,

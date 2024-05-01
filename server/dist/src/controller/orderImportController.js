@@ -64,6 +64,7 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         yield Promise.all(productUpdates);
         const totalPrice = order.products[0].import_price * order.products[0].inventory_number;
         const newWarehouseEntry = new WarehouseModel_1.default({
+            code: order.code,
             inventory_number: order.products[0].inventory_number,
             import_price: order.products[0].import_price,
             totalPrice,
