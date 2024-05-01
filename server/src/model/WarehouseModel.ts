@@ -40,6 +40,11 @@ const WarehouseSchema = new mongoose.Schema(
       enum: ["delivered", "pending"],
       default: "pending",
     },
+    order_status: {
+      type: String,
+      enum: ["entered", "not-entered"],
+      default: "entered",
+    },
   },
   {
     timestamps: true,

@@ -69,7 +69,10 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             import_price: order.products[0].import_price,
             totalPrice,
             productId: order.products[0].productId,
+            delivery_date: order.received_date,
             supplierId: order.supplierId,
+            generalId: order.generalId,
+            order_status: order.order_status,
             payment_status: order.payment_status,
         });
         yield newWarehouseEntry.save();

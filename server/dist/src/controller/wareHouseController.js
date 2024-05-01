@@ -22,6 +22,18 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!supplierId || !products || products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
         }
+        const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const { productId, inventory_number, import_price } = product;
+            if (!productId || !inventory_number || !import_price) {
+                return res.status(400).json({ message: "Missing product details" });
+            }
+            const existingProduct = yield ProductModel_1.default.findById(productId);
+            if (!existingProduct) {
+                return res.status(400).json({ message: "Invalid product ID" });
+            }
+            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+        }));
+        yield Promise.all([productUpdates]);
         const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalPrice,
@@ -88,7 +100,6 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.getInfoWareHouse = getInfoWareHouse;
 const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const warehouseId = req.params.id;
     if (!warehouseId) {
         return res.status(400).json({
@@ -101,17 +112,6 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }, {
             new: true,
         });
-        const productUpdates = (_a = updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.products) === null || _a === void 0 ? void 0 : _a.map((product) => __awaiter(void 0, void 0, void 0, function* () {
-            const { productId, inventory_number, import_price } = product;
-            if (!productId || !inventory_number || !import_price) {
-                return res.status(400).json({ message: "Missing product details" });
-            }
-            const existingProduct = yield ProductModel_1.default.findById(productId);
-            if (!existingProduct) {
-                return res.status(400).json({ message: "Invalid product ID" });
-            }
-            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
-        }));
         yield (updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.save());
         res.status(200).json(updatedWarehouseData);
     }
