@@ -84,7 +84,7 @@ const getInfoWareHouse = async (req: Request, res: Response) => {
         select: "-createdAt -updatedAt -userId -website -desc -tax_code",
       })
       .populate({
-        path: "products.productId",
+        path: "products",
       });
     if (!detailWarehouse) {
       return res.status(401).json({
