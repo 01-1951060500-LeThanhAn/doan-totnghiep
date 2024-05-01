@@ -23,7 +23,7 @@ const createImportOrder = async (req: Request, res: Response) => {
     const newImportOrder = new ImportOrderModel({
       ...req.body,
       totalQuantity,
-      totalPrice,
+      totalPrice: totalPrice,
     });
     await newImportOrder.save();
     res.status(200).json(newImportOrder);
