@@ -35,7 +35,7 @@ const OrderPurchaseSchema = new mongoose_1.default.Schema({
             },
         },
     ],
-    total_price: {
+    totalPrice: {
         type: Number,
     },
     totalQuantity: {

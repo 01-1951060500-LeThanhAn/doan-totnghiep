@@ -23,7 +23,8 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return res.status(400).json({ message: "Missing required fields" });
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
-        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
+        const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
+        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity, totalPrice: totalPrice }));
         yield newImportOrder.save();
         res.status(200).json(newImportOrder);
     }
@@ -63,10 +64,12 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }));
         yield Promise.all(productUpdates);
         const totalPrice = order.products[0].import_price * order.products[0].inventory_number;
+        const totalQuantity = order.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const newWarehouseEntry = new WarehouseModel_1.default({
             code: order.code,
             import_price: order.products[0].import_price,
             totalPrice,
+            totalQuantity,
             products: order.products,
             delivery_date: order.received_date,
             supplierId: order.supplierId,

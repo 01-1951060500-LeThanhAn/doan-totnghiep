@@ -102,6 +102,13 @@ const getDetailSupplier = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const history_warehouse = yield WarehouseModel_1.default.find({
             supplierId,
         }).populate("products.productId supplierId generalId");
+        for (const warehouseEntry of history_warehouse) {
+            let totalQuantity = 0;
+            for (const product of warehouseEntry.products) {
+                totalQuantity += product.inventory_number;
+            }
+            warehouseEntry.totalQuantity = totalQuantity;
+        }
         const suppliers = yield SupplierModel_1.default.findById(supplierId);
         if (!suppliers) {
             return res.status(404).json({
