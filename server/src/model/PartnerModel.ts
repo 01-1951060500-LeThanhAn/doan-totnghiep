@@ -6,6 +6,10 @@ const PartnerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    code: {
+      type: String,
+      required: true,
+    },
 
     address: {
       type: String,
@@ -19,10 +23,19 @@ const PartnerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    staffIncharge: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
+    payer: {
+      type: String,
+      enum: ["customer", "shop"],
+      default: "shop",
+    },
 
     status: {
       type: String,
-      enum: ["active", "inactive"],
+      enum: ["active", "passive"],
       default: "active",
     },
   },

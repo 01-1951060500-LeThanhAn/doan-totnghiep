@@ -4,14 +4,10 @@ import PartnerModel from "../model/PartnerModel";
 const createPartner = async (req: Request, res: Response) => {
   try {
     const partner = new PartnerModel({
-      username: req.body.username,
-      email: req.body.email,
-      phone: req.body.phone,
-      address: req.body.address,
+      ...req.body,
     });
 
     await partner.save();
-
     return res.status(200).json(partner);
   } catch (error) {
     console.log(error);

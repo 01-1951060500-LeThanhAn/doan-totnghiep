@@ -16,12 +16,7 @@ exports.deletePartner = exports.getInfoPartner = exports.getPartners = exports.c
 const PartnerModel_1 = __importDefault(require("../model/PartnerModel"));
 const createPartner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const partner = new PartnerModel_1.default({
-            username: req.body.username,
-            email: req.body.email,
-            phone: req.body.phone,
-            address: req.body.address,
-        });
+        const partner = new PartnerModel_1.default(Object.assign({}, req.body));
         yield partner.save();
         return res.status(200).json(partner);
     }
