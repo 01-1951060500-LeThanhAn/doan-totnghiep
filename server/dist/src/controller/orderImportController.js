@@ -16,6 +16,7 @@ exports.deleteImportOrder = exports.getDetailImportOrder = exports.updateImportO
 const ImportOrderModel_1 = __importDefault(require("../model/ImportOrderModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
+const format_price_1 = require("../config/format-price");
 const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products } = req.body;
@@ -24,7 +25,7 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
-        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity, totalPrice: totalPrice }));
+        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity, totalPrice: (0, format_price_1.formatPrice)(totalPrice) }));
         yield newImportOrder.save();
         res.status(200).json(newImportOrder);
     }

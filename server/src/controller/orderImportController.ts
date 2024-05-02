@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ImportOrderModel from "../model/ImportOrderModel";
 import WarehouseModel from "../model/WarehouseModel";
 import ProductModel from "../model/ProductModel";
+import { formatPrice } from "../config/format-price";
 
 const createImportOrder = async (req: Request, res: Response) => {
   try {
@@ -23,7 +24,7 @@ const createImportOrder = async (req: Request, res: Response) => {
     const newImportOrder = new ImportOrderModel({
       ...req.body,
       totalQuantity,
-      totalPrice: totalPrice,
+      totalPrice: formatPrice(totalPrice),
     });
     await newImportOrder.save();
     res.status(200).json(newImportOrder);

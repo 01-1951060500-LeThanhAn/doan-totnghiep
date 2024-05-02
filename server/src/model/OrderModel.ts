@@ -55,7 +55,6 @@ const OrderSchema = new mongoose.Schema(
     },
     order_status: {
       type: String,
-
       enum: ["pending", "delivered", "shipped"],
       default: "pending",
     },
@@ -119,6 +118,14 @@ OrderSchema.pre("find", async function (next) {
   this.populate({
     path: "generalId",
     select: "name address createdAt code",
+  });
+  next();
+});
+
+OrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "products.productId",
+    select: "generalId",
   });
   next();
 });
