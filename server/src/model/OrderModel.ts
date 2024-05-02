@@ -42,6 +42,12 @@ const OrderSchema = new mongoose.Schema(
     code: {
       type: String,
     },
+    delivery_address: {
+      type: String,
+    },
+    invoice_address: {
+      type: String,
+    },
 
     payment_status: {
       type: String,

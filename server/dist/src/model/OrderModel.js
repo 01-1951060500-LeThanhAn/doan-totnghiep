@@ -54,6 +54,12 @@ const OrderSchema = new mongoose_1.default.Schema({
     code: {
         type: String,
     },
+    delivery_address: {
+        type: String,
+    },
+    invoice_address: {
+        type: String,
+    },
     payment_status: {
         type: String,
         enum: ["unpaid", "paid"],
