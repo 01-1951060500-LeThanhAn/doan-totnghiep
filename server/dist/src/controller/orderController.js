@@ -54,10 +54,10 @@ const getAllOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         let orders = [];
         if (((_a = user === null || user === void 0 ? void 0 : user.role) === null || _a === void 0 ? void 0 : _a.name) === "admin") {
-            orders = yield OrderModel_1.default.find().populate("userId ");
+            orders = yield OrderModel_1.default.find().populate("userId");
         }
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
-            orders = yield OrderModel_1.default.find({ userId: user._id }).populate("userId ");
+            orders = yield OrderModel_1.default.find({ userId: user._id }).populate("userId");
         }
         else {
             orders = [];
