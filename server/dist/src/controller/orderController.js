@@ -22,6 +22,10 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const customerId = req.body.customerId;
         const userId = req.body.userId;
+        const products = req.body.products;
+        if (!products || products.length === 0) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
         if (!customerId) {
             return res.status(400).json({ message: "customerId is required" });
         }
@@ -32,7 +36,9 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!customer) {
             return res.status(400).json({ message: "customerId not found" });
         }
-        const newOrder = new OrderModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, userId, payment_status: "unpaid" }));
+        const totalQuantity = products.reduce((acc, product) => acc + Number(product.quantity), 0);
+        const newOrder = new OrderModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, userId,
+            totalQuantity, payment_status: "unpaid" }));
         const savedOrder = yield newOrder.save();
         res.status(200).json(savedOrder);
     }

@@ -9,6 +9,10 @@ const createOrder = async (req: Request, res: Response) => {
   try {
     const customerId = req.body.customerId;
     const userId = req.body.userId;
+    const products = req.body.products;
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     if (!customerId) {
       return res.status(400).json({ message: "customerId is required" });
@@ -24,10 +28,16 @@ const createOrder = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "customerId not found" });
     }
 
+    const totalQuantity = products.reduce(
+      (acc: number, product: any) => acc + Number(product.quantity),
+      0
+    );
+
     const newOrder = new OrderModel({
       ...req.body,
       customerId: customer._id,
       userId,
+      totalQuantity,
       payment_status: "unpaid",
     });
 
