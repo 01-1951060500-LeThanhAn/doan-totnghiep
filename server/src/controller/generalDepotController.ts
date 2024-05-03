@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import GeneralDepotModel from "../model/GeneralDepotModel";
+import mongoose from "mongoose";
 
 const createGeneralDepot = async (req: Request, res: Response) => {
   try {
@@ -33,17 +34,10 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
       query = { manager: user._id };
     }
 
-    const generals = await GeneralDepotModel.find(query)
-      .populate({
-        path: "manager",
-        select: "-password -confirmPassword",
-      })
-      .populate({
-        path: "products",
-        populate: {
-          path: "product",
-        },
-      });
+    const generals = await GeneralDepotModel.find(query).populate({
+      path: "manager",
+      select: "-password -confirmPassword",
+    });
 
     res.status(200).json(generals);
   } catch (error) {
@@ -59,9 +53,64 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "General not found" });
     }
 
-    const general = await GeneralDepotModel.findById(generalId);
+    const results = await GeneralDepotModel.findById(generalId);
 
-    res.status(200).json(general);
+    const general = await GeneralDepotModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(generalId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "products",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          products: {
+            _id: 1,
+            generalId: 1,
+            code: 1,
+            name_product: 1,
+            import_price: 1,
+            export_price: 1,
+            inventory_number: 1,
+            status: 1,
+            img: 1,
+            desc: 1,
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$_id",
+
+          products: {
+            $push: "$products",
+          },
+        },
+      },
+
+      {
+        $project: {
+          _id: 1,
+          products: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      results,
+      general,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json(error);

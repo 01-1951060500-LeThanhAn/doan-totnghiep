@@ -30,21 +30,22 @@ const generalDepotSchema = new mongoose_1.default.Schema({
     products: [
         {
             type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: "products",
         },
     ],
 }, {
     timestamps: true,
 });
-generalDepotSchema.virtual("ProductSchema", {
-    ref: "products",
-    localField: "products",
-    foreignField: "_id",
-    justOne: true,
-});
-generalDepotSchema.virtual("ShippingWarehouseModel", {
-    ref: "shipping_warehouse",
-    localField: "products",
-    foreignField: "generalId",
-    justOne: true,
-});
+// generalDepotSchema.virtual("ProductSchema", {
+//   ref: "products",
+//   localField: "products",
+//   foreignField: "_id",
+//   justOne: true,
+// });
+// generalDepotSchema.virtual("ShippingWarehouseModel", {
+//   ref: "shipping_warehouse",
+//   localField: "products",
+//   foreignField: "generalId",
+//   justOne: true,
+// });
 exports.default = mongoose_1.default.model("general", generalDepotSchema);

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateGeneralDepot = exports.getDetailGeneralDepot = exports.getGeneralDepot = exports.createGeneralDepot = void 0;
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const generalDepot = new GeneralDepotModel_1.default(Object.assign({}, req.body));
@@ -43,16 +44,9 @@ const getGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
             query = { manager: user._id };
         }
-        const generals = yield GeneralDepotModel_1.default.find(query)
-            .populate({
+        const generals = yield GeneralDepotModel_1.default.find(query).populate({
             path: "manager",
             select: "-password -confirmPassword",
-        })
-            .populate({
-            path: "products",
-            populate: {
-                path: "product",
-            },
         });
         res.status(200).json(generals);
     }
@@ -68,8 +62,60 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
         if (!generalId) {
             return res.status(400).json({ message: "General not found" });
         }
-        const general = yield GeneralDepotModel_1.default.findById(generalId);
-        res.status(200).json(general);
+        const results = yield GeneralDepotModel_1.default.findById(generalId);
+        const general = yield GeneralDepotModel_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(generalId),
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "generalId",
+                    as: "products",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    products: {
+                        _id: 1,
+                        generalId: 1,
+                        code: 1,
+                        name_product: 1,
+                        import_price: 1,
+                        export_price: 1,
+                        inventory_number: 1,
+                        status: 1,
+                        img: 1,
+                        desc: 1,
+                    },
+                },
+            },
+            {
+                $unwind: "$products",
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    products: {
+                        $push: "$products",
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    products: 1,
+                },
+            },
+        ]);
+        return res.status(200).json({
+            results,
+            general,
+        });
     }
     catch (error) {
         console.log(error);

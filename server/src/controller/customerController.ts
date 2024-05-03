@@ -14,7 +14,6 @@ const createCustomer = async (req: Request, res: Response) => {
     res.status(400).json(error);
   }
 };
-
 const getListCustomer = async (req: Request, res: Response) => {
   try {
     const customers = await CustomerModel.aggregate([

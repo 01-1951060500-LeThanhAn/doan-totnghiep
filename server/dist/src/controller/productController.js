@@ -16,12 +16,17 @@ exports.getTypeProducts = exports.getDetailProduct = exports.searchProduct = exp
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const product = new ProductModel_1.default(Object.assign({}, req.body));
     try {
+        const generalId = req.body.generalId;
+        if (!generalId) {
+            return res.status(400).json({ message: "ID General is required" });
+        }
+        const general = yield GeneralDepotModel_1.default.findById(generalId);
+        if (!general) {
+            return res.status(400).json({ message: "General not found" });
+        }
+        const product = new ProductModel_1.default(Object.assign(Object.assign({}, req.body), { generalId: general._id }));
         yield product.save();
-        yield GeneralDepotModel_1.default.findByIdAndUpdate(req.body.generalId, {
-            $push: { products: product._id },
-        });
         res.status(200).json(product);
     }
     catch (error) {

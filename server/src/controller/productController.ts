@@ -3,16 +3,23 @@ import ProductModel from "../model/ProductModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createProduct = async (req: Request, res: Response) => {
-  const product = new ProductModel({
-    ...req.body,
-  });
-
   try {
-    await product.save();
+    const generalId = req.body.generalId;
+    if (!generalId) {
+      return res.status(400).json({ message: "ID General is required" });
+    }
 
-    await GeneralDepotModel.findByIdAndUpdate(req.body.generalId, {
-      $push: { products: product._id },
+    const general = await GeneralDepotModel.findById(generalId);
+
+    if (!general) {
+      return res.status(400).json({ message: "General not found" });
+    }
+    const product = new ProductModel({
+      ...req.body,
+      generalId: general._id,
     });
+
+    await product.save();
 
     res.status(200).json(product);
   } catch (error) {
