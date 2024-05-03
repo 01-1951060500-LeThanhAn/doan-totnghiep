@@ -54,9 +54,9 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
 
     let orders: any[] = [];
     if (user?.role?.name === "admin") {
-      orders = await OrderModel.find().populate("userId");
+      orders = await OrderModel.find().populate("userId ");
     } else if (user?.role?.name === "manager") {
-      orders = await OrderModel.find({ userId: user._id }).populate("userId");
+      orders = await OrderModel.find({ userId: user._id }).populate("userId ");
     } else {
       orders = [];
     }
@@ -173,7 +173,27 @@ const getDetailOrder = async (req: Request, res: Response) => {
     }
 
     const order = await OrderModel.findById(orderId)
-      .populate("customerId products.productId partnerId")
+      .populate({
+        path: "customerId",
+        select:
+          "username code address phone city district ward specific_address",
+      })
+      .populate({
+        path: "partnerId",
+        select: "username code address phone ",
+      })
+      .populate({
+        path: "userId",
+        select: "username ",
+      })
+      .populate({
+        path: "generalId",
+        select: "name ",
+      })
+      .populate({
+        path: "products.productId",
+        select: "",
+      })
       .select("");
     if (!order) {
       return res.status(400).json({ message: "orderId not found" });

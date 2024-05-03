@@ -127,12 +127,4 @@ OrderSchema.pre("find", async function (next) {
   next();
 });
 
-OrderSchema.pre("find", async function (next) {
-  this.populate({
-    path: "products.productId",
-    select: "generalId",
-  });
-  next();
-});
-
 export default mongoose.model("orders", OrderSchema);

@@ -134,13 +134,4 @@ OrderSchema.pre("find", function (next) {
         next();
     });
 });
-OrderSchema.pre("find", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        this.populate({
-            path: "products.productId",
-            select: "generalId",
-        });
-        next();
-    });
-});
 exports.default = mongoose_1.default.model("orders", OrderSchema);

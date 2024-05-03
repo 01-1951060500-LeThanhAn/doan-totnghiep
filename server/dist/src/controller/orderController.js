@@ -54,10 +54,10 @@ const getAllOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         let orders = [];
         if (((_a = user === null || user === void 0 ? void 0 : user.role) === null || _a === void 0 ? void 0 : _a.name) === "admin") {
-            orders = yield OrderModel_1.default.find().populate("userId");
+            orders = yield OrderModel_1.default.find().populate("userId ");
         }
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
-            orders = yield OrderModel_1.default.find({ userId: user._id }).populate("userId");
+            orders = yield OrderModel_1.default.find({ userId: user._id }).populate("userId ");
         }
         else {
             orders = [];
@@ -158,7 +158,26 @@ const getDetailOrder = (req, res) => __awaiter(void 0, void 0, void 0, function*
             return res.status(400).json({ message: "orderId is required" });
         }
         const order = yield OrderModel_1.default.findById(orderId)
-            .populate("customerId products.productId partnerId")
+            .populate({
+            path: "customerId",
+            select: "username code address phone city district ward specific_address",
+        })
+            .populate({
+            path: "partnerId",
+            select: "username code address phone ",
+        })
+            .populate({
+            path: "userId",
+            select: "username ",
+        })
+            .populate({
+            path: "generalId",
+            select: "name ",
+        })
+            .populate({
+            path: "products.productId",
+            select: "",
+        })
             .select("");
         if (!order) {
             return res.status(400).json({ message: "orderId not found" });
