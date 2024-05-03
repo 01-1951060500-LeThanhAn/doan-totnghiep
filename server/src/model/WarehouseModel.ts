@@ -21,10 +21,6 @@ const WarehouseSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-        import_price: {
-          type: Number,
-          required: true,
-        },
       },
     ],
     generalId: {
@@ -50,5 +46,26 @@ const WarehouseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+WarehouseSchema.pre("save", async function (next) {
+  const order = this;
+  order.totalPrice = 0;
+  for (const product of order.products) {
+    const productDoc = await mongoose
+      .model("products")
+      .findById(product.productId);
+
+    if (!productDoc) {
+      console.warn(
+        `Product with ID ${product.productId} not found while calculating total price.`
+      );
+      continue;
+    }
+
+    order.totalPrice += productDoc.import_price * product.inventory_number;
+  }
+
+  next();
+});
 
 export default mongoose.model("purchase_orders", WarehouseSchema);

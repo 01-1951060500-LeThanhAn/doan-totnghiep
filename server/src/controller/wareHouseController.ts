@@ -12,9 +12,9 @@ const createWareHouse = async (req: Request, res: Response) => {
     }
 
     const productUpdates = products?.map(async (product: any) => {
-      const { productId, inventory_number, import_price } = product;
+      const { productId, inventory_number } = product;
 
-      if (!productId || !inventory_number || !import_price) {
+      if (!productId || !inventory_number) {
         return res.status(400).json({ message: "Missing product details" });
       }
 
@@ -31,18 +31,12 @@ const createWareHouse = async (req: Request, res: Response) => {
     });
     await Promise.all([productUpdates]);
 
-    const totalPrice = products.reduce(
-      (acc: number, product: any) =>
-        acc + product.inventory_number * product.import_price,
-      0
-    );
     const totalQuantity = products.reduce(
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
     const warehouse = new WarehouseModel({
       ...req.body,
-      totalPrice,
       totalQuantity,
     });
 

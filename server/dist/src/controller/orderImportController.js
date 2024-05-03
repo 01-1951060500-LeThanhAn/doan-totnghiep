@@ -16,7 +16,6 @@ exports.deleteImportOrder = exports.getDetailImportOrder = exports.updateImportO
 const ImportOrderModel_1 = __importDefault(require("../model/ImportOrderModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
-const format_price_1 = require("../config/format-price");
 const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products } = req.body;
@@ -24,8 +23,7 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return res.status(400).json({ message: "Missing required fields" });
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
-        const totalPrice = products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
-        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity, totalPrice: (0, format_price_1.formatPrice)(totalPrice) }));
+        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
         yield newImportOrder.save();
         res.status(200).json(newImportOrder);
     }
@@ -57,19 +55,16 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             throw new Error("Order not found");
         }
         const productUpdates = order.products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
-            const { productId, inventory_number, import_price } = product;
-            if (!productId || !inventory_number || !import_price) {
+            const { productId, inventory_number } = product;
+            if (!productId || !inventory_number) {
                 return res.status(400).json({ message: "Missing product details" });
             }
             yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
         }));
         yield Promise.all(productUpdates);
-        const totalPrice = order.products[0].import_price * order.products[0].inventory_number;
         const totalQuantity = order.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
         const newWarehouseEntry = new WarehouseModel_1.default({
             code: order.code,
-            import_price: order.products[0].import_price,
-            totalPrice,
             totalQuantity,
             products: order.products,
             delivery_date: order.received_date,

@@ -29,10 +29,6 @@ const OrderPurchaseSchema = new mongoose_1.default.Schema({
                 type: Number,
                 required: true,
             },
-            import_price: {
-                type: Number,
-                required: true,
-            },
         },
     ],
     totalPrice: {
@@ -90,6 +86,23 @@ OrderPurchaseSchema.pre("find", function (next) {
             path: "generalId",
             select: "name",
         });
+        next();
+    });
+});
+OrderPurchaseSchema.pre("save", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const order = this;
+        order.totalPrice = 0;
+        for (const product of order.products) {
+            const productDoc = yield mongoose_1.default
+                .model("products")
+                .findById(product.productId);
+            if (!productDoc) {
+                console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
+                continue;
+            }
+            order.totalPrice += productDoc.import_price * product.inventory_number;
+        }
         next();
     });
 });
