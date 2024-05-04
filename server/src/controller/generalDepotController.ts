@@ -82,6 +82,7 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
             inventory_number: 1,
             status: 1,
             img: 1,
+            type: 1,
             unit: 1,
             desc: 1,
           },

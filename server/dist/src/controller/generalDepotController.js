@@ -90,6 +90,7 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
                         inventory_number: 1,
                         status: 1,
                         img: 1,
+                        type: 1,
                         unit: 1,
                         desc: 1,
                     },
