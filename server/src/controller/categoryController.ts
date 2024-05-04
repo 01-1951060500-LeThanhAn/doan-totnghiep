@@ -30,6 +30,27 @@ const getCategoryProduct = async (
   }
 };
 
+const getDetailCategoryProduct = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const categoryId = req.params.id;
+
+    if (!categoryId) {
+      return res.status(401).json({
+        message: "Mã danh mục sản phẩm không hợp lệ hoặc không tồn tại",
+      });
+    }
+
+    const category = await CategoryModel.findById(categoryId);
+
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 const deleteCategoryProduct = async (
   req: Request,
   res: Response
@@ -56,4 +77,9 @@ const deleteCategoryProduct = async (
   }
 };
 
-export { createCategoryProduct, getCategoryProduct, deleteCategoryProduct };
+export {
+  createCategoryProduct,
+  getCategoryProduct,
+  deleteCategoryProduct,
+  getDetailCategoryProduct,
+};

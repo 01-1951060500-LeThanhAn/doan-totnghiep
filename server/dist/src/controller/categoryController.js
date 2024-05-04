@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCategoryProduct = exports.getCategoryProduct = exports.createCategoryProduct = void 0;
+exports.getDetailCategoryProduct = exports.deleteCategoryProduct = exports.getCategoryProduct = exports.createCategoryProduct = void 0;
 const CategoryModel_1 = __importDefault(require("../model/CategoryModel"));
 const createCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -35,6 +35,22 @@ const getCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getCategoryProduct = getCategoryProduct;
+const getDetailCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const categoryId = req.params.id;
+        if (!categoryId) {
+            return res.status(401).json({
+                message: "Mã danh mục sản phẩm không hợp lệ hoặc không tồn tại",
+            });
+        }
+        const category = yield CategoryModel_1.default.findById(categoryId);
+        res.status(200).json(category);
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+});
+exports.getDetailCategoryProduct = getDetailCategoryProduct;
 const deleteCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryParams = req.params.id;
     try {
