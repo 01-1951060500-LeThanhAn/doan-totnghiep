@@ -36,7 +36,10 @@ const getInfoPartner = async (req: Request, res: Response) => {
   }
 
   try {
-    const results = await PartnerModel.findById(partnerId);
+    const results = await PartnerModel.findById(partnerId).populate({
+      path: "staffIncharge",
+      select: "username email",
+    });
     if (!results) {
       return res.status(400).json({
         message: "Partner not found",

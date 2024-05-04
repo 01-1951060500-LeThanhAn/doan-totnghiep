@@ -46,7 +46,10 @@ const getInfoPartner = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
     try {
-        const results = yield PartnerModel_1.default.findById(partnerId);
+        const results = yield PartnerModel_1.default.findById(partnerId).populate({
+            path: "staffIncharge",
+            select: "username email",
+        });
         if (!results) {
             return res.status(400).json({
                 message: "Partner not found",
