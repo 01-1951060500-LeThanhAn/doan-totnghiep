@@ -102,7 +102,7 @@ OrderSchema.pre("save", async function (next) {
       continue;
     }
 
-    order.total_price += productDoc.import_price * product.quantity;
+    order.total_price += productDoc.export_price * product.quantity;
   }
 
   next();

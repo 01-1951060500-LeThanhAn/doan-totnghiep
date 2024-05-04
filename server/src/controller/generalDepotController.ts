@@ -82,6 +82,7 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
             inventory_number: 1,
             status: 1,
             img: 1,
+            unit: 1,
             desc: 1,
           },
         },
@@ -92,7 +93,9 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
       {
         $group: {
           _id: "$_id",
-
+          type: {
+            $first: "$products.type",
+          },
           products: {
             $push: "$products",
           },
@@ -103,6 +106,7 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
         $project: {
           _id: 1,
           products: 1,
+          type: 1,
         },
       },
     ]);

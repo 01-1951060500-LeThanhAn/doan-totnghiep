@@ -90,6 +90,7 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
                         inventory_number: 1,
                         status: 1,
                         img: 1,
+                        unit: 1,
                         desc: 1,
                     },
                 },
@@ -100,6 +101,9 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
             {
                 $group: {
                     _id: "$_id",
+                    type: {
+                        $first: "$products.type",
+                    },
                     products: {
                         $push: "$products",
                     },
@@ -109,6 +113,7 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 $project: {
                     _id: 1,
                     products: 1,
+                    type: 1,
                 },
             },
         ]);

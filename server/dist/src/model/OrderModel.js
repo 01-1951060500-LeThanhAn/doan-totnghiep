@@ -107,7 +107,7 @@ OrderSchema.pre("save", function (next) {
                 console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
                 continue;
             }
-            order.total_price += productDoc.import_price * product.quantity;
+            order.total_price += productDoc.export_price * product.quantity;
         }
         next();
     });
