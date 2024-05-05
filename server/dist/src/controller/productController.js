@@ -36,7 +36,7 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.createProduct = createProduct;
 const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     const status = req.query.status;
     try {
         if (!req.user) {
@@ -53,11 +53,14 @@ const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
                 status: status ? status : { $exists: true },
             }).populate("type generalId manager");
         }
-        else {
+        else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
             generals = yield ProductModel_1.default.find({
                 manager: user._id,
                 status: status ? status : { $exists: true },
             }).populate("generalId type manager");
+        }
+        else {
+            generals = [];
         }
         res.status(200).json(generals);
     }
@@ -67,7 +70,7 @@ const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.getListProducts = getListProducts;
 const getTypeProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c;
+    var _c, _d;
     const status = req.query.status;
     try {
         if (!req.user) {
@@ -78,13 +81,13 @@ const getTypeProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
             return res.status(401).json({ message: "Unauthorized" });
         }
         let generals = [];
-        if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "admin") {
+        if (((_c = user === null || user === void 0 ? void 0 : user.role) === null || _c === void 0 ? void 0 : _c.name) === "admin") {
             generals = yield ProductModel_1.default.find({
                 manager: user._id,
                 status: status ? status : { $exists: true },
             }).populate("type generalId manager");
         }
-        else if (((_c = user === null || user === void 0 ? void 0 : user.role) === null || _c === void 0 ? void 0 : _c.name) === "manager") {
+        else if (((_d = user === null || user === void 0 ? void 0 : user.role) === null || _d === void 0 ? void 0 : _d.name) === "manager") {
             generals = yield ProductModel_1.default.find({
                 manager: user._id,
                 status: status ? status : { $exists: true },
