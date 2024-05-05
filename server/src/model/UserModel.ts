@@ -43,6 +43,8 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "role",
       enum: ["admin", "manager"],
+      required: true,
+      unique: true,
     },
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
