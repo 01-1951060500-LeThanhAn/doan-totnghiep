@@ -15,11 +15,11 @@ const router = express.Router();
 
 router.post(`/`, verifyTokenAndAdmin, createShippets);
 
-router.get(`/`, verifyTokenAndAuthorization, getShippets);
+router.get(`/`, verifyTokenAndAdmin, getShippets);
 
 router.delete("/:id", verifyTokenAndAdmin, deleteShippets);
 
-router.patch("/:id", verifyTokenAndAuthorization, updateShippets);
+router.patch("/:id", verifyTokenAndAdmin, updateShippets);
 
-router.get("/:id", verifyTokenAndAuthorization, getDetailShippets);
+router.get("/:id", verifyTokenAndAdmin, getDetailShippets);
 export default router;

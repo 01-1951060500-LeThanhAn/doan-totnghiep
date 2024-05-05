@@ -6,7 +6,8 @@ import TransactionModel from "../model/TransactionModel";
 
 async function createShippets(req: Request, res: Response) {
   try {
-    const { fromGeneralId, toGeneralId, products, transferDate } = req.body;
+    const { fromGeneralId, toGeneralId, products, transferDate, deliveryDate } =
+      req.body;
 
     if (!fromGeneralId || !toGeneralId || !products || products.length === 0) {
       res.status(403).json("Invalid transfer data provided");
@@ -25,6 +26,8 @@ async function createShippets(req: Request, res: Response) {
       throw new Error("Invalid warehouse selection for transfer");
     }
 
+    const transferredProducts = [];
+
     const updatePromises = products.map(async (product: any) => {
       const { productId, inventory_number } = product;
 
@@ -41,6 +44,10 @@ async function createShippets(req: Request, res: Response) {
         mainProduct.inventory_number -= inventory_number;
         await mainProduct.save();
       }
+      transferredProducts.push({
+        productId,
+        inventory_number,
+      });
 
       if (subProduct) {
         subProduct.inventory_number += +inventory_number;
@@ -54,9 +61,8 @@ async function createShippets(req: Request, res: Response) {
           products: transferredProduct,
           toGeneralId: subWarehouse._id,
           fromGeneralId: mainWarehouse._id,
-          deliveryDate: new Date().toISOString(),
+          deliveryDate,
           transferDate,
-
           status: "pending",
         });
         await newSubProduct.save();
@@ -65,11 +71,17 @@ async function createShippets(req: Request, res: Response) {
 
     await Promise.all(updatePromises);
 
+    const totalQuantity = products.reduce(
+      (acc: number, product: any) => acc + Number(product.inventory_number),
+      0
+    );
+
     const newTransferOrder = new ShippingWarehouseModel({
       fromGeneralId: mainWarehouse._id,
       toGeneralId: subWarehouse._id,
       products,
       transferDate,
+      totalQuantity,
       deliveryDate: new Date().toISOString(),
       status: "pending",
     });
@@ -84,7 +96,7 @@ async function createShippets(req: Request, res: Response) {
 const getShippets = async (req: Request, res: Response) => {
   try {
     const ships = await ShippingWarehouseModel.find().populate({
-      path: "toGeneralId.manager",
+      path: "toGeneralId",
       select: "username email address",
     });
 

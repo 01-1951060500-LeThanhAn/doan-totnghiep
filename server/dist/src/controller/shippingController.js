@@ -20,7 +20,7 @@ const TransactionModel_1 = __importDefault(require("../model/TransactionModel"))
 function createShippets(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { fromGeneralId, toGeneralId, products, transferDate } = req.body;
+            const { fromGeneralId, toGeneralId, products, transferDate, deliveryDate } = req.body;
             if (!fromGeneralId || !toGeneralId || !products || products.length === 0) {
                 res.status(403).json("Invalid transfer data provided");
             }
@@ -35,6 +35,7 @@ function createShippets(req, res) {
             if (!mainWarehouse || !subWarehouse) {
                 throw new Error("Invalid warehouse selection for transfer");
             }
+            const transferredProducts = [];
             const updatePromises = products.map((product) => __awaiter(this, void 0, void 0, function* () {
                 const { productId, inventory_number } = product;
                 const mainProduct = yield ProductModel_1.default.findOne({
@@ -49,6 +50,10 @@ function createShippets(req, res) {
                     mainProduct.inventory_number -= inventory_number;
                     yield mainProduct.save();
                 }
+                transferredProducts.push({
+                    productId,
+                    inventory_number,
+                });
                 if (subProduct) {
                     subProduct.inventory_number += +inventory_number;
                     yield subProduct.save();
@@ -62,7 +67,7 @@ function createShippets(req, res) {
                         products: transferredProduct,
                         toGeneralId: subWarehouse._id,
                         fromGeneralId: mainWarehouse._id,
-                        deliveryDate: new Date().toISOString(),
+                        deliveryDate,
                         transferDate,
                         status: "pending",
                     });
@@ -70,11 +75,13 @@ function createShippets(req, res) {
                 }
             }));
             yield Promise.all(updatePromises);
+            const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
             const newTransferOrder = new ShippingWarehouseModel_1.default({
                 fromGeneralId: mainWarehouse._id,
                 toGeneralId: subWarehouse._id,
                 products,
                 transferDate,
+                totalQuantity,
                 deliveryDate: new Date().toISOString(),
                 status: "pending",
             });
@@ -90,7 +97,7 @@ exports.createShippets = createShippets;
 const getShippets = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const ships = yield ShippingWarehouseModel_1.default.find().populate({
-            path: "toGeneralId.manager",
+            path: "toGeneralId",
             select: "username email address",
         });
         return res.status(200).json(ships);

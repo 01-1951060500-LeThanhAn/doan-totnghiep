@@ -36,7 +36,6 @@ const ShippingWarehouseModel = new mongoose_1.default.Schema({
             inventory_number: {
                 type: Number,
                 required: true,
-                default: 0,
             },
             productId: {
                 type: mongoose_1.default.Schema.Types.ObjectId,
@@ -44,6 +43,8 @@ const ShippingWarehouseModel = new mongoose_1.default.Schema({
             },
         },
     ],
+    totalPrice: Number,
+    totalQuantity: Number,
     transferDate: {
         type: String,
         required: true,
@@ -62,7 +63,7 @@ ShippingWarehouseModel.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
             path: "toGeneralId",
-            select: "address name type manager",
+            select: "address name type ",
         });
         next();
     });
@@ -71,8 +72,25 @@ ShippingWarehouseModel.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
             path: "fromGeneralId",
-            select: "address name type manager",
+            select: "address name type ",
         });
+        next();
+    });
+});
+ShippingWarehouseModel.pre("save", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const order = this;
+        order.totalPrice = 0;
+        for (const product of order.products) {
+            const productDoc = yield mongoose_1.default
+                .model("products")
+                .findById(product.productId);
+            if (!productDoc) {
+                console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
+                continue;
+            }
+            order.totalPrice += productDoc.export_price * product.inventory_number;
+        }
         next();
     });
 });
