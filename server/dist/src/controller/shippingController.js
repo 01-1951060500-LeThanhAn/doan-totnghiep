@@ -141,16 +141,16 @@ const updateShippets = (req, res) => __awaiter(void 0, void 0, void 0, function*
         for (let product of ships.products) {
             const { inventory_number, productId } = product;
             const subProduct = yield ProductModel_1.default.findOne({
-                _id: productId,
                 generalId: targetWarehouse._id,
+                manager: ships === null || ships === void 0 ? void 0 : ships.manager,
             });
             const results = yield ProductModel_1.default.findById(product.productId);
-            if (!subProduct || results) {
-                const newProduct = new ProductModel_1.default(Object.assign(Object.assign({}, results), { name_product: results === null || results === void 0 ? void 0 : results.name_product, desc: results === null || results === void 0 ? void 0 : results.desc, img: results === null || results === void 0 ? void 0 : results.name_product, export_price: results === null || results === void 0 ? void 0 : results.export_price, import_price: results === null || results === void 0 ? void 0 : results.import_price, unit: results === null || results === void 0 ? void 0 : results.unit, code: results === null || results === void 0 ? void 0 : results.code, inventory_number: inventory_number, generalId: targetWarehouse._id }));
-                yield newProduct.save();
+            if (subProduct) {
+                yield ProductModel_1.default.findOneAndUpdate({ _id: subProduct === null || subProduct === void 0 ? void 0 : subProduct._id }, { $inc: { inventory_number } }, { upsert: true, new: true });
             }
             else {
-                return res.status(400).json({ message: "Product not found" });
+                const newProduct = new ProductModel_1.default(Object.assign(Object.assign({}, results), { name_product: results === null || results === void 0 ? void 0 : results.name_product, desc: results === null || results === void 0 ? void 0 : results.desc, img: results === null || results === void 0 ? void 0 : results.img, export_price: results === null || results === void 0 ? void 0 : results.export_price, import_price: results === null || results === void 0 ? void 0 : results.import_price, unit: results === null || results === void 0 ? void 0 : results.unit, type: results === null || results === void 0 ? void 0 : results.type, status: "stocking", code: results === null || results === void 0 ? void 0 : results.code, inventory_number: inventory_number, generalId: targetWarehouse._id }));
+                yield newProduct.save();
             }
         }
         const transactionHistory = new TransactionModel_1.default({

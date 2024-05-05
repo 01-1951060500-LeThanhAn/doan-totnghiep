@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get("/", verifyTokenAndAuthorization, getAllTransactions);
 
-router.get("/:id", verifyTokenAndAdmin, getDetailTransaction);
+router.get("/:id", verifyTokenAndAuthorization, getDetailTransaction);
 
 router.delete("/:id", verifyTokenAndAdmin, deleteTransaction);
 

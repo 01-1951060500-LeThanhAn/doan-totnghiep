@@ -27,6 +27,10 @@ const WarehouseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "general",
     },
+    manager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
     supplierId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "supplier",

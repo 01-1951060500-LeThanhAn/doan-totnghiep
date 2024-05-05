@@ -19,15 +19,39 @@ const createWareHouse = async (req: Request, res: Response) => {
       }
 
       const existingProduct = await ProductModel.findById(productId);
+      const existGeneral = await GeneralDepotModel.findOne({
+        type: "sub",
+        _id: req.body.generalId,
+      });
+
       if (!existingProduct) {
         return res.status(400).json({ message: "Invalid product ID" });
       }
 
-      await ProductModel.findOneAndUpdate(
-        { _id: productId },
-        { $inc: { inventory_number } },
-        { upsert: true, new: true }
-      );
+      if (existGeneral?.type === "sub") {
+        const newProduct = new ProductModel({
+          name_product: existingProduct.name_product,
+          code: existingProduct.code,
+          generalId: existGeneral?._id,
+          manager: req.body.manager,
+          type: existingProduct.type,
+          unit: existingProduct.unit,
+          import_price: existingProduct.import_price,
+          export_price: existingProduct.export_price,
+          inventory_number: inventory_number,
+          status: "stocking",
+          img: existingProduct.img,
+          desc: existingProduct.desc,
+        });
+
+        await newProduct.save();
+      } else {
+        await ProductModel.findOneAndUpdate(
+          { _id: productId, generalId: existingProduct?.generalId },
+          { $inc: { inventory_number } },
+          { upsert: true, new: true }
+        );
+      }
     });
     await Promise.all([productUpdates]);
 

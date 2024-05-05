@@ -22,7 +22,7 @@ router.get(`/list-user`, verifyTokenAndAdmin, getAllUsers);
 
 router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
-router.patch(`/update-user/:id`, updateUser);
+router.patch(`/update-user/:id`, verifyTokenAndAuthorization, updateUser);
 
 router.delete(`/delete-user/:id`, verifyTokenAndAdmin, deleteUser);
 

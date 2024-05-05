@@ -43,17 +43,15 @@ const getListProducts = async (req: UserRequest, res: Response) => {
     let generals: any[] = [];
     if (user?.role?.name === "admin") {
       generals = await ProductModel.find({
+        manager: user._id,
         status: status ? status : { $exists: true },
       }).populate("type generalId manager");
-    } else if (user?.role?.name === "manager") {
+    } else {
       generals = await ProductModel.find({
         manager: user._id,
         status: status ? status : { $exists: true },
       }).populate("generalId type manager");
-    } else {
-      generals = [];
     }
-
     res.status(200).json(generals);
   } catch (error) {
     res.status(500).json(error);

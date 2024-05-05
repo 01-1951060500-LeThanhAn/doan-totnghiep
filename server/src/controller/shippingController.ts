@@ -147,29 +147,35 @@ const updateShippets = async (req: Request, res: Response) => {
       const { inventory_number, productId } = product;
 
       const subProduct = await ProductModel.findOne({
-        _id: productId,
         generalId: targetWarehouse._id,
+        manager: ships?.manager,
       });
 
       const results = await ProductModel.findById(product.productId);
 
-      if (!subProduct || results) {
+      if (subProduct) {
+        await ProductModel.findOneAndUpdate(
+          { _id: subProduct?._id },
+          { $inc: { inventory_number } },
+          { upsert: true, new: true }
+        );
+      } else {
         const newProduct = new ProductModel({
           ...results,
           name_product: results?.name_product,
           desc: results?.desc,
-          img: results?.name_product,
+          img: results?.img,
           export_price: results?.export_price,
           import_price: results?.import_price,
           unit: results?.unit,
+          type: results?.type,
+          status: "stocking",
           code: results?.code,
           inventory_number: inventory_number,
           generalId: targetWarehouse._id,
         });
 
         await newProduct.save();
-      } else {
-        return res.status(400).json({ message: "Product not found" });
       }
     }
 

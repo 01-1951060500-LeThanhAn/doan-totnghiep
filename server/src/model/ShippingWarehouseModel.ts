@@ -9,6 +9,10 @@ const ShippingWarehouseModel = new mongoose.Schema({
     ref: "general",
     required: true,
   },
+  manager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
   toGeneralId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "general",

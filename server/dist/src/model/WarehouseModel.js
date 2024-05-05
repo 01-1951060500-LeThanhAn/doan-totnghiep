@@ -40,6 +40,10 @@ const WarehouseSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "general",
     },
+    manager: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "users",
+    },
     supplierId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "supplier",

@@ -28,10 +28,33 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 return res.status(400).json({ message: "Missing product details" });
             }
             const existingProduct = yield ProductModel_1.default.findById(productId);
+            const existGeneral = yield GeneralDepotModel_1.default.findOne({
+                type: "sub",
+                _id: req.body.generalId,
+            });
             if (!existingProduct) {
                 return res.status(400).json({ message: "Invalid product ID" });
             }
-            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+            if ((existGeneral === null || existGeneral === void 0 ? void 0 : existGeneral.type) === "sub") {
+                const newProduct = new ProductModel_1.default({
+                    name_product: existingProduct.name_product,
+                    code: existingProduct.code,
+                    generalId: existGeneral === null || existGeneral === void 0 ? void 0 : existGeneral._id,
+                    manager: req.body.manager,
+                    type: existingProduct.type,
+                    unit: existingProduct.unit,
+                    import_price: existingProduct.import_price,
+                    export_price: existingProduct.export_price,
+                    inventory_number: inventory_number,
+                    status: "stocking",
+                    img: existingProduct.img,
+                    desc: existingProduct.desc,
+                });
+                yield newProduct.save();
+            }
+            else {
+                yield ProductModel_1.default.findOneAndUpdate({ _id: productId, generalId: existingProduct === null || existingProduct === void 0 ? void 0 : existingProduct.generalId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+            }
         }));
         yield Promise.all([productUpdates]);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
