@@ -7,6 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const generalDepotSchema = new mongoose_1.default.Schema({
     code: {
         type: String,
+        required: true,
     },
     name: {
         type: String,
