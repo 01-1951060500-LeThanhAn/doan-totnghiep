@@ -193,7 +193,6 @@ const getDetailShippets = (req, res) => __awaiter(void 0, void 0, void 0, functi
         })
             .populate({
             path: "products.productId",
-            select: "-_id name code", // Select specific product fields (exclude _id)
         });
         if (!results) {
             return res.status(404).json({ message: "Shipping not found" });

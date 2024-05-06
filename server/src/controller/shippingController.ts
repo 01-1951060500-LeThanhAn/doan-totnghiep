@@ -234,7 +234,6 @@ const getDetailShippets = async (req: Request, res: Response) => {
       })
       .populate({
         path: "products.productId",
-        select: "-_id name code", // Select specific product fields (exclude _id)
       });
 
     if (!results) {
