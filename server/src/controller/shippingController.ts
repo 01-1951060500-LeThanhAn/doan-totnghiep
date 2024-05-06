@@ -6,8 +6,14 @@ import TransactionModel from "../model/TransactionModel";
 
 async function createShippets(req: Request, res: Response) {
   try {
-    const { fromGeneralId, toGeneralId, products, transferDate, deliveryDate } =
-      req.body;
+    const {
+      fromGeneralId,
+      toGeneralId,
+      products,
+      transferDate,
+      deliveryDate,
+      code,
+    } = req.body;
 
     if (!fromGeneralId || !toGeneralId || !products || products.length === 0) {
       res.status(403).json("Invalid transfer data provided");
@@ -58,6 +64,7 @@ async function createShippets(req: Request, res: Response) {
           inventory_number,
         };
         const newSubProduct = new ShippingWarehouseModel({
+          code,
           products: transferredProduct,
           toGeneralId: subWarehouse._id,
           fromGeneralId: mainWarehouse._id,
@@ -77,6 +84,7 @@ async function createShippets(req: Request, res: Response) {
     );
 
     const newTransferOrder = new ShippingWarehouseModel({
+      code,
       fromGeneralId: mainWarehouse._id,
       toGeneralId: subWarehouse._id,
       products,
