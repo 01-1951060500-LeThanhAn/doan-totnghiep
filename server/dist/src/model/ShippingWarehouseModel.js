@@ -16,6 +16,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const ShippingWarehouseModel = new mongoose_1.default.Schema({
     code: {
         type: String,
+        required: true,
     },
     fromGeneralId: {
         type: mongoose_1.default.Schema.Types.ObjectId,

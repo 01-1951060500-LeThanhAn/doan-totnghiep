@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const ShippingWarehouseModel = new mongoose.Schema({
   code: {
     type: String,
+    required: true,
   },
   fromGeneralId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +33,6 @@ const ShippingWarehouseModel = new mongoose.Schema({
   ],
   totalPrice: Number,
   totalQuantity: Number,
-
   transferDate: {
     type: String,
     required: true,
