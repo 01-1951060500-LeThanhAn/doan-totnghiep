@@ -22,8 +22,8 @@ router.get(`/list-user`, verifyTokenAndAdmin, getAllUsers);
 
 router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
-router.patch(`/update-user/:id`, verifyTokenAndAuthorization, updateUser);
+router.patch(`/list-user/:id`, verifyTokenAndAuthorization, updateUser);
 
-router.delete(`/delete-user/:id`, verifyTokenAndAdmin, deleteUser);
+router.delete(`/list-user/:id`, verifyTokenAndAdmin, deleteUser);
 
 export default router;
