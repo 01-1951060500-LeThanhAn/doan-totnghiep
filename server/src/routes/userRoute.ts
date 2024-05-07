@@ -16,14 +16,14 @@ const router = express.Router();
 
 router.post(`/login`, loginUser);
 
-router.post(`/create-user`, verifyTokenAndAdmin, registerUser);
+router.post(`/`, verifyTokenAndAdmin, registerUser);
 
-router.get(`/list-user`, verifyTokenAndAdmin, getAllUsers);
+router.get(`/`, verifyTokenAndAdmin, getAllUsers);
 
 router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
-router.patch(`/list-user/:id`, verifyTokenAndAuthorization, updateUser);
+router.patch(`/:id`, verifyTokenAndAuthorization, updateUser);
 
-router.delete(`/list-user/:id`, verifyTokenAndAdmin, deleteUser);
+router.delete(`/:id`, verifyTokenAndAdmin, deleteUser);
 
 export default router;

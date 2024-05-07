@@ -17,6 +17,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_validator_1 = require("express-validator");
 const UserModel_1 = __importDefault(require("../model/UserModel"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const RoleModel_1 = __importDefault(require("../model/RoleModel"));
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
@@ -65,12 +66,17 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 error: "Mật khẩu xác nhận không khớp",
             });
         }
+        const managerRole = yield RoleModel_1.default.findById(req.body.role);
+        if (!managerRole) {
+            return res.status(400).json({ error: "Invalid role ID" });
+        }
         const user = new UserModel_1.default({
             username: req.body.username,
             email: req.body.email,
             password: hashedPw,
             confirmPassword: hashedConfirmPw,
-            role: req.body.role,
+            role: managerRole._id,
+            generalId: req.body.generalId,
         });
         const accessToken = jsonwebtoken_1.default.sign({
             userId: user._id,

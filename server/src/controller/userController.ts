@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
 import UserModel from "../model/UserModel";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
+import RoleModel from "../model/RoleModel";
 
 interface UserRequest extends Request {
   user?: JwtPayload | (string & { userId?: string });
@@ -66,12 +67,17 @@ const registerUser = async (req: Request, res: Response) => {
       });
     }
 
+    const managerRole = await RoleModel.findById(req.body.role);
+    if (!managerRole) {
+      return res.status(400).json({ error: "Invalid role ID" });
+    }
     const user = new UserModel({
       username: req.body.username,
       email: req.body.email,
       password: hashedPw,
       confirmPassword: hashedConfirmPw,
-      role: req.body.role,
+      role: managerRole._id,
+      generalId: req.body.generalId,
     });
 
     const accessToken = jwt.sign(

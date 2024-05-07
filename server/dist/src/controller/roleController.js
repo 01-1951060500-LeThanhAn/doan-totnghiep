@@ -16,12 +16,12 @@ exports.getRoles = exports.createRoles = void 0;
 const RoleModel_1 = __importDefault(require("../model/RoleModel"));
 const createRoles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, permissions } = req.body;
+        const { name, description } = req.body;
         const existingRole = yield RoleModel_1.default.findOne({ name });
         if (existingRole) {
             throw new Error(`Role with name "${req.body.name}" already exists.`);
         }
-        const role = new RoleModel_1.default({ name, permissions });
+        const role = new RoleModel_1.default({ name, description });
         yield role.save();
         res.status(200).json(role);
     }
