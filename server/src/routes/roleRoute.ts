@@ -3,8 +3,8 @@ import { createRoles, getRoles } from "../controller/roleController";
 import { verifyTokenAndAdmin } from "../middleware/auth";
 const router = express.Router();
 
-router.post("/", verifyTokenAndAdmin, createRoles);
+router.post("/", createRoles);
 
-router.get("/", verifyTokenAndAdmin, getRoles);
+router.get("/", getRoles);
 
 export default router;
