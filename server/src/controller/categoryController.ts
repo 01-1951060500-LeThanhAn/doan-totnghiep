@@ -22,9 +22,31 @@ const getCategoryProduct = async (
   res: Response
 ): Promise<any> => {
   try {
-    const category = await CategoryModel.find();
-
-    res.status(200).json(category);
+    const results = await CategoryModel.aggregate([
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "type",
+          as: "products",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          type: { $first: "$$ROOT" },
+          total_products: { $sum: { $size: "$products" } },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          type: "$type",
+          total_products: 1,
+        },
+      },
+    ]);
+    return res.status(200).json(results);
   } catch (error) {
     res.status(500).json(error);
   }

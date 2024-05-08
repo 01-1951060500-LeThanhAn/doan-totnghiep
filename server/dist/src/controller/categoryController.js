@@ -27,8 +27,31 @@ const createCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.createCategoryProduct = createCategoryProduct;
 const getCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const category = yield CategoryModel_1.default.find();
-        res.status(200).json(category);
+        const results = yield CategoryModel_1.default.aggregate([
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "type",
+                    as: "products",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    type: { $first: "$$ROOT" },
+                    total_products: { $sum: { $size: "$products" } },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    type: "$type",
+                    total_products: 1,
+                },
+            },
+        ]);
+        return res.status(200).json(results);
     }
     catch (error) {
         res.status(500).json(error);
