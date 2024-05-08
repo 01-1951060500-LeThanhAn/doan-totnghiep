@@ -13,6 +13,16 @@ const CategorySchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    description: {
+        type: String,
+    },
+    total_products: Number,
+    status: {
+        type: String,
+        enum: ["active", "passive"],
+        default: "active",
+        required: true,
+    },
 }, {
     timestamps: true,
 });
