@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDetailCategoryProduct = exports.deleteCategoryProduct = exports.getCategoryProduct = exports.createCategoryProduct = void 0;
 const CategoryModel_1 = __importDefault(require("../model/CategoryModel"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const createCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const category = new CategoryModel_1.default(Object.assign({}, req.body));
@@ -66,8 +67,62 @@ const getDetailCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0,
                 message: "Mã danh mục sản phẩm không hợp lệ hoặc không tồn tại",
             });
         }
-        const category = yield CategoryModel_1.default.findById(categoryId);
-        res.status(200).json(category);
+        const category = yield CategoryModel_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(categoryId),
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "_id",
+                    foreignField: "type",
+                    as: "products",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    type: 1,
+                    products: {
+                        _id: 1,
+                        name_product: 1,
+                        code: 1,
+                        generalId: 1,
+                        unit: 1,
+                        import_price: 1,
+                        export_price: 1,
+                        inventory_number: 1,
+                        status: 1,
+                        img: 1,
+                        desc: 1,
+                    },
+                },
+            },
+            {
+                $unwind: "$products",
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    totalProducts: {
+                        $sum: 1,
+                    },
+                    products: {
+                        $push: "$products",
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalProducts: 1,
+                    products: 1,
+                },
+            },
+        ]);
+        return res.status(200).json(category);
     }
     catch (error) {
         res.status(500).json(error);

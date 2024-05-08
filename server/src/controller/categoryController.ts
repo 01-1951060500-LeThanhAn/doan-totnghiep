@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CategoryModel from "../model/CategoryModel";
+import mongoose from "mongoose";
 
 const createCategoryProduct = async (
   req: Request,
@@ -65,9 +66,66 @@ const getDetailCategoryProduct = async (
       });
     }
 
-    const category = await CategoryModel.findById(categoryId);
+    const category = await CategoryModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(categoryId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "type",
+          as: "products",
+        },
+      },
 
-    res.status(200).json(category);
+      {
+        $project: {
+          _id: 1,
+          type: 1,
+          products: {
+            _id: 1,
+            name_product: 1,
+            code: 1,
+            generalId: 1,
+            unit: 1,
+            import_price: 1,
+            export_price: 1,
+            inventory_number: 1,
+            status: 1,
+            img: 1,
+            desc: 1,
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$_id",
+          totalProducts: {
+            $sum: 1,
+          },
+
+          products: {
+            $push: "$products",
+          },
+        },
+      },
+
+      {
+        $project: {
+          _id: 1,
+          totalProducts: 1,
+          products: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json(category);
   } catch (error) {
     res.status(500).json(error);
   }
