@@ -14,5 +14,7 @@ const TransactionSchema = new mongoose_1.default.Schema({
     orderId: { type: mongoose_1.default.Types.ObjectId, ref: "orders" },
     shipId: { type: mongoose_1.default.Types.ObjectId, ref: "shipping_warehouse" },
     warehouseId: { type: mongoose_1.default.Types.ObjectId, ref: "purchase_orders" },
+}, {
+    timestamps: true,
 });
 exports.default = mongoose_1.default.model("transactions", TransactionSchema);

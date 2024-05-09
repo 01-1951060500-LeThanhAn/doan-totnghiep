@@ -16,6 +16,7 @@ exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGener
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
+const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products } = req.body;
@@ -133,7 +134,12 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }, {
             new: true,
         });
-        yield (updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.save());
+        const transactionHistory = new TransactionModel_1.default({
+            transaction_type: "import",
+            transaction_date: Date.now(),
+            warehouseId: updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData._id,
+        });
+        yield transactionHistory.save();
         res.status(200).json(updatedWarehouseData);
     }
     catch (error) {

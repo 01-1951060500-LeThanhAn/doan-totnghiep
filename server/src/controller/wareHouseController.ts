@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ProductModel from "../model/ProductModel";
 import WarehouseModel from "../model/WarehouseModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
+import TransactionModel from "../model/TransactionModel";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
@@ -154,7 +155,13 @@ const updateWarehouse = async (req: Request, res: Response) => {
       }
     );
 
-    await updatedWarehouseData?.save();
+    const transactionHistory = new TransactionModel({
+      transaction_type: "import",
+      transaction_date: Date.now(),
+      warehouseId: updatedWarehouseData?._id,
+    });
+
+    await transactionHistory.save();
 
     res.status(200).json(updatedWarehouseData);
   } catch (error) {
