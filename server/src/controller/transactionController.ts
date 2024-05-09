@@ -3,7 +3,24 @@ import TransactionModel from "../model/TransactionModel";
 
 const getAllTransactions = async (req: Request, res: Response) => {
   try {
-    const transactions = await TransactionModel.find();
+    const transactions = await TransactionModel.find()
+      .populate({
+        path: "orderId",
+        select:
+          " total_price received_date totalQuantity code order_status payment_status",
+      })
+      .populate({
+        path: "warehouseId",
+        select:
+          "code delivery_date totalQuantity order_status payment_status totalPrice",
+        populate: {
+          path: "products.productId",
+          select: "name_product",
+        },
+      })
+      .populate({
+        path: "shipId",
+      });
     res.status(200).json(transactions);
   } catch (error) {
     res.status(500).json(error);

@@ -16,7 +16,22 @@ exports.deleteTransaction = exports.getDetailTransaction = exports.getAllTransac
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const getAllTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const transactions = yield TransactionModel_1.default.find();
+        const transactions = yield TransactionModel_1.default.find()
+            .populate({
+            path: "orderId",
+            select: " total_price received_date totalQuantity code order_status payment_status",
+        })
+            .populate({
+            path: "warehouseId",
+            select: "code delivery_date totalQuantity order_status payment_status totalPrice",
+            populate: {
+                path: "products.productId",
+                select: "name_product",
+            },
+        })
+            .populate({
+            path: "shipId",
+        });
         res.status(200).json(transactions);
     }
     catch (error) {
