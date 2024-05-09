@@ -215,8 +215,8 @@ const getIncomeOrders = (req, res) => __awaiter(void 0, void 0, void 0, function
                     month: {
                         $month: "$createdAt",
                     },
-                    total_price: {
-                        $cond: [{ $eq: ["$payment_status", "paid"] }, "$total_price", 0],
+                    totalPrice: {
+                        $cond: [{ $eq: ["$payment_status", "paid"] }, "$totalPrice", 0],
                     },
                     total_orders: { $sum: 1 },
                 },
@@ -225,7 +225,7 @@ const getIncomeOrders = (req, res) => __awaiter(void 0, void 0, void 0, function
                 $group: {
                     _id: "$_id",
                     month: { $first: "$month" },
-                    total_income: { $sum: "$total_price" },
+                    total_income: { $sum: "$totalPrice" },
                     total_orders: { $sum: "$total_orders" },
                 },
             },
@@ -288,10 +288,10 @@ const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, f
                     count: {
                         $first: "$orders.products.quantity",
                     },
-                    total_price: {
+                    totalPrice: {
                         $cond: [
                             { $eq: ["$orders.payment_status", "paid"] },
-                            "$orders.total_price",
+                            "$orders.totalPrice",
                             0,
                         ],
                     },
@@ -302,7 +302,7 @@ const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, f
                     _id: "$_id.general",
                     month: { $first: "$_id.month" },
                     total_products: { $sum: "$count" },
-                    total_price: { $sum: "$total_price" },
+                    totalPrice: { $sum: "$totalPrice" },
                 },
             },
         ];
@@ -365,14 +365,14 @@ const getIncomeOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, 
                     quantity: {
                         $first: "$orders.products.quantity",
                     },
-                    total_price: "$orders.total_price",
+                    totalPrice: "$orders.totalPrice",
                 },
             },
             {
                 $group: {
                     _id: "$_id.customer",
                     total_quantity: { $sum: "$quantity" },
-                    total_price: { $sum: "$total_price" },
+                    totalPrice: { $sum: "$totalPrice" },
                 },
             },
         ];
@@ -435,7 +435,7 @@ const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, f
                     quantity: {
                         $first: "$orders.products.quantity",
                     },
-                    total_price: "$orders.total_price",
+                    totalPrice: "$orders.totalPrice",
                     productName: "$products.name_product",
                     productCode: "$products.code",
                 },
@@ -444,7 +444,7 @@ const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, f
                 $group: {
                     _id: "$_id.customer",
                     total_quantity: { $sum: "$quantity" },
-                    total_price: { $sum: "$total_price" },
+                    totalPrice: { $sum: "$totalPrice" },
                     product_name: { $first: "$productName" },
                     product_code: { $first: "$productCode" },
                 },

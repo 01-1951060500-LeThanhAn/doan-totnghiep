@@ -45,7 +45,7 @@ const getListCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         $sum: {
                             $cond: {
                                 if: { $isArray: "$orders" },
-                                then: { $sum: "$orders.total_price" },
+                                then: { $sum: "$orders.totalPrice" },
                                 else: 0,
                             },
                         },
@@ -99,7 +99,7 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         _id: 1,
                         products: 1,
                         generalId: 1,
-                        total_price: 1,
+                        totalPrice: 1,
                         payment_status: 1,
                         code: 1,
                         received_date: 1,
@@ -114,7 +114,7 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                 $group: {
                     _id: "$_id",
                     totalSpending: {
-                        $sum: "$orders.total_price",
+                        $sum: "$orders.totalPrice",
                     },
                     totalOrders: {
                         $sum: 1,
@@ -198,7 +198,7 @@ const getHistoryOrder = (req, res) => __awaiter(void 0, void 0, void 0, function
                     orders: {
                         _id: 1,
                         products: 1,
-                        total_price: 1,
+                        totalPrice: 1,
                         payment_status: 1,
                         received_date: 1,
                         order_status: 1,

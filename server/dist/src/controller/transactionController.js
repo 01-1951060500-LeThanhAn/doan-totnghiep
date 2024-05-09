@@ -19,7 +19,7 @@ const getAllTransactions = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const transactions = yield TransactionModel_1.default.find()
             .populate({
             path: "orderId",
-            select: " total_price received_date totalQuantity code order_status payment_status",
+            select: " totalPrice received_date totalQuantity code order_status payment_status",
         })
             .populate({
             path: "warehouseId",

@@ -7,7 +7,7 @@ const getAllTransactions = async (req: Request, res: Response) => {
       .populate({
         path: "orderId",
         select:
-          " total_price received_date totalQuantity code order_status payment_status",
+          " totalPrice received_date totalQuantity code order_status payment_status",
       })
       .populate({
         path: "warehouseId",

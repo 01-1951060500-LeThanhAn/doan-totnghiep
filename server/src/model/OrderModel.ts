@@ -34,7 +34,7 @@ const OrderSchema = new mongoose.Schema(
         },
       },
     ],
-    total_price: {
+    totalPrice: {
       type: Number,
       default: 0,
       required: true,
@@ -89,7 +89,7 @@ const OrderSchema = new mongoose.Schema(
 
 OrderSchema.pre("save", async function (next) {
   const order = this;
-  order.total_price = 0;
+  order.totalPrice = 0;
   for (const product of order.products) {
     const productDoc = await mongoose
       .model("products")
@@ -102,7 +102,7 @@ OrderSchema.pre("save", async function (next) {
       continue;
     }
 
-    order.total_price += productDoc.export_price * product.quantity;
+    order.totalPrice += productDoc.export_price * product.quantity;
   }
 
   next();

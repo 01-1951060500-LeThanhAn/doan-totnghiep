@@ -77,7 +77,7 @@ const getInfoPartner = (req, res) => __awaiter(void 0, void 0, void 0, function*
                         _id: 1,
                         products: 1,
                         generalId: 1,
-                        total_price: 1,
+                        totalPrice: 1,
                         payment_status: 1,
                         code: 1,
                         received_date: 1,
@@ -92,7 +92,7 @@ const getInfoPartner = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 $group: {
                     _id: "$_id",
                     totalSpending: {
-                        $sum: "$orders.total_price",
+                        $sum: "$orders.totalPrice",
                     },
                     totalOrders: {
                         $sum: 1,
