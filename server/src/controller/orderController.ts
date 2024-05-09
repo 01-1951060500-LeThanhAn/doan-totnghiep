@@ -94,42 +94,45 @@ const updateOrder = async (req: Request, res: Response) => {
       new: true,
     });
 
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
     const paymentStatusChangedToPaid =
       originalOrder?.payment_status !== "paid" &&
       updatedOrder?.payment_status === "paid";
 
     if (paymentStatusChangedToPaid) {
-      let insufficientStock = false;
+      const updatePromises = updatedOrder.products.map(async (productItem) => {
+        const product = await ProductModel.findById(productItem.productId);
 
-      for (const product of updatedOrder.products) {
-        const foundProduct = await ProductModel.findById(product.productId);
+        if (product) {
+          if (product.inventory_number >= productItem.quantity) {
+            product.inventory_number -= productItem.quantity;
 
-        if (foundProduct && foundProduct.inventory_number >= product.quantity) {
-          foundProduct.inventory_number -= product.quantity;
-          await foundProduct.save();
+            await product.updateOne({
+              $inc: { inventory_number: -productItem.quantity },
+              $push: {
+                transactionHistory: {
+                  orderId: updatedOrder._id,
+                  quantity: productItem.quantity,
+                  generalId: updatedOrder.generalId,
+                  staffId: updatedOrder.userId,
+                  inventory_number: product.inventory_number,
+                },
+              },
+            });
+          } else {
+            throw new Error(
+              `Insufficient stock for product ${product.name_product}`
+            );
+          }
         } else {
-          insufficientStock = true;
-          console.error(
-            "Lỗi: Sản phẩm",
-            product.productId,
-            "không đủ hàng trong kho"
-          );
+          throw new Error(`Product not found: ${productItem.productId}`);
         }
-      }
-
-      if (insufficientStock) {
-        return res
-          .status(400)
-          .json({ message: "Lỗi: Không đủ số lượng sản phẩm trong kho" });
-      }
-
-      const transactionHistory = new TransactionModel({
-        transaction_type: "order",
-        transaction_date: Date.now(),
-        orderId: updatedOrder._id,
       });
 
-      await transactionHistory.save();
+      await Promise.all(updatePromises);
     }
 
     res.status(200).json(updatedOrder);

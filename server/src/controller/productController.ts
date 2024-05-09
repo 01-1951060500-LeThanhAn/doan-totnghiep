@@ -164,9 +164,14 @@ const getDetailProduct = async (req: Request, res: Response) => {
   const productId = req.params.id;
 
   try {
-    const product = await ProductModel.findById(productId).populate(
-      "type generalId manager"
-    );
+    const product = await ProductModel.findById(productId)
+      .populate("type generalId manager")
+      .populate({
+        path: "transactionHistory.orderId",
+      })
+      .populate({
+        path: "transactionHistory.staffId",
+      });
 
     if (!product) {
       return res.status(404).json({

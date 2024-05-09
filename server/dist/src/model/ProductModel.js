@@ -65,6 +65,46 @@ const ProductSchema = new mongoose_1.default.Schema({
     desc: {
         type: String,
     },
+    transactionHistory: {
+        type: [
+            {
+                orderId: {
+                    type: mongoose_1.default.Schema.Types.ObjectId,
+                    ref: "orders",
+                },
+                generalId: {
+                    type: mongoose_1.default.Schema.Types.ObjectId,
+                    ref: "generals",
+                },
+                staffId: {
+                    type: mongoose_1.default.Schema.Types.ObjectId,
+                    ref: "users",
+                },
+                productId: {
+                    type: mongoose_1.default.Schema.Types.ObjectId,
+                    ref: "products",
+                },
+                quantity: {
+                    type: Number,
+                    required: true,
+                },
+                inventory_number: {
+                    type: Number,
+                    required: true,
+                },
+                transactionType: {
+                    type: String,
+                    enum: ["order", "adjustment"],
+                    default: "order",
+                },
+                transactionDate: {
+                    type: Date,
+                    default: Date.now,
+                },
+            },
+        ],
+        default: [],
+    },
 }, {
     timestamps: true,
 });

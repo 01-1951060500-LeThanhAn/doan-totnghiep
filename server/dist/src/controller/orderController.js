@@ -17,7 +17,6 @@ const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
-const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customerId = req.body.customerId;
@@ -88,32 +87,39 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const updatedOrder = yield OrderModel_1.default.findByIdAndUpdate(cartId, req.body, {
             new: true,
         });
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+        }
         const paymentStatusChangedToPaid = (originalOrder === null || originalOrder === void 0 ? void 0 : originalOrder.payment_status) !== "paid" &&
             (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.payment_status) === "paid";
         if (paymentStatusChangedToPaid) {
-            let insufficientStock = false;
-            for (const product of updatedOrder.products) {
-                const foundProduct = yield ProductModel_1.default.findById(product.productId);
-                if (foundProduct && foundProduct.inventory_number >= product.quantity) {
-                    foundProduct.inventory_number -= product.quantity;
-                    yield foundProduct.save();
+            const updatePromises = updatedOrder.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
+                const product = yield ProductModel_1.default.findById(productItem.productId);
+                if (product) {
+                    if (product.inventory_number >= productItem.quantity) {
+                        product.inventory_number -= productItem.quantity;
+                        yield product.updateOne({
+                            $inc: { inventory_number: -productItem.quantity },
+                            $push: {
+                                transactionHistory: {
+                                    orderId: updatedOrder._id,
+                                    quantity: productItem.quantity,
+                                    generalId: updatedOrder.generalId,
+                                    staffId: updatedOrder.userId,
+                                    inventory_number: product.inventory_number,
+                                },
+                            },
+                        });
+                    }
+                    else {
+                        throw new Error(`Insufficient stock for product ${product.name_product}`);
+                    }
                 }
                 else {
-                    insufficientStock = true;
-                    console.error("Lỗi: Sản phẩm", product.productId, "không đủ hàng trong kho");
+                    throw new Error(`Product not found: ${productItem.productId}`);
                 }
-            }
-            if (insufficientStock) {
-                return res
-                    .status(400)
-                    .json({ message: "Lỗi: Không đủ số lượng sản phẩm trong kho" });
-            }
-            const transactionHistory = new TransactionModel_1.default({
-                transaction_type: "order",
-                transaction_date: Date.now(),
-                orderId: updatedOrder._id,
-            });
-            yield transactionHistory.save();
+            }));
+            yield Promise.all(updatePromises);
         }
         res.status(200).json(updatedOrder);
     }
