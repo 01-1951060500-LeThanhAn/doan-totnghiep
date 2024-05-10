@@ -33,6 +33,12 @@ const createOrder = async (req: Request, res: Response) => {
       0
     );
 
+    for (const product of products) {
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingOrderQuantity: product.quantity },
+      });
+    }
+
     const newOrder = new OrderModel({
       ...req.body,
       customerId: customer._id,
@@ -134,6 +140,20 @@ const updateOrder = async (req: Request, res: Response) => {
 
       await Promise.all(updatePromises);
     }
+
+    for (const product of updatedOrder.products) {
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingOrderQuantity: -product.quantity },
+      });
+    }
+
+    const transactionHistory = new TransactionModel({
+      transaction_type: "order",
+      transaction_date: Date.now(),
+      orderId: updatedOrder?._id,
+    });
+
+    await transactionHistory.save();
 
     res.status(200).json(updatedOrder);
   } catch (error) {

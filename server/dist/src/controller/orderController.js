@@ -17,6 +17,7 @@ const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
+const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customerId = req.body.customerId;
@@ -36,6 +37,11 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(400).json({ message: "customerId not found" });
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.quantity), 0);
+        for (const product of products) {
+            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                $inc: { pendingOrderQuantity: product.quantity },
+            });
+        }
         const newOrder = new OrderModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, userId,
             totalQuantity, payment_status: "unpaid" }));
         const savedOrder = yield newOrder.save();
@@ -121,6 +127,17 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             }));
             yield Promise.all(updatePromises);
         }
+        for (const product of updatedOrder.products) {
+            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                $inc: { pendingOrderQuantity: -product.quantity },
+            });
+        }
+        const transactionHistory = new TransactionModel_1.default({
+            transaction_type: "order",
+            transaction_date: Date.now(),
+            orderId: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id,
+        });
+        yield transactionHistory.save();
         res.status(200).json(updatedOrder);
     }
     catch (error) {
