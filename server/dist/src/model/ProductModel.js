@@ -36,7 +36,6 @@ const ProductSchema = new mongoose_1.default.Schema({
     },
     unit: {
         type: String,
-        enum: ["m", "box"],
         required: true,
     },
     import_price: {

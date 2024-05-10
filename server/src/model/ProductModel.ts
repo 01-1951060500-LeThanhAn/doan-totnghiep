@@ -25,7 +25,6 @@ const ProductSchema = new mongoose.Schema(
 
     unit: {
       type: String,
-      enum: ["m", "box"],
       required: true,
     },
     import_price: {
