@@ -16,6 +16,26 @@ const CustomerSchema = new mongoose.Schema(
     tax_code: { type: String, required: true },
     website: { type: String },
     note: { type: String },
+    opening_balance: {
+      type: Number,
+      default: 0,
+    },
+    balance_increases: {
+      type: Number,
+      default: 0,
+    },
+    balance_decreases: {
+      type: Number,
+      default: 0,
+    },
+    remaining_decreases: {
+      type: Number,
+      default: 0,
+    },
+    ending_balance: {
+      type: Number,
+      default: 0,
+    },
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: "orders" },
   },
   {

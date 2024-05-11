@@ -7,9 +7,8 @@ import TransactionModel from "../model/TransactionModel";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
-    const customerId = req.body.customerId;
-    const userId = req.body.userId;
-    const products = req.body.products;
+    const { customerId, userId, products } = req.body;
+
     if (!products || products.length === 0) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -39,12 +38,36 @@ const createOrder = async (req: Request, res: Response) => {
       });
     }
 
+    let totalPrice = 0;
+    for (const product of products) {
+      const productData = await ProductModel.findById(product.productId);
+      if (!productData) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.productId}` });
+      }
+
+      totalPrice = products.reduce(
+        (acc: number, product: any) =>
+          acc + Number(product.quantity) * Number(productData.export_price),
+        0
+      );
+    }
+
     const newOrder = new OrderModel({
       ...req.body,
       customerId: customer._id,
       userId,
       totalQuantity,
       payment_status: "unpaid",
+    });
+
+    const currentBalance =
+      customer.balance_increases + customer.opening_balance;
+
+    await CustomerModel.findByIdAndUpdate(customerId, {
+      balance_increases: currentBalance + totalPrice,
+      ending_balance: currentBalance + totalPrice,
     });
 
     const savedOrder = await newOrder.save();
@@ -109,6 +132,26 @@ const updateOrder = async (req: Request, res: Response) => {
       updatedOrder?.payment_status === "paid";
 
     if (paymentStatusChangedToPaid) {
+      const customerId = updatedOrder.customerId;
+      const totalPrice = updatedOrder.totalPrice;
+
+      const customer = await CustomerModel.findById(customerId);
+
+      const currentBalanceIncreases = customer?.balance_increases || 0;
+      const currentBalanceDecreases = customer?.balance_decreases || 0;
+      const remainingDecreases =
+        currentBalanceIncreases - currentBalanceDecreases;
+      const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - totalPrice,
+        0
+      );
+      await CustomerModel.findByIdAndUpdate(customerId, {
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
+
       const updatePromises = updatedOrder.products.map(async (productItem) => {
         const product = await ProductModel.findById(productItem.productId);
 
@@ -172,7 +215,12 @@ const deleteOrder = async (req: Request, res: Response) => {
   }
 
   try {
-    const order = await OrderModel.findByIdAndDelete(cartId);
+    const deletedOrder = await OrderModel.findByIdAndDelete(cartId);
+
+    if (!deletedOrder) {
+      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+    }
+
     const customers = await CustomerModel.aggregate([
       {
         $lookup: {
@@ -188,6 +236,27 @@ const deleteOrder = async (req: Request, res: Response) => {
         },
       },
     ]);
+
+    const customerId = deletedOrder.customerId;
+    const totalPrice = deletedOrder.totalPrice;
+
+    const customer = await CustomerModel.findById(customerId);
+    if (!customer) {
+      throw new Error(`Customer not found: ${customerId}`);
+    }
+
+    const currentBalanceIncreases = customer.balance_increases || 0;
+    const currentBalanceDecreases = customer.balance_decreases || 0;
+    const currentEndingBalance = customer.ending_balance || 0;
+
+    const updatedBalanceIncreases = currentBalanceIncreases - totalPrice;
+
+    await CustomerModel.findByIdAndUpdate(customerId, {
+      balance_increases: updatedBalanceIncreases,
+      balance_decreases: 0,
+      ending_balance: 0,
+      remaining_decreases: 0,
+    });
 
     res.status(200).json({
       message: "Sản phẩm đã được xóa khỏi giỏ hàng.",
