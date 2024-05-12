@@ -184,10 +184,12 @@ const updateOrder = async (req: Request, res: Response) => {
       await Promise.all(updatePromises);
     }
 
-    for (const product of updatedOrder.products) {
-      await ProductModel.findByIdAndUpdate(product.productId, {
-        $inc: { pendingOrderQuantity: -product.quantity },
-      });
+    if (updatedOrder?.payment_status === "paid") {
+      for (const product of updatedOrder.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.quantity },
+        });
+      }
     }
 
     const transactionHistory = new TransactionModel({

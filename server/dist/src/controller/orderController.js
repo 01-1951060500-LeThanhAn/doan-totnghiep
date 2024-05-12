@@ -153,10 +153,12 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             }));
             yield Promise.all(updatePromises);
         }
-        for (const product of updatedOrder.products) {
-            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                $inc: { pendingOrderQuantity: -product.quantity },
-            });
+        if ((updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.payment_status) === "paid") {
+            for (const product of updatedOrder.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.quantity },
+                });
+            }
         }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "order",
