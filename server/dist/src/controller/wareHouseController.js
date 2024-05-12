@@ -17,11 +17,21 @@ const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
+const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
 const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { supplierId, products } = req.body;
-        if (!supplierId || !products || products.length === 0) {
+        const { supplierId, products, delivery_date, generalId, manager } = req.body;
+        if (!supplierId ||
+            !delivery_date ||
+            !generalId ||
+            !manager ||
+            !products ||
+            products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
+        }
+        const supplier = yield SupplierModel_1.default.findById(supplierId);
+        if (!supplier) {
+            return res.status(400).json({ message: "supplierId not found" });
         }
         const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
             const { productId, inventory_number } = product;
@@ -59,9 +69,25 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }));
         yield Promise.all([productUpdates]);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
-        const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
-        yield warehouse.save();
-        res.status(200).json(warehouse);
+        let totalPrice = 0;
+        for (const product of products) {
+            const productData = yield ProductModel_1.default.findById(product.productId);
+            if (!productData) {
+                return res
+                    .status(400)
+                    .json({ message: `Product not found: ${product.productId}` });
+            }
+            totalPrice = products.reduce((acc, product) => acc +
+                Number(product.inventory_number) * Number(productData.export_price), 0);
+        }
+        const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, totalQuantity, payment_status: "pending" }));
+        const currentBalance = supplier.balance_increases + supplier.opening_balance;
+        yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
+            balance_increases: currentBalance + totalPrice,
+            ending_balance: currentBalance + totalPrice,
+        });
+        const newWarehouse = yield warehouse.save();
+        res.status(200).json(newWarehouse);
     }
     catch (error) {
         console.error("Error creating warehouse entry:", error);
@@ -134,6 +160,21 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }, {
             new: true,
         });
+        if (updatedWarehouseData) {
+            const supplierId = updatedWarehouseData.supplierId;
+            const totalPrice = updatedWarehouseData.totalPrice;
+            const supplier = yield SupplierModel_1.default.findById(supplierId);
+            const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
+            const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
+            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
+            const updatedBalanceDecreases = currentBalanceDecreases + Number(totalPrice);
+            const updatedRemainingDecreases = Math.max(remainingDecreases - Number(totalPrice), 0);
+            yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
+                balance_decreases: updatedBalanceDecreases,
+                remaining_decreases: updatedRemainingDecreases,
+                ending_balance: updatedRemainingDecreases,
+            });
+        }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "import",
             transaction_date: Date.now(),
@@ -152,6 +193,20 @@ const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
     const warehouseId = req.params.id;
     try {
         const deleteProductId = yield WarehouseModel_1.default.findByIdAndDelete(warehouseId);
+        const supplierId = deleteProductId === null || deleteProductId === void 0 ? void 0 : deleteProductId.supplierId;
+        const totalPrice = deleteProductId === null || deleteProductId === void 0 ? void 0 : deleteProductId.totalPrice;
+        const supplier = yield SupplierModel_1.default.findById(supplierId);
+        if (!supplier) {
+            throw new Error(`Customer not found: ${supplierId}`);
+        }
+        const currentBalanceIncreases = supplier.balance_increases || 0;
+        const updatedBalanceIncreases = currentBalanceIncreases - Number(totalPrice);
+        yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
+            balance_increases: updatedBalanceIncreases,
+            balance_decreases: 0,
+            ending_balance: 0,
+            remaining_decreases: 0,
+        });
         if (!deleteProductId) {
             return res.status(401).json({
                 message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",

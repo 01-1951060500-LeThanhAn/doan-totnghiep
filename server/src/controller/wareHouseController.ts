@@ -3,13 +3,28 @@ import ProductModel from "../model/ProductModel";
 import WarehouseModel from "../model/WarehouseModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 import TransactionModel from "../model/TransactionModel";
+import SupplierModel from "../model/SupplierModel";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
-    const { supplierId, products } = req.body;
+    const { supplierId, products, delivery_date, generalId, manager } =
+      req.body;
 
-    if (!supplierId || !products || products.length === 0) {
+    if (
+      !supplierId ||
+      !delivery_date ||
+      !generalId ||
+      !manager ||
+      !products ||
+      products.length === 0
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const supplier = await SupplierModel.findById(supplierId);
+
+    if (!supplier) {
+      return res.status(400).json({ message: "supplierId not found" });
     }
 
     const productUpdates = products?.map(async (product: any) => {
@@ -60,13 +75,41 @@ const createWareHouse = async (req: Request, res: Response) => {
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
+
+    let totalPrice = 0;
+    for (const product of products) {
+      const productData = await ProductModel.findById(product.productId);
+      if (!productData) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.productId}` });
+      }
+
+      totalPrice = products.reduce(
+        (acc: number, product: any) =>
+          acc +
+          Number(product.inventory_number) * Number(productData.export_price),
+        0
+      );
+    }
+
     const warehouse = new WarehouseModel({
       ...req.body,
+      supplierId: supplier._id,
       totalQuantity,
+      payment_status: "pending",
     });
 
-    await warehouse.save();
-    res.status(200).json(warehouse);
+    const currentBalance =
+      supplier.balance_increases + supplier.opening_balance;
+    await SupplierModel.findByIdAndUpdate(supplierId, {
+      balance_increases: currentBalance + totalPrice,
+      ending_balance: currentBalance + totalPrice,
+    });
+
+    const newWarehouse = await warehouse.save();
+
+    res.status(200).json(newWarehouse);
   } catch (error) {
     console.error("Error creating warehouse entry:", error);
     res.status(500).json(error);
@@ -155,6 +198,29 @@ const updateWarehouse = async (req: Request, res: Response) => {
       }
     );
 
+    if (updatedWarehouseData) {
+      const supplierId = updatedWarehouseData.supplierId;
+      const totalPrice = updatedWarehouseData.totalPrice;
+
+      const supplier = await SupplierModel.findById(supplierId);
+
+      const currentBalanceIncreases = supplier?.balance_increases || 0;
+      const currentBalanceDecreases = supplier?.balance_decreases || 0;
+      const remainingDecreases =
+        currentBalanceIncreases - currentBalanceDecreases;
+      const updatedBalanceDecreases =
+        currentBalanceDecreases + Number(totalPrice);
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - Number(totalPrice),
+        0
+      );
+      await SupplierModel.findByIdAndUpdate(supplierId, {
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
+    }
+
     const transactionHistory = new TransactionModel({
       transaction_type: "import",
       transaction_date: Date.now(),
@@ -175,6 +241,25 @@ const deleteWarehouse = async (req: Request, res: Response) => {
 
   try {
     const deleteProductId = await WarehouseModel.findByIdAndDelete(warehouseId);
+
+    const supplierId = deleteProductId?.supplierId;
+    const totalPrice = deleteProductId?.totalPrice;
+
+    const supplier = await SupplierModel.findById(supplierId);
+    if (!supplier) {
+      throw new Error(`Customer not found: ${supplierId}`);
+    }
+
+    const currentBalanceIncreases = supplier.balance_increases || 0;
+    const updatedBalanceIncreases =
+      currentBalanceIncreases - Number(totalPrice);
+
+    await SupplierModel.findByIdAndUpdate(supplierId, {
+      balance_increases: updatedBalanceIncreases,
+      balance_decreases: 0,
+      ending_balance: 0,
+      remaining_decreases: 0,
+    });
 
     if (!deleteProductId) {
       return res.status(401).json({

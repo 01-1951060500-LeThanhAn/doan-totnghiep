@@ -246,9 +246,6 @@ const deleteOrder = async (req: Request, res: Response) => {
     }
 
     const currentBalanceIncreases = customer.balance_increases || 0;
-    const currentBalanceDecreases = customer.balance_decreases || 0;
-    const currentEndingBalance = customer.ending_balance || 0;
-
     const updatedBalanceIncreases = currentBalanceIncreases - totalPrice;
 
     await CustomerModel.findByIdAndUpdate(customerId, {

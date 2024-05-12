@@ -206,8 +206,6 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             throw new Error(`Customer not found: ${customerId}`);
         }
         const currentBalanceIncreases = customer.balance_increases || 0;
-        const currentBalanceDecreases = customer.balance_decreases || 0;
-        const currentEndingBalance = customer.ending_balance || 0;
         const updatedBalanceIncreases = currentBalanceIncreases - totalPrice;
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
             balance_increases: updatedBalanceIncreases,

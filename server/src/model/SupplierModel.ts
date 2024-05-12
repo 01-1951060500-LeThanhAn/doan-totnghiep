@@ -46,6 +46,26 @@ const SupplierSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    opening_balance: {
+      type: Number,
+      default: 0,
+    },
+    balance_increases: {
+      type: Number,
+      default: 0,
+    },
+    balance_decreases: {
+      type: Number,
+      default: 0,
+    },
+    remaining_decreases: {
+      type: Number,
+      default: 0,
+    },
+    ending_balance: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
