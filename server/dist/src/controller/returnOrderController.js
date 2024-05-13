@@ -39,7 +39,7 @@ const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             yield ProductModel_1.default.findByIdAndUpdate(productId, {
                 $inc: { inventory_number: quantityToReturn },
             });
-            order.totalQuantity -= quantityToReturn;
+            // order.totalQuantity -= quantityToReturn;
             yield order.save();
         }
         yield returnOrders.save();
