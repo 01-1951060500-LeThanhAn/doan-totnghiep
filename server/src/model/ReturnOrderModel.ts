@@ -82,4 +82,28 @@ ReturnOrderSchema.pre("save", async function (next) {
   next();
 });
 
+ReturnOrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "customerId",
+    select: "username code address phone",
+  });
+  next();
+});
+
+ReturnOrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "generalId",
+    select: "name address  code",
+  });
+  next();
+});
+
+ReturnOrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "orderId",
+    select: "code",
+  });
+  next();
+});
+
 export default mongoose.model("return_orders", ReturnOrderSchema);

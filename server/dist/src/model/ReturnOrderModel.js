@@ -85,4 +85,31 @@ ReturnOrderSchema.pre("save", function (next) {
         next();
     });
 });
+ReturnOrderSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "customerId",
+            select: "username code address phone",
+        });
+        next();
+    });
+});
+ReturnOrderSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "generalId",
+            select: "name address  code",
+        });
+        next();
+    });
+});
+ReturnOrderSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "orderId",
+            select: "code",
+        });
+        next();
+    });
+});
 exports.default = mongoose_1.default.model("return_orders", ReturnOrderSchema);
