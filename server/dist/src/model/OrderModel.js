@@ -125,7 +125,7 @@ OrderSchema.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
             path: "customerId",
-            select: "username createdAt",
+            select: "username code address phone createdAt",
         });
         next();
     });

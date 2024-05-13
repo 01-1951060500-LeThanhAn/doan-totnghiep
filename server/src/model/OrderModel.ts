@@ -22,6 +22,7 @@ const OrderSchema = new mongoose.Schema(
       required: true,
       ref: "general",
     },
+
     products: [
       {
         productId: {
@@ -119,7 +120,7 @@ OrderSchema.pre("find", async function (next) {
 OrderSchema.pre("find", async function (next) {
   this.populate({
     path: "customerId",
-    select: "username createdAt",
+    select: "username code address phone createdAt",
   });
   next();
 });
