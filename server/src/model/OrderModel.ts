@@ -133,4 +133,12 @@ OrderSchema.pre("find", async function (next) {
   next();
 });
 
+OrderSchema.pre("find", async function (next) {
+  this.populate({
+    path: "userId",
+    select: "username code address phone",
+  });
+  next();
+});
+
 export default mongoose.model("orders", OrderSchema);

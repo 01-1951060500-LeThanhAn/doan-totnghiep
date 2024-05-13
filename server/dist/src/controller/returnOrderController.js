@@ -72,7 +72,7 @@ const getDetailReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, fun
         if (!returnOrder) {
             return res.status(404).json({ message: "Return Order not found" });
         }
-        return res.status(200).json(returnOrder);
+        res.status(200).json(returnOrder);
     }
     catch (error) {
         res.status(500).json({ message: "Error fetching return order details" });
