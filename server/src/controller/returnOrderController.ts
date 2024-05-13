@@ -61,4 +61,26 @@ const getReturnOrder = async (req: Request, res: Response) => {
   }
 };
 
-export { createReturnOrder, getReturnOrder };
+const getDetailReturnOrder = async (req: Request, res: Response) => {
+  const returnOrderId = req.params.id;
+
+  if (!returnOrderId) {
+    return res.status(400).json({ message: "Id Return Order not found" });
+  }
+
+  try {
+    const returnOrder = await ReturnOrderModel.findById(returnOrderId).populate(
+      "customerId generalId orderId products.productId"
+    );
+
+    if (!returnOrder) {
+      return res.status(404).json({ message: "Return Order not found" });
+    }
+
+    return res.status(200).json(returnOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching return order details" });
+  }
+};
+
+export { createReturnOrder, getReturnOrder, getDetailReturnOrder };

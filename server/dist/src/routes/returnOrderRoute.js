@@ -9,4 +9,5 @@ const returnOrderController_1 = require("../controller/returnOrderController");
 const router = express_1.default.Router();
 router.post(`/`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.createReturnOrder);
 router.get(`/`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getReturnOrder);
+router.get(`/:id`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getDetailReturnOrder);
 exports.default = router;
