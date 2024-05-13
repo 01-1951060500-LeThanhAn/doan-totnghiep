@@ -93,9 +93,11 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
 
     let orders: any[] = [];
     if (user?.role?.name === "admin") {
-      orders = await OrderModel.find().populate("userId");
+      orders = await OrderModel.find().populate("userId products.productId");
     } else if (user?.role?.name === "manager") {
-      orders = await OrderModel.find({ userId: user._id }).populate("userId");
+      orders = await OrderModel.find({ userId: user._id }).populate(
+        "userId products.productId"
+      );
     } else {
       orders = [];
     }
