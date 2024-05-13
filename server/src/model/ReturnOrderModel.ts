@@ -8,15 +8,18 @@ const ReturnOrderSchema = new mongoose.Schema(
     },
     orderId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: "orders",
     },
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: "customer",
     },
 
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
+      required: true,
       ref: "general",
     },
 
