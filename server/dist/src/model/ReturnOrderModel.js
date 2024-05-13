@@ -20,17 +20,14 @@ const ReturnOrderSchema = new mongoose_1.default.Schema({
     },
     orderId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        required: true,
         ref: "orders",
     },
     customerId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        required: true,
         ref: "customer",
     },
     generalId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        required: true,
         ref: "general",
     },
     return_reason: {
