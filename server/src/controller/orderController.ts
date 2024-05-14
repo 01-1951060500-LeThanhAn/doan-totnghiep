@@ -154,6 +154,12 @@ const updateOrder = async (req: Request, res: Response) => {
         ending_balance: updatedRemainingDecreases,
       });
 
+      for (const product of updatedOrder.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.quantity },
+        });
+      }
+
       const updatePromises = updatedOrder.products.map(async (productItem) => {
         const product = await ProductModel.findById(productItem.productId);
 
@@ -184,14 +190,6 @@ const updateOrder = async (req: Request, res: Response) => {
       });
 
       await Promise.all(updatePromises);
-    }
-
-    if (updatedOrder?.payment_status === "paid") {
-      for (const product of updatedOrder.products) {
-        await ProductModel.findByIdAndUpdate(product.productId, {
-          $inc: { pendingOrderQuantity: -product.quantity },
-        });
-      }
     }
 
     const transactionHistory = new TransactionModel({
@@ -242,18 +240,14 @@ const deleteOrder = async (req: Request, res: Response) => {
     ]);
 
     const customerId = deletedOrder.customerId;
-    const totalPrice = deletedOrder.totalPrice;
 
     const customer = await CustomerModel.findById(customerId);
     if (!customer) {
       throw new Error(`Customer not found: ${customerId}`);
     }
 
-    const currentBalanceIncreases = customer.balance_increases || 0;
-    const updatedBalanceIncreases = currentBalanceIncreases - totalPrice;
-
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: updatedBalanceIncreases,
+      balance_increases: 0,
       balance_decreases: 0,
       ending_balance: 0,
       remaining_decreases: 0,

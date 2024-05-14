@@ -125,6 +125,11 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 remaining_decreases: updatedRemainingDecreases,
                 ending_balance: updatedRemainingDecreases,
             });
+            for (const product of updatedOrder.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.quantity },
+                });
+            }
             const updatePromises = updatedOrder.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
                 const product = yield ProductModel_1.default.findById(productItem.productId);
                 if (product) {
@@ -152,13 +157,6 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 }
             }));
             yield Promise.all(updatePromises);
-        }
-        if ((updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.payment_status) === "paid") {
-            for (const product of updatedOrder.products) {
-                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                    $inc: { pendingOrderQuantity: -product.quantity },
-                });
-            }
         }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "order",
@@ -202,15 +200,12 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             },
         ]);
         const customerId = deletedOrder.customerId;
-        const totalPrice = deletedOrder.totalPrice;
         const customer = yield CustomerModel_1.default.findById(customerId);
         if (!customer) {
             throw new Error(`Customer not found: ${customerId}`);
         }
-        const currentBalanceIncreases = customer.balance_increases || 0;
-        const updatedBalanceIncreases = currentBalanceIncreases - totalPrice;
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: updatedBalanceIncreases,
+            balance_increases: 0,
             balance_decreases: 0,
             ending_balance: 0,
             remaining_decreases: 0,
