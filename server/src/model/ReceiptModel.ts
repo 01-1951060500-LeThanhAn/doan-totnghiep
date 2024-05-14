@@ -15,6 +15,11 @@ const ReceiptSchema = new mongoose.Schema({
     ref: "customer",
   },
 
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "orders",
+  },
+
   receipt_type: {
     type: String,
     enum: ["debt-customer", "receive-supplier"],

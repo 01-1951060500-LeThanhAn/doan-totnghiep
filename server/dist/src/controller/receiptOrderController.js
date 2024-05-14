@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteReceipt = exports.getReceipt = exports.createReceipt = void 0;
 const ReceiptModel_1 = __importDefault(require("../model/ReceiptModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
+const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { customerId, totalPrice } = req.body;
+        const { customerId, totalPrice, orderId } = req.body;
         if (!customerId || !totalPrice) {
             return res.status(400).json("Missing customerId or totalPrice");
         }
@@ -34,6 +35,9 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             balance_decreases: updatedBalanceDecreases,
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedRemainingDecreases,
+        });
+        yield OrderModel_1.default.findByIdAndUpdate(orderId, {
+            $inc: { totalPrice: -totalPrice },
         });
         const receiptOrder = new ReceiptModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, totalPrice }));
         yield receiptOrder.save();

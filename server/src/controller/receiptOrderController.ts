@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import ReceiptModel from "../model/ReceiptModel";
 import CustomerModel from "../model/CustomerModel";
+import OrderModel from "../model/OrderModel";
 
 const createReceipt = async (req: Request, res: Response) => {
   try {
-    const { customerId, totalPrice } = req.body;
+    const { customerId, totalPrice, orderId } = req.body;
 
     if (!customerId || !totalPrice) {
       return res.status(400).json("Missing customerId or totalPrice");
@@ -26,6 +27,10 @@ const createReceipt = async (req: Request, res: Response) => {
       balance_decreases: updatedBalanceDecreases,
       remaining_decreases: updatedRemainingDecreases,
       ending_balance: updatedRemainingDecreases,
+    });
+
+    await OrderModel.findByIdAndUpdate(orderId, {
+      $inc: { totalPrice: -totalPrice },
     });
 
     const receiptOrder = new ReceiptModel({

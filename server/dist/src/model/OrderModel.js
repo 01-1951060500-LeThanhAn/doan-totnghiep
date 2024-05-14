@@ -51,6 +51,11 @@ const OrderSchema = new mongoose_1.default.Schema({
         default: 0,
         required: true,
     },
+    totalCustomerPay: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
     totalQuantity: {
         type: Number,
         default: 0,
@@ -108,6 +113,23 @@ OrderSchema.pre("save", function (next) {
                 continue;
             }
             order.totalPrice += productDoc.export_price * product.quantity;
+        }
+        next();
+    });
+});
+OrderSchema.pre("save", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const order = this;
+        order.totalPrice = 0;
+        for (const product of order.products) {
+            const productDoc = yield mongoose_1.default
+                .model("products")
+                .findById(product.productId);
+            if (!productDoc) {
+                console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
+                continue;
+            }
+            order.totalCustomerPay += productDoc.export_price * product.quantity;
         }
         next();
     });

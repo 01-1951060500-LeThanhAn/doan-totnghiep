@@ -40,6 +40,11 @@ const OrderSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
+    totalCustomerPay: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
     totalQuantity: {
       type: Number,
       default: 0,
@@ -104,6 +109,27 @@ OrderSchema.pre("save", async function (next) {
     }
 
     order.totalPrice += productDoc.export_price * product.quantity;
+  }
+
+  next();
+});
+
+OrderSchema.pre("save", async function (next) {
+  const order = this;
+  order.totalPrice = 0;
+  for (const product of order.products) {
+    const productDoc = await mongoose
+      .model("products")
+      .findById(product.productId);
+
+    if (!productDoc) {
+      console.warn(
+        `Product with ID ${product.productId} not found while calculating total price.`
+      );
+      continue;
+    }
+
+    order.totalCustomerPay += productDoc.export_price * product.quantity;
   }
 
   next();
