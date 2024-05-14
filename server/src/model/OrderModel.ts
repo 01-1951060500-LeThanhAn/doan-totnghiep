@@ -116,7 +116,7 @@ OrderSchema.pre("save", async function (next) {
 
 OrderSchema.pre("save", async function (next) {
   const order = this;
-  order.totalPrice = 0;
+  order.totalCustomerPay = 0;
   for (const product of order.products) {
     const productDoc = await mongoose
       .model("products")

@@ -120,7 +120,7 @@ OrderSchema.pre("save", function (next) {
 OrderSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const order = this;
-        order.totalPrice = 0;
+        order.totalCustomerPay = 0;
         for (const product of order.products) {
             const productDoc = yield mongoose_1.default
                 .model("products")
