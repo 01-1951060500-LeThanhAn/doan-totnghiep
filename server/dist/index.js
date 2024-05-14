@@ -30,6 +30,7 @@ const generalRoute_1 = __importDefault(require("./src/routes/generalRoute"));
 const shippingRoute_1 = __importDefault(require("./src/routes/shippingRoute"));
 const transactionRoute_1 = __importDefault(require("./src/routes/transactionRoute"));
 const returnOrderRoute_1 = __importDefault(require("./src/routes/returnOrderRoute"));
+const receiptRoute_1 = __importDefault(require("./src/routes/receiptRoute"));
 dotenv_1.default.config();
 (0, index_1.default)();
 const app = (0, express_1.default)();
@@ -56,6 +57,7 @@ app.use("/general", generalRoute_1.default);
 app.use("/transactions", transactionRoute_1.default);
 app.use("/ship", shippingRoute_1.default);
 app.use("/return-order", returnOrderRoute_1.default);
+app.use("/receipt-order", receiptRoute_1.default);
 app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
 });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTotalCustomer = exports.getHistoryOrder = exports.deleteCustomer = exports.getInfoCustomer = exports.getListCustomer = exports.createCustomer = void 0;
+exports.updateCustomer = exports.getTotalCustomer = exports.getHistoryOrder = exports.deleteCustomer = exports.getInfoCustomer = exports.getListCustomer = exports.createCustomer = void 0;
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -255,3 +255,21 @@ const getTotalCustomer = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getTotalCustomer = getTotalCustomer;
+const updateCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const customerId = req.params.id;
+    if (!customerId) {
+        return res.status(400).json({ message: "Customer not found" });
+    }
+    try {
+        const updatedCustomer = yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+            $set: req.body,
+        }, {
+            new: true,
+        });
+        res.status(200).json(updatedCustomer);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Customer not found" });
+    }
+});
+exports.updateCustomer = updateCustomer;

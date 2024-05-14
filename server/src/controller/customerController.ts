@@ -254,6 +254,29 @@ const getTotalCustomer = async (req: Request, res: Response) => {
   }
 };
 
+const updateCustomer = async (req: Request, res: Response) => {
+  const customerId = req.params.id;
+  if (!customerId) {
+    return res.status(400).json({ message: "Customer not found" });
+  }
+
+  try {
+    const updatedCustomer = await CustomerModel.findByIdAndUpdate(
+      customerId,
+      {
+        $set: req.body,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json(updatedCustomer);
+  } catch (error) {
+    res.status(500).json({ message: "Customer not found" });
+  }
+};
+
 export {
   createCustomer,
   getListCustomer,
@@ -261,4 +284,5 @@ export {
   deleteCustomer,
   getHistoryOrder,
   getTotalCustomer,
+  updateCustomer,
 };

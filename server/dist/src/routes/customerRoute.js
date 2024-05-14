@@ -10,6 +10,7 @@ const router = express_1.default.Router();
 router.post("/", auth_1.verifyTokenAndAuthorization, customerController_1.createCustomer);
 router.get(`/`, auth_1.verifyTokenAndAuthorization, customerController_1.getListCustomer);
 router.get("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.getInfoCustomer);
+router.patch("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.updateCustomer);
 router.delete("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.deleteCustomer);
 router.get("/history/:id", auth_1.verifyTokenAndAuthorization, customerController_1.getHistoryOrder);
 router.get("/income/total-customer", auth_1.verifyTokenAndAdmin, customerController_1.getTotalCustomer);

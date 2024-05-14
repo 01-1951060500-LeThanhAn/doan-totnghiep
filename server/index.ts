@@ -16,6 +16,7 @@ import generalRoute from "./src/routes/generalRoute";
 import shippingRoute from "./src/routes/shippingRoute";
 import transactionRoute from "./src/routes/transactionRoute";
 import returnOrderRoute from "./src/routes/returnOrderRoute";
+import receiptRoute from "./src/routes/receiptRoute";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/general", generalRoute);
 app.use("/transactions", transactionRoute);
 app.use("/ship", shippingRoute);
 app.use("/return-order", returnOrderRoute);
+app.use("/receipt-order", receiptRoute);
 
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);

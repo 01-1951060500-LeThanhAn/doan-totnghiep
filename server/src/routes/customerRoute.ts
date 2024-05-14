@@ -10,6 +10,7 @@ import {
   getInfoCustomer,
   getListCustomer,
   getTotalCustomer,
+  updateCustomer,
 } from "../controller/customerController";
 
 const router = express.Router();
@@ -19,6 +20,8 @@ router.post("/", verifyTokenAndAuthorization, createCustomer);
 router.get(`/`, verifyTokenAndAuthorization, getListCustomer);
 
 router.get("/:id", verifyTokenAndAuthorization, getInfoCustomer);
+
+router.patch("/:id", verifyTokenAndAuthorization, updateCustomer);
 
 router.delete("/:id", verifyTokenAndAuthorization, deleteCustomer);
 
