@@ -12,34 +12,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInfoReceipt = exports.deleteReceipt = exports.getReceipt = exports.createReceipt = void 0;
-const ReceiptCustomerModel_1 = __importDefault(require("../model/ReceiptCustomerModel"));
-const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
-const OrderModel_1 = __importDefault(require("../model/OrderModel"));
-const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getInfoReceiptSupplier = exports.deleteReceiptSupplier = exports.getReceiptSupplier = exports.createReceiptSupplier = void 0;
+const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
+const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
+const ReceiptSupplierModel_1 = __importDefault(require("../model/ReceiptSupplierModel"));
+const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { customerId, totalPrice, orderId } = req.body;
-        if (!customerId || !orderId) {
-            return res.status(400).json("Missing customerId or orderId");
+        const { supplierId, totalPrice, warehouseId } = req.body;
+        if (!supplierId || !warehouseId) {
+            return res.status(400).json("Missing supplierId or warehouseId");
         }
-        const customer = yield CustomerModel_1.default.findById(customerId);
-        if (!customer) {
-            return res.status(400).json("Customer not found");
+        const supplier = yield SupplierModel_1.default.findById(supplierId);
+        if (!supplier) {
+            return res.status(400).json("Supplier not found");
         }
-        const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-        const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
+        const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
+        const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
         const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
         const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
         const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-        yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+        yield SupplierModel_1.default.findByIdAndUpdate(warehouseId, {
             balance_decreases: updatedBalanceDecreases,
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedRemainingDecreases,
         });
-        yield OrderModel_1.default.findByIdAndUpdate(orderId, {
+        yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
             $inc: { totalPrice: -totalPrice },
         });
-        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, totalPrice }));
+        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, totalPrice }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }
@@ -47,18 +47,18 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json("Server error: " + error.message);
     }
 });
-exports.createReceipt = createReceipt;
-const getReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createReceiptSupplier = createReceiptSupplier;
+const getReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const customer = yield ReceiptCustomerModel_1.default.find();
-        res.status(200).json(customer);
+        const supplier = yield ReceiptSupplierModel_1.default.find();
+        res.status(200).json(supplier);
     }
     catch (error) {
         res.status(500).json("Server error: " + error.message);
     }
 });
-exports.getReceipt = getReceipt;
-const deleteReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getReceiptSupplier = getReceiptSupplier;
+const deleteReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const receiptId = req.params.id;
     if (!receiptId) {
         return res.status(400).json({
@@ -66,7 +66,7 @@ const deleteReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     try {
-        const receipt = yield ReceiptCustomerModel_1.default.findByIdAndDelete(receiptId);
+        const receipt = yield ReceiptSupplierModel_1.default.findByIdAndDelete(receiptId);
         if (!receipt) {
             return res.status(400).json({
                 message: "Không thể xóa phiếu thu ",
@@ -78,8 +78,8 @@ const deleteReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json(err);
     }
 });
-exports.deleteReceipt = deleteReceipt;
-const getInfoReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.deleteReceiptSupplier = deleteReceiptSupplier;
+const getInfoReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const receiptId = req.params.id;
     if (!receiptId) {
         return res.status(400).json({
@@ -87,10 +87,10 @@ const getInfoReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
     try {
-        const receipt = yield ReceiptCustomerModel_1.default.findById(receiptId)
-            .populate("customerId staffId")
+        const receipt = yield ReceiptSupplierModel_1.default.findById(receiptId)
+            .populate("supplierId staffId")
             .populate({
-            path: "orderId",
+            path: "warehouseId",
             select: "products code",
             populate: {
                 path: "products.productId",
@@ -107,4 +107,4 @@ const getInfoReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(500).json(error);
     }
 });
-exports.getInfoReceipt = getInfoReceipt;
+exports.getInfoReceiptSupplier = getInfoReceiptSupplier;

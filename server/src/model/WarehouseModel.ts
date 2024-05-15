@@ -9,7 +9,16 @@ const WarehouseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    totalPrice: Number,
+    totalPrice: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    totalSupplierPay: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
     totalQuantity: Number,
     products: [
       {
@@ -73,4 +82,25 @@ WarehouseSchema.pre("save", async function (next) {
   next();
 });
 
+WarehouseSchema.pre("save", async function (next) {
+  const order = this;
+  order.totalSupplierPay = 0;
+  for (const product of order.products) {
+    const productDoc = await mongoose
+      .model("products")
+      .findById(product.productId);
+
+    if (!productDoc) {
+      console.warn(
+        `Product with ID ${product.productId} not found while calculating total price.`
+      );
+      continue;
+    }
+
+    order.totalSupplierPay +=
+      productDoc.export_price * product.inventory_number;
+  }
+
+  next();
+});
 export default mongoose.model("purchase_orders", WarehouseSchema);

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ReceiptSchema = new mongoose.Schema(
+const ReceiptSupplierSchema = new mongoose.Schema(
   {
     code: {
       type: String,
@@ -9,11 +9,11 @@ const ReceiptSchema = new mongoose.Schema(
     submitter: {
       type: String,
       enum: ["customer", "supplier"],
-      default: "customer",
+      default: "supplier",
     },
-    customerId: {
+    supplierId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "customer",
+      ref: "supplier",
     },
 
     staffId: {
@@ -21,15 +21,15 @@ const ReceiptSchema = new mongoose.Schema(
       ref: "users",
     },
 
-    orderId: {
+    warehouseId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "orders",
+      ref: "purchase_orders",
     },
 
     receipt_type: {
       type: String,
       enum: ["debt-customer", "receive-supplier"],
-      default: "debt-customer",
+      default: "receive-supplier",
     },
     payment_method: {
       type: String,
@@ -54,15 +54,15 @@ const ReceiptSchema = new mongoose.Schema(
   }
 );
 
-ReceiptSchema.pre("find", async function (next) {
+ReceiptSupplierSchema.pre("find", async function (next) {
   this.populate({
-    path: "customerId",
-    select: "username code address phone ",
+    path: "supplierId",
+    select: "supplier_name supplier_code email_supplier address_supplier",
   });
   next();
 });
 
-ReceiptSchema.pre("find", async function (next) {
+ReceiptSupplierSchema.pre("find", async function (next) {
   this.populate({
     path: "staffId",
     select: "username  address phone ",
@@ -70,12 +70,12 @@ ReceiptSchema.pre("find", async function (next) {
   next();
 });
 
-ReceiptSchema.pre("find", async function (next) {
+ReceiptSupplierSchema.pre("find", async function (next) {
   this.populate({
-    path: "orderId",
+    path: "warehouseId",
     select: "code payment_status",
   });
   next();
 });
 
-export default mongoose.model("receipt_orders", ReceiptSchema);
+export default mongoose.model("receipt_supplier", ReceiptSupplierSchema);

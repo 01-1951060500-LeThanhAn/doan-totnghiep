@@ -28,8 +28,41 @@ const createSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.createSupplier = createSupplier;
 const getListSuppliers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield SupplierModel_1.default.find();
-        res.status(200).json(users);
+        const suppliers = yield SupplierModel_1.default.aggregate([
+            {
+                $lookup: {
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "supplierId",
+                    as: "purchase_orders",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    supplierData: { $first: "$$ROOT" },
+                    totalSpending: {
+                        $sum: {
+                            $cond: {
+                                if: { $isArray: "$purchase_orders" },
+                                then: { $sum: "$purchase_orders.totalPrice" },
+                                else: 0,
+                            },
+                        },
+                    },
+                    totalOrders: { $sum: { $size: "$purchase_orders" } },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    supplier: "$supplierData",
+                    totalSpending: 1,
+                    totalOrders: 1,
+                },
+            },
+        ]);
+        res.status(200).json(suppliers);
     }
     catch (error) {
         res.status(500).json(error);

@@ -17,8 +17,41 @@ const createSupplier = async (req: Request, res: Response) => {
 
 const getListSuppliers = async (req: Request, res: Response) => {
   try {
-    const users = await SupplierModel.find();
-    res.status(200).json(users);
+    const suppliers = await SupplierModel.aggregate([
+      {
+        $lookup: {
+          from: "purchase_orders",
+          localField: "_id",
+          foreignField: "supplierId",
+          as: "purchase_orders",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          supplierData: { $first: "$$ROOT" },
+          totalSpending: {
+            $sum: {
+              $cond: {
+                if: { $isArray: "$purchase_orders" },
+                then: { $sum: "$purchase_orders.totalPrice" },
+                else: 0,
+              },
+            },
+          },
+          totalOrders: { $sum: { $size: "$purchase_orders" } },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          supplier: "$supplierData",
+          totalSpending: 1,
+          totalOrders: 1,
+        },
+      },
+    ]);
+    res.status(200).json(suppliers);
   } catch (error) {
     res.status(500).json(error);
   }

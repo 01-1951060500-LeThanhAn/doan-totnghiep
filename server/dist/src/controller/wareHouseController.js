@@ -160,6 +160,9 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }, {
             new: true,
         });
+        if (!updatedWarehouseData) {
+            return res.status(404).json({ message: "Không tìm thấy đơn nhập hàng" });
+        }
         if (updatedWarehouseData) {
             const supplierId = updatedWarehouseData.supplierId;
             const totalPrice = updatedWarehouseData.totalPrice;
@@ -173,6 +176,11 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 balance_decreases: updatedBalanceDecreases,
                 remaining_decreases: updatedRemainingDecreases,
                 ending_balance: updatedRemainingDecreases,
+            });
+        }
+        if (updatedWarehouseData) {
+            yield WarehouseModel_1.default.findByIdAndUpdate(updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData._id, {
+                $inc: { totalPrice: -(updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.totalPrice) },
             });
         }
         const transactionHistory = new TransactionModel_1.default({

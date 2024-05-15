@@ -22,7 +22,16 @@ const WarehouseSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    totalPrice: Number,
+    totalPrice: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
+    totalSupplierPay: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
     totalQuantity: Number,
     products: [
         {
@@ -75,6 +84,24 @@ WarehouseSchema.pre("save", function (next) {
                 continue;
             }
             order.totalPrice += productDoc.export_price * product.inventory_number;
+        }
+        next();
+    });
+});
+WarehouseSchema.pre("save", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const order = this;
+        order.totalSupplierPay = 0;
+        for (const product of order.products) {
+            const productDoc = yield mongoose_1.default
+                .model("products")
+                .findById(product.productId);
+            if (!productDoc) {
+                console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
+                continue;
+            }
+            order.totalSupplierPay +=
+                productDoc.export_price * product.inventory_number;
         }
         next();
     });
