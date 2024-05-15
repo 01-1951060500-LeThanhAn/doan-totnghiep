@@ -15,6 +15,11 @@ const ReceiptSchema = new mongoose.Schema({
     ref: "customer",
   },
 
+  staffId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+  },
+
   orderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "orders",
@@ -38,4 +43,29 @@ const ReceiptSchema = new mongoose.Schema({
     type: String,
   },
 });
+
+ReceiptSchema.pre("find", async function (next) {
+  this.populate({
+    path: "customerId",
+    select: "username code address phone ",
+  });
+  next();
+});
+
+ReceiptSchema.pre("find", async function (next) {
+  this.populate({
+    path: "staffId",
+    select: "username  address phone ",
+  });
+  next();
+});
+
+ReceiptSchema.pre("find", async function (next) {
+  this.populate({
+    path: "orderId",
+    select: "code payment_status",
+  });
+  next();
+});
+
 export default mongoose.model("receipt_orders", ReceiptSchema);

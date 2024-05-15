@@ -192,6 +192,12 @@ const updateOrder = async (req: Request, res: Response) => {
       await Promise.all(updatePromises);
     }
 
+    if (paymentStatusChangedToPaid) {
+      await OrderModel.findByIdAndUpdate(updatedOrder?._id, {
+        $inc: { totalPrice: -updatedOrder?.totalPrice },
+      });
+    }
+
     const transactionHistory = new TransactionModel({
       transaction_type: "order",
       transaction_date: Date.now(),

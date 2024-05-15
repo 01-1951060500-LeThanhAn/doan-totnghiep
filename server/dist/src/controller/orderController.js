@@ -158,6 +158,11 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             }));
             yield Promise.all(updatePromises);
         }
+        if (paymentStatusChangedToPaid) {
+            yield OrderModel_1.default.findByIdAndUpdate(updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id, {
+                $inc: { totalPrice: -(updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.totalPrice) },
+            });
+        }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "order",
             transaction_date: Date.now(),
