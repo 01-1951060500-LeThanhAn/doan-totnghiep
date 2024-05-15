@@ -40,6 +40,11 @@ const ReceiptSchema = new mongoose_1.default.Schema({
         enum: ["debt-customer", "receive-supplier"],
         default: "debt-customer",
     },
+    payment_method: {
+        type: String,
+        enum: ["banking", "money"],
+        default: "money",
+    },
     totalPrice: {
         type: Number,
         default: 0,
@@ -52,6 +57,8 @@ const ReceiptSchema = new mongoose_1.default.Schema({
     desc: {
         type: String,
     },
+}, {
+    timestamps: true,
 });
 ReceiptSchema.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
