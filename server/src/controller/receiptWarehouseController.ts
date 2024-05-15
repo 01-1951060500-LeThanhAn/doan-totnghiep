@@ -22,7 +22,7 @@ const createReceiptSupplier = async (req: Request, res: Response) => {
       remainingDecreases - totalPrice,
       0
     );
-    await SupplierModel.findByIdAndUpdate(warehouseId, {
+    await SupplierModel.findByIdAndUpdate(supplierId, {
       balance_decreases: updatedBalanceDecreases,
       remaining_decreases: updatedRemainingDecreases,
       ending_balance: updatedRemainingDecreases,

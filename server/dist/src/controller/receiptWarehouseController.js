@@ -31,7 +31,7 @@ const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, fu
         const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
         const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
         const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-        yield SupplierModel_1.default.findByIdAndUpdate(warehouseId, {
+        yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
             balance_decreases: updatedBalanceDecreases,
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedRemainingDecreases,

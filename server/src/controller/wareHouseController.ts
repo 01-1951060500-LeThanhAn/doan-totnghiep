@@ -188,6 +188,8 @@ const updateWarehouse = async (req: Request, res: Response) => {
   }
 
   try {
+    const originalWarehouseData = await WarehouseModel.findById(warehouseId);
+
     const updatedWarehouseData = await WarehouseModel.findByIdAndUpdate(
       warehouseId,
       {
@@ -202,7 +204,11 @@ const updateWarehouse = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy đơn nhập hàng" });
     }
 
-    if (updatedWarehouseData) {
+    const paymentStatusChangedToPaid =
+      originalWarehouseData?.payment_status !== "delivered" &&
+      updatedWarehouseData?.payment_status === "delivered";
+
+    if (paymentStatusChangedToPaid) {
       const supplierId = updatedWarehouseData.supplierId;
       const totalPrice = updatedWarehouseData.totalPrice;
 
@@ -248,34 +254,45 @@ const updateWarehouse = async (req: Request, res: Response) => {
 
 const deleteWarehouse = async (req: Request, res: Response) => {
   const warehouseId = req.params.id;
-
+  if (!warehouseId) {
+    return res.status(400).json({
+      message: "Lỗi khi xóa giỏ đơn nhập hàng",
+    });
+  }
   try {
     const deleteProductId = await WarehouseModel.findByIdAndDelete(warehouseId);
+    if (!deleteProductId) {
+      return res.status(404).json({ message: "Đơn nhập hàng không tồn tại" });
+    }
 
+    const suppliers = await SupplierModel.aggregate([
+      {
+        $lookup: {
+          from: "purchase_orders",
+          localField: "_id",
+          foreignField: "supplierId",
+          as: "purchase_orders",
+        },
+      },
+      {
+        $match: {
+          "purchase_orders._id": { $in: [warehouseId] },
+        },
+      },
+    ]);
     const supplierId = deleteProductId?.supplierId;
-    const totalPrice = deleteProductId?.totalPrice;
 
     const supplier = await SupplierModel.findById(supplierId);
     if (!supplier) {
-      throw new Error(`Customer not found: ${supplierId}`);
+      throw new Error(`Supplier not found: ${supplierId}`);
     }
 
-    const currentBalanceIncreases = supplier.balance_increases || 0;
-    const updatedBalanceIncreases =
-      currentBalanceIncreases - Number(totalPrice);
-
     await SupplierModel.findByIdAndUpdate(supplierId, {
-      balance_increases: updatedBalanceIncreases,
+      balance_increases: 0,
       balance_decreases: 0,
       ending_balance: 0,
       remaining_decreases: 0,
     });
-
-    if (!deleteProductId) {
-      return res.status(401).json({
-        message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
-      });
-    }
 
     res.status(200).json({
       message: "Xóa đơn nhập hàng thành công",

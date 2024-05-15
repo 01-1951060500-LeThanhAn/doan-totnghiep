@@ -155,6 +155,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
     }
     try {
+        const originalWarehouseData = yield WarehouseModel_1.default.findById(warehouseId);
         const updatedWarehouseData = yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
             payment_status: "delivered",
         }, {
@@ -163,7 +164,9 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!updatedWarehouseData) {
             return res.status(404).json({ message: "Không tìm thấy đơn nhập hàng" });
         }
-        if (updatedWarehouseData) {
+        const paymentStatusChangedToPaid = (originalWarehouseData === null || originalWarehouseData === void 0 ? void 0 : originalWarehouseData.payment_status) !== "delivered" &&
+            (updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.payment_status) === "delivered";
+        if (paymentStatusChangedToPaid) {
             const supplierId = updatedWarehouseData.supplierId;
             const totalPrice = updatedWarehouseData.totalPrice;
             const supplier = yield SupplierModel_1.default.findById(supplierId);
@@ -199,27 +202,42 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.updateWarehouse = updateWarehouse;
 const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const warehouseId = req.params.id;
+    if (!warehouseId) {
+        return res.status(400).json({
+            message: "Lỗi khi xóa giỏ đơn nhập hàng",
+        });
+    }
     try {
         const deleteProductId = yield WarehouseModel_1.default.findByIdAndDelete(warehouseId);
+        if (!deleteProductId) {
+            return res.status(404).json({ message: "Đơn nhập hàng không tồn tại" });
+        }
+        const suppliers = yield SupplierModel_1.default.aggregate([
+            {
+                $lookup: {
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "supplierId",
+                    as: "purchase_orders",
+                },
+            },
+            {
+                $match: {
+                    "purchase_orders._id": { $in: [warehouseId] },
+                },
+            },
+        ]);
         const supplierId = deleteProductId === null || deleteProductId === void 0 ? void 0 : deleteProductId.supplierId;
-        const totalPrice = deleteProductId === null || deleteProductId === void 0 ? void 0 : deleteProductId.totalPrice;
         const supplier = yield SupplierModel_1.default.findById(supplierId);
         if (!supplier) {
-            throw new Error(`Customer not found: ${supplierId}`);
+            throw new Error(`Supplier not found: ${supplierId}`);
         }
-        const currentBalanceIncreases = supplier.balance_increases || 0;
-        const updatedBalanceIncreases = currentBalanceIncreases - Number(totalPrice);
         yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
-            balance_increases: updatedBalanceIncreases,
+            balance_increases: 0,
             balance_decreases: 0,
             ending_balance: 0,
             remaining_decreases: 0,
         });
-        if (!deleteProductId) {
-            return res.status(401).json({
-                message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
-            });
-        }
         res.status(200).json({
             message: "Xóa đơn nhập hàng thành công",
         });
