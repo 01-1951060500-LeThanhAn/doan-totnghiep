@@ -78,4 +78,34 @@ const deleteReceipt = async (req: Request, res: Response) => {
   }
 };
 
-export { createReceipt, getReceipt, deleteReceipt };
+const getInfoReceipt = async (req: Request, res: Response) => {
+  const receiptId = req.params.id;
+  if (!receiptId) {
+    return res.status(400).json({
+      message: "ID Receipt not found",
+    });
+  }
+
+  try {
+    const receipt = await ReceiptModel.findById(receiptId)
+      .populate("customerId staffId")
+      .populate({
+        path: "orderId",
+        select: "products",
+        populate: {
+          path: "products.productId",
+        },
+      });
+    if (!receipt) {
+      return res.status(400).json({
+        message: "Receipt not found",
+      });
+    }
+
+    res.status(200).json(receipt);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+export { createReceipt, getReceipt, deleteReceipt, getInfoReceipt };

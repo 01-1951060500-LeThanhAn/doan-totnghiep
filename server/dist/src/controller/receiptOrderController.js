@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteReceipt = exports.getReceipt = exports.createReceipt = void 0;
+exports.getInfoReceipt = exports.deleteReceipt = exports.getReceipt = exports.createReceipt = void 0;
 const ReceiptModel_1 = __importDefault(require("../model/ReceiptModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
@@ -79,3 +79,32 @@ const deleteReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deleteReceipt = deleteReceipt;
+const getInfoReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiptId = req.params.id;
+    if (!receiptId) {
+        return res.status(400).json({
+            message: "ID Receipt not found",
+        });
+    }
+    try {
+        const receipt = yield ReceiptModel_1.default.findById(receiptId)
+            .populate("customerId staffId")
+            .populate({
+            path: "orderId",
+            select: "products",
+            populate: {
+                path: "products.productId",
+            },
+        });
+        if (!receipt) {
+            return res.status(400).json({
+                message: "Receipt not found",
+            });
+        }
+        res.status(200).json(receipt);
+    }
+    catch (error) {
+        return res.status(500).json(error);
+    }
+});
+exports.getInfoReceipt = getInfoReceipt;

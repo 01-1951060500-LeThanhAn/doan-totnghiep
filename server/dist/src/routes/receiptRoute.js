@@ -10,4 +10,5 @@ const router = express_1.default.Router();
 router.post("/", auth_1.verifyTokenAndAuthorization, receiptOrderController_1.createReceipt);
 router.get("/", auth_1.verifyTokenAndAuthorization, receiptOrderController_1.getReceipt);
 router.delete("/:id", auth_1.verifyTokenAndAuthorization, receiptOrderController_1.deleteReceipt);
+router.get("/:id", auth_1.verifyTokenAndAuthorization, receiptOrderController_1.getInfoReceipt);
 exports.default = router;
