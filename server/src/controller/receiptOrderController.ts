@@ -91,7 +91,7 @@ const getInfoReceipt = async (req: Request, res: Response) => {
       .populate("customerId staffId")
       .populate({
         path: "orderId",
-        select: "products",
+        select: "products code",
         populate: {
           path: "products.productId",
         },
