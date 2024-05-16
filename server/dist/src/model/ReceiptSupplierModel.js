@@ -87,4 +87,4 @@ ReceiptSupplierSchema.pre("find", function (next) {
         next();
     });
 });
-exports.default = mongoose_1.default.model("receipt_supplier", ReceiptSupplierSchema);
+exports.default = mongoose_1.default.model("receipt_suppliers", ReceiptSupplierSchema);

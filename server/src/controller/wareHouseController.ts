@@ -265,33 +265,28 @@ const deleteWarehouse = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Đơn nhập hàng không tồn tại" });
     }
 
-    const suppliers = await SupplierModel.aggregate([
-      {
-        $lookup: {
-          from: "purchase_orders",
-          localField: "_id",
-          foreignField: "supplierId",
-          as: "purchase_orders",
-        },
-      },
-      {
-        $match: {
-          "purchase_orders._id": { $in: [warehouseId] },
-        },
-      },
-    ]);
     const supplierId = deleteProductId?.supplierId;
+    const orderTotalPrice = deleteProductId.totalPrice;
 
     const supplier = await SupplierModel.findById(supplierId);
     if (!supplier) {
       throw new Error(`Supplier not found: ${supplierId}`);
     }
 
+    const updatedBalanceIncreases = Math.max(
+      supplier.balance_increases - orderTotalPrice,
+      0
+    );
+    const updatedRemainingDecreases =
+      supplier.opening_balance +
+      updatedBalanceIncreases -
+      supplier.balance_decreases;
+    const updatedEndingBalance = updatedRemainingDecreases;
+
     await SupplierModel.findByIdAndUpdate(supplierId, {
-      balance_increases: 0,
-      balance_decreases: 0,
-      ending_balance: 0,
-      remaining_decreases: 0,
+      balance_increases: updatedBalanceIncreases,
+      remaining_decreases: updatedRemainingDecreases,
+      ending_balance: updatedEndingBalance,
     });
 
     res.status(200).json({

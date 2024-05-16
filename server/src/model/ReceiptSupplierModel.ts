@@ -78,4 +78,4 @@ ReceiptSupplierSchema.pre("find", async function (next) {
   next();
 });
 
-export default mongoose.model("receipt_supplier", ReceiptSupplierSchema);
+export default mongoose.model("receipt_suppliers", ReceiptSupplierSchema);
