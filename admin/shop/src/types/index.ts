@@ -1,14 +1,29 @@
 export type User = {
   email: string | null;
   pasword: string | null;
+  role: string | null;
 };
 
 export type UserTableData = {
   username: string;
   email: string;
-  createdAt: string | undefined;
+  createdAt: string | Date;
   _id: string;
-  picture: string | undefined;
+  phone: string;
+  address: string;
+  role: {
+    name: string;
+  };
+};
+
+export type UserDataTableProps = {
+  username: string;
+  email: string;
+  createdAt: string | Date;
+  _id: string;
+  phone: string;
+  address: string;
+  role: string;
 };
 
 export type UserData = UserTableData;
@@ -17,65 +32,10 @@ export type UpdateUserDataType = {
   username: string;
   email: string;
   createdAt: string | undefined;
-  picture: string | undefined;
 };
 
-export type CreateProductDataType = {
-  title: string;
-  desc: string;
-  img: string;
-  ram: string[];
-  ssd: string[];
-  type: string;
-  price: number;
-  operator_system: string;
-  cpu: string;
-  gpu: string;
-  webcam: string;
-  screen: string;
-  design: string;
-  performance: string;
-  connector: string;
-};
-
-export type UpdateProductDataType = CreateProductDataType;
-
-export type ProductData = {
+export type RoleData = {
+  name: string;
   _id: string;
-  title: string;
-  desc: string;
-  img: string | null;
-  ram: string[];
-  ssd: string[];
-  type?: string;
-  price: number;
-  operator_system: string;
-  cpu: string;
-  gpu: string;
-  webcam: string;
-  screen: string;
-  design: string;
-  performance: string;
-  connector: string;
-  createdAt: string;
-};
-
-export type ProductDataResponse = {
-  message: string;
-  results: ProductData[];
-};
-
-export type UserDataResponse = {
-  message: string;
-  results: UserData[];
-};
-
-export type Data = {
-  _id: number;
-  total: number;
-};
-
-export type StatusData = {
-  _id: string;
-  count: number;
+  description: string;
 };

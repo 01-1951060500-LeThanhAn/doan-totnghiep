@@ -74,7 +74,7 @@ const MoredropDown = () => {
         <DropdownMenuContent
           ref={ref}
           className={cn(
-            "dark:bg-neutral-800 w-64 !rounded-xl !p-0 transition-opacity"
+            "dark:bg-[#020817] w-64 !rounded-xl !p-0 transition-opacity"
           )}
           align="end"
           alignOffset={-40}

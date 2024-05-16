@@ -1,11 +1,15 @@
 import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import React from "react";
 type Props = {
   title: string;
+  text1: string;
+  text2: string;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const Header = ({ title }: Props) => {
+const Header = ({ title, text1, text2, onClick }: Props) => {
   return (
     <>
       <div className="border-b p-6 flex justify-between items-center">
@@ -22,12 +26,17 @@ const Header = ({ title }: Props) => {
           </div>
         </div>
         <div className="flex items-center">
-          <Button className="mr-3" variant="outline">
+          <Button
+            onClick={onClick}
+            className="mr-3"
+            type="submit"
+            variant="outline"
+          >
             <Save className="mr-2" />
-            <span>Save to Draft</span>
+            <span>{text1}</span>
           </Button>
           <Button>
-            <span>Save Product</span>
+            <span>{text2}</span>
           </Button>
         </div>
       </div>

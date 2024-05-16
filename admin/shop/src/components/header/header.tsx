@@ -2,13 +2,16 @@ import { useAppSelector } from "@/hooks/hooks";
 
 const Header = () => {
   const { currentUser } = useAppSelector((state) => state.auth);
-
   return (
     <>
       <div className="flex justify-between items-center">
         <div className="">
-          <header className="text-slate-600">Hello, Thanh An</header>
-          <p className="text-3xl font-bold">Welcome to admin dashboard </p>
+          <header className="text-slate-600">
+            Hello, {currentUser?.username}
+          </header>
+          <p className="text-2xl font-bold">
+            Chào mừng đến với website của chúng tôi
+          </p>
         </div>
         <div className="flex items-center">
           <img

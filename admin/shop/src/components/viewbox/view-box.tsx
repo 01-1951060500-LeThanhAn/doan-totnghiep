@@ -6,13 +6,20 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import useGetUsers from "../suppliers/hooks/use-get-users";
+import useGetOrders from "../order/hooks/use-get-orders";
+import useGetProducts from "../products/hooks/use-get-products";
 
 const ViewBox = () => {
   const { theme } = useTheme();
+  const { users } = useGetUsers();
+  const { orders } = useGetOrders();
+  const { products } = useGetProducts();
+
   return (
     <>
       <div className="my-4">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
           <div
             className={`shadow-md flex items-center justify-between  rounded-xl ${
               theme === "dark" ? "bg-[#212B36]" : ""
@@ -24,7 +31,7 @@ const ViewBox = () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-slate-400">Total Users</p>
-                <span className="text-2xl font-bold">20</span>
+                <span className="text-2xl font-bold">{users?.length}</span>
               </div>
             </div>
             <div className="p-3 flex items-center">
@@ -67,7 +74,7 @@ const ViewBox = () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-slate-400">Total Products</p>
-                <span className="text-2xl font-bold">20</span>
+                <span className="text-2xl font-bold">{products?.length}</span>
               </div>
             </div>
             <div className="p-3 flex items-center">
@@ -88,7 +95,7 @@ const ViewBox = () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-slate-400">Total Order</p>
-                <span className="text-2xl font-bold">$20</span>
+                <span className="text-2xl font-bold">{orders?.length}</span>
               </div>
             </div>
             <div className="p-3 flex items-center">

@@ -5,15 +5,22 @@ const Sidebar = () => {
   return (
     <>
       <div className="flex h-full flex-col px-3 py-4 md:px-2">
+        <div>
+          <img
+            className="w-auto mb-6 h-auto object-contain hidden lg:block"
+            src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715327201/Screenshot_2024-05-10_144404-removebg-preview_cpu2ap.png"
+            alt=""
+          />
+        </div>
         <div
-          className="boder-t flex-1 w-full md:relative md:h-full bottom-0 md:border-none flex
+          className="border-t flex-1 w-full md:relative md:h-full bottom-0 md:border-none flex
          flex-row md:justify-between space-x-2 md:flex-col
-          md:space-x-0 -ml-3 justify-evenly fixed
-           z-50 md:ml-0 bg-white dark:bg-neutral-950"
+          md:space-x-0 -ml-3 bg-white dark:bg-[#020817] justify-evenly fixed
+           z-50 md:ml-0 "
         >
           <ListNavLinks />
 
-          <div className="hidden md:flex relative md:mt-auto flex-1 items-end w-full">
+          <div className=" md:flex relative md:mt-auto flex-1 items-end w-full">
             <MoredropDown />
           </div>
         </div>

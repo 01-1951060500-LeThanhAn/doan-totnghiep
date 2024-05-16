@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const formUserSchema = z.object({
   email: z.string().min(1, "Name is required"),
-  password: z.string().optional(),
+  password: z.string().min(1, "Password is required"),
+  role: z.string().min(1, "Role is required"),
 });
 
 export const userChema = z.object({

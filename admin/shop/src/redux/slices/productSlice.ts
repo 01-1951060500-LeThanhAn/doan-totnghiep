@@ -1,9 +1,13 @@
 import { createProduct, deleteProduct, updateProduct } from "@/api/productApi";
-import { ProductData } from "@/types";
+import {
+  CreateProductDataType,
+  UpdatePriceProduct,
+  UpdateProductDataType,
+} from "@/types/product";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type ProductState = {
-  products: ProductData[];
+  products: CreateProductDataType[];
   loading: boolean;
   isEdit: boolean;
   error: boolean;
@@ -18,7 +22,7 @@ const initialState: ProductState = {
 
 export const createProductAsync = createAsyncThunk(
   "products/createProductAsync",
-  async (product: ProductData) => {
+  async (product: CreateProductDataType) => {
     const response = await createProduct(product);
     return response.data;
   }
@@ -34,7 +38,10 @@ export const deleteProductAsync = createAsyncThunk(
 
 export const updateProductAsync = createAsyncThunk(
   "products/updateProductAsync",
-  async (updateData: { productId: string | undefined; data: ProductData }) => {
+  async (updateData: {
+    productId: string | undefined;
+    data: UpdateProductDataType | UpdatePriceProduct;
+  }) => {
     try {
       const response = await updateProduct(
         updateData.productId as string,
@@ -51,11 +58,7 @@ export const updateProductAsync = createAsyncThunk(
 export const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {
-    getStatus: (state) => {
-      state.loading = false;
-    },
-  },
+  reducers: {},
 
   extraReducers: (builder) => {
     builder
@@ -65,10 +68,12 @@ export const productSlice = createSlice({
       })
       .addCase(
         createProductAsync.fulfilled,
-        (state, action: PayloadAction<ProductData>) => {
-          state.loading = false;
-          state.products.push(action.payload);
-          state.error = false;
+        (state, action: PayloadAction<CreateProductDataType>) => {
+          if (action.payload) {
+            state.loading = false;
+            state.products = [...state.products, action.payload];
+            state.error = false;
+          }
         }
       )
       .addCase(createProductAsync.rejected, (state) => {
@@ -98,7 +103,7 @@ export const productSlice = createSlice({
       })
       .addCase(
         updateProductAsync.fulfilled,
-        (state, action: PayloadAction<ProductData>) => {
+        (state, action: PayloadAction<UpdateProductDataType>) => {
           const index = state.products.findIndex(
             (item) => item._id === action.payload._id
           );
@@ -107,6 +112,7 @@ export const productSlice = createSlice({
         }
       )
       .addCase(updateProductAsync.rejected, (state) => {
+        state.isEdit = true;
         state.error = true;
       });
   },

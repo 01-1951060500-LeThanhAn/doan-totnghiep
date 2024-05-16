@@ -96,7 +96,7 @@ span {
 
 @layer components {
   .navLink {
-    @apply md:!justify-start space-x-2 md:!my-1.5 !pl-5 !px-3 w-full;
+    @apply md:!justify-start !flex !justify-between !items-center !overflow-hidden space-x-2 md:!my-1.5 !pl-5 !px-3 w-full;
   }
 
   .menuItem {

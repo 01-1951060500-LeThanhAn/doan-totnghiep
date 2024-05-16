@@ -4,19 +4,18 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import HomeLayout from "@/layouts/home-layout";
-import { CreateProductDataType, ProductData } from "@/types";
+import { CreateProductDataType, ProductData } from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import {
   createProductAsync,
   updateProductAsync,
@@ -24,14 +23,13 @@ import {
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
-import FormUpload from "./add/form-upload";
-import OptionInformation from "./add/section-checkbox";
-import SectionSelect from "./add/section-select";
-import TechnicalSpecification from "./add/technical-specifications";
+import FormUpload from "./add/components/form-upload";
+import OptionInformation from "./add/components/section-checkbox";
+import SectionSelect from "./add/components/section-select";
 import { Loader2 } from "lucide-react";
 
 type Props = {
-  initialValues: CreateProductDataType;
+  initialValues: CreateProductDataType | ProductData;
   productId?: string | undefined;
 };
 
@@ -40,36 +38,29 @@ const FormProduct = ({ initialValues, productId }: Props) => {
     () => ({
       desc: initialValues?.desc ?? "",
       img: initialValues?.img ?? "",
-      title: initialValues?.title ?? "",
-      ram: initialValues?.ram ?? [],
-      ssd: initialValues?.ssd ?? [],
-      price: Number(initialValues?.price) ?? 0,
-      cpu: initialValues?.cpu ?? "",
-      gpu: initialValues?.gpu ?? "",
-      screen: initialValues?.screen ?? "",
-      design: initialValues?.design ?? "",
-      performance: initialValues?.screen ?? "",
-      webcam: initialValues?.webcam ?? "",
-      operator_system: initialValues?.operator_system ?? "",
-      connector: initialValues?.connector ?? "",
+      name_product: initialValues?.name_product ?? "",
+      code: initialValues?.code ?? "",
+      unit: initialValues?.unit ?? "",
+      import_price: initialValues?.import_price ?? "",
+      export_price: initialValues?.export_price ?? "",
+      inventory_number: initialValues?.inventory_number ?? 0,
     }),
     [initialValues]
   );
 
   const form = useForm<ProductFormSchema>({
     resolver: zodResolver(formProductSchema),
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
   useEffect(() => {
-    form.setValue("title", defaultValues?.title);
+    form.setValue("name_product", defaultValues?.name_product);
     form.setValue("desc", defaultValues?.desc);
-    form.setValue("price", defaultValues?.price);
-    form.setValue("cpu", defaultValues?.cpu);
-    form.setValue("gpu", defaultValues?.gpu);
-    form.setValue("connector", defaultValues?.connector);
-    form.setValue("webcam", defaultValues?.webcam);
-    form.setValue("screen", defaultValues?.screen);
+    form.setValue("code", defaultValues?.code);
+    form.setValue("unit", defaultValues?.unit);
+    form.setValue("import_price", defaultValues?.import_price);
+    form.setValue("export_price", defaultValues?.export_price);
+    form.setValue("inventory_number", defaultValues?.inventory_number);
   }, [form, defaultValues]);
 
   const [file, setFile] = useState<File | null>(null);
@@ -77,10 +68,9 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(false);
+  const { loading, isEdit } = useAppSelector((state) => state.products);
   const onAddSubmit = async () => {
     try {
-      setLoading(true);
       const formData = form.getValues() as CreateProductDataType;
 
       const data = new FormData();
@@ -96,14 +86,12 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       const newProducts = {
         ...formData,
         img: res.data?.url,
-      } as ProductData;
-
-      console.log(newProducts);
+      } as CreateProductDataType;
 
       dispatch(createProductAsync(newProducts));
-      toast.success("Add product successfully");
-      setLoading(false);
-      navigate(`/dashboard`);
+      toast.success("Thêm sản phẩm thành công");
+
+      navigate(`/dashboard/product`);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
@@ -135,7 +123,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       const newProductData = {
         ...formData,
         img: imageResponse.data?.url,
-      } as ProductData;
+      } as CreateProductDataType;
 
       dispatch(
         updateProductAsync({
@@ -145,17 +133,10 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       );
 
       toast.success("Cập nhật sản phẩm thành công");
-      navigate(`/dashboard`);
+      navigate(`/dashboard/product`);
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response) {
-          console.error(error.response.data);
-          toast.error(error.response.data.message || "Cloudinary error");
-        } else {
-          toast.error(
-            "Failed to upload product. Check your internet connection."
-          );
-        }
+        toast.error("Cloudinary error");
       } else {
         console.error("Unexpected error:", error);
         toast.error("An unknown error occurred during upload.");
@@ -165,7 +146,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
 
   return (
     <>
-      <HomeLayout className="xl:mx-6 md:mx-6 mx-6 mt-4 max-h-[75vh] overflow-y-scroll">
+      <HomeLayout className="xl:mx-6 md:mx-6 mx-6 mt-4 h-full md:max-h-[75vh] md:overflow-y-scroll">
         <Form {...form}>
           <form
             onSubmit={
@@ -173,7 +154,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                 ? form.handleSubmit(onAddSubmit)
                 : form.handleSubmit(oneEditSubmit)
             }
-            className="grid grid-cols-1 lg:grid-cols-3 gap-3 h-full w-full"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-3 "
           >
             <div
               className={`${
@@ -187,19 +168,19 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                 theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
               } rounded-lg p-3`}
             >
-              <p className="text-2xl font-semibold">General Information</p>
+              <p className="text-2xl font-semibold">Thông tin sản phẩm</p>
               <div className="my-2">
                 <FormField
                   control={form.control}
-                  defaultValue={defaultValues?.title}
-                  name="title"
+                  defaultValue={defaultValues?.name_product}
+                  name="name_product"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name Product</FormLabel>
+                      <p>Tên sản phẩm</p>
                       <FormControl>
                         <Input
                           placeholder="Enter name product..."
-                          defaultValue={defaultValues?.title}
+                          defaultValue={defaultValues?.name_product}
                           {...field}
                         />
                       </FormControl>
@@ -207,6 +188,46 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                     </FormItem>
                   )}
                 />
+                <div className="grid grid-cols-1 lg:grid-cols-2 my-3 gap-3 h-full w-full">
+                  <div className="">
+                    <FormField
+                      control={form.control}
+                      name="import_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <p>Gía nhập</p>
+                          <FormControl>
+                            <Input
+                              defaultValue={defaultValues?.import_price}
+                              placeholder="Gía nhập..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <FormField
+                      control={form.control}
+                      name="export_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <p>Gía bán</p>
+                          <FormControl>
+                            <Input
+                              defaultValue={defaultValues?.export_price}
+                              placeholder="Gía bán..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -215,9 +236,10 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                   name="desc"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Product Description</FormLabel>
+                      <p>Mô tả sản phẩm</p>
                       <FormControl>
                         <Textarea
+                          defaultValue={defaultValues?.desc}
                           placeholder="Enter description product..."
                           {...field}
                         />
@@ -228,9 +250,14 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                 />
               </div>
 
-              <OptionInformation />
-              <SectionSelect defaultValues={defaultValues as ProductData} />
-              <TechnicalSpecification />
+              <OptionInformation
+                defaultValues={
+                  defaultValues as CreateProductDataType | ProductData
+                }
+              />
+              <SectionSelect
+                defaultValues={defaultValues as CreateProductDataType}
+              />
             </div>
 
             <div></div>
@@ -244,14 +271,23 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                     </Button>
                   ) : (
                     <Button type="submit">
-                      <p>Add Product</p>
+                      <p>Thêm sản phẩm</p>
                     </Button>
                   )}
                 </>
               ) : (
-                <Button type="submit">
-                  <p>Edit Product</p>
-                </Button>
+                <>
+                  {isEdit ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button type="submit">
+                      <p>Sửa thông tin sản phẩm</p>
+                    </Button>
+                  )}
+                </>
               )}
               <Button onClick={() => navigate("/dashboard")} className="ml-3">
                 <p>Back to Home</p>

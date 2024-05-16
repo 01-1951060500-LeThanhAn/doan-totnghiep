@@ -1,5 +1,5 @@
-import { UserData, UserDataResponse } from "@/types";
-import { adminApi, advancedApi, baseApi } from ".";
+import { UserData } from "@/types";
+import { adminApi, baseApi } from ".";
 import { toast } from "sonner";
 
 type UserStatsData = {
@@ -7,8 +7,8 @@ type UserStatsData = {
   total: number;
 };
 
-const getUserInfo = (userId: string) => {
-  return advancedApi.get(`/users?userId=${userId}`);
+const getUserInfo = () => {
+  return baseApi.get(`/users/info-user`);
 };
 
 const getUserCreatedAccount = async () => {
@@ -18,8 +18,8 @@ const getUserCreatedAccount = async () => {
 
 const getAllUsers = async (): Promise<UserData[]> => {
   try {
-    const response = await adminApi.get<UserDataResponse>(`/users/listuser`);
-    return response.data.results;
+    const response = await adminApi.get<UserData[]>(`/users`);
+    return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
     throw error;
@@ -37,4 +37,15 @@ const updateUser = async (userId: string, data: UserData) => {
   }
 };
 
-export { getUserInfo, getUserCreatedAccount, getAllUsers, updateUser };
+const getRoles = async () => {
+  const roles = await baseApi.get("/roles");
+  return roles;
+};
+
+export {
+  getUserInfo,
+  getUserCreatedAccount,
+  getAllUsers,
+  updateUser,
+  getRoles,
+};

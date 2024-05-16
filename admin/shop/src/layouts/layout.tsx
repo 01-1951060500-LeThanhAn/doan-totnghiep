@@ -14,7 +14,7 @@ export default function DashBoardLayout({
       </div>
 
       <div
-        className={`flex-grow  z-10   mx-auto mt-0 md:mt-0  max-w-7xl flex-1 w-full overflow-y-auto ${className}`}
+        className={`flex-grow  z-10  mx-auto mt-0 md:mt-0  max-w-7xl flex-1 w-full overflow-y-scroll ${className}`}
       >
         {children}
       </div>

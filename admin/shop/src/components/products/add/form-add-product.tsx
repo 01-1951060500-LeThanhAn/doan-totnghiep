@@ -5,21 +5,18 @@ const FormAddProduct = () => {
     <>
       <FormProduct
         initialValues={{
-          title: "",
+          _id: "",
+          name_product: "",
           desc: "",
           img: "",
-          ram: [],
-          ssd: [],
+          code: "",
+          unit: "",
           type: "",
-          price: 0,
-          operator_system: "",
-          cpu: "",
-          gpu: "",
-          screen: "",
-          webcam: "",
-          connector: "",
-          design: "",
-          performance: "",
+          import_price: "",
+          export_price: "",
+          inventory_number: 0,
+          manager: "",
+          generalId: "",
         }}
       />
     </>

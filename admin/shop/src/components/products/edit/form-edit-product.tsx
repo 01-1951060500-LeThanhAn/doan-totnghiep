@@ -1,5 +1,5 @@
-import useGetProducts from "@/hooks/useGetProducts";
-import { ProductData, UpdateProductDataType } from "@/types";
+import useGetProducts from "@/components/products/hooks/use-get-products";
+import { ProductData } from "@/types/product";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import FormProduct from "../fom-product";
@@ -16,10 +16,7 @@ const FormEditProduct = () => {
 
   return (
     <>
-      <FormProduct
-        productId={productId}
-        initialValues={data as UpdateProductDataType}
-      />
+      <FormProduct productId={productId} initialValues={data as ProductData} />
     </>
   );
 };
