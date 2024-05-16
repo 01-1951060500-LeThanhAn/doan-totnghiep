@@ -229,39 +229,40 @@ const deleteOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
     }
 
-    const customers = await CustomerModel.aggregate([
-      {
-        $lookup: {
-          from: "orders",
-          localField: "_id",
-          foreignField: "customerId",
-          as: "orders",
-        },
-      },
-      {
-        $match: {
-          "orders._id": { $in: [cartId] },
-        },
-      },
-    ]);
-
     const customerId = deletedOrder.customerId;
+    const orderTotalPrice = deletedOrder.totalPrice; // Get the order's total price
 
     const customer = await CustomerModel.findById(customerId);
     if (!customer) {
       throw new Error(`Customer not found: ${customerId}`);
     }
 
+    const updatedBalanceIncreases = Math.max(
+      customer.balance_increases - orderTotalPrice,
+      0
+    );
+    const updatedRemainingDecreases =
+      customer.opening_balance +
+      updatedBalanceIncreases -
+      customer.balance_decreases;
+    const updatedEndingBalance = updatedRemainingDecreases;
+
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: 0,
-      balance_decreases: 0,
-      ending_balance: 0,
-      remaining_decreases: 0,
+      balance_increases: updatedBalanceIncreases,
+      remaining_decreases: updatedRemainingDecreases,
+      ending_balance: updatedEndingBalance,
     });
+
+    if (deletedOrder.payment_status === "unpaid") {
+      for (const product of deletedOrder.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.quantity },
+        });
+      }
+    }
 
     res.status(200).json({
       message: "Sản phẩm đã được xóa khỏi giỏ hàng.",
-      customers,
     });
   } catch (err) {
     res.status(500).json(err);

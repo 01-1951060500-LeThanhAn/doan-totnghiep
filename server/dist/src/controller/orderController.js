@@ -189,35 +189,31 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!deletedOrder) {
             return res.status(404).json({ message: "Đơn hàng không tồn tại" });
         }
-        const customers = yield CustomerModel_1.default.aggregate([
-            {
-                $lookup: {
-                    from: "orders",
-                    localField: "_id",
-                    foreignField: "customerId",
-                    as: "orders",
-                },
-            },
-            {
-                $match: {
-                    "orders._id": { $in: [cartId] },
-                },
-            },
-        ]);
         const customerId = deletedOrder.customerId;
+        const orderTotalPrice = deletedOrder.totalPrice; // Get the order's total price
         const customer = yield CustomerModel_1.default.findById(customerId);
         if (!customer) {
             throw new Error(`Customer not found: ${customerId}`);
         }
+        const updatedBalanceIncreases = Math.max(customer.balance_increases - orderTotalPrice, 0);
+        const updatedRemainingDecreases = customer.opening_balance +
+            updatedBalanceIncreases -
+            customer.balance_decreases;
+        const updatedEndingBalance = updatedRemainingDecreases;
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: 0,
-            balance_decreases: 0,
-            ending_balance: 0,
-            remaining_decreases: 0,
+            balance_increases: updatedBalanceIncreases,
+            remaining_decreases: updatedRemainingDecreases,
+            ending_balance: updatedEndingBalance,
         });
+        if (deletedOrder.payment_status === "unpaid") {
+            for (const product of deletedOrder.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.quantity },
+                });
+            }
+        }
         res.status(200).json({
             message: "Sản phẩm đã được xóa khỏi giỏ hàng.",
-            customers,
         });
     }
     catch (err) {
