@@ -45,7 +45,7 @@ const getListSuppliers = (req, res) => __awaiter(void 0, void 0, void 0, functio
                         $sum: {
                             $cond: {
                                 if: { $isArray: "$purchase_orders" },
-                                then: { $sum: "$purchase_orders.totalPrice" },
+                                then: { $sum: "$purchase_orders.totalSupplierPay" },
                                 else: 0,
                             },
                         },

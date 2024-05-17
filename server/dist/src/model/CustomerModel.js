@@ -39,7 +39,6 @@ const CustomerSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
-    orderId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "orders" },
 }, {
     timestamps: true,
 });
