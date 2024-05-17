@@ -33,7 +33,7 @@ const getListCustomer = async (req: Request, res: Response) => {
             $sum: {
               $cond: {
                 if: { $isArray: "$orders" },
-                then: { $sum: "$orders.totalPrice" },
+                then: { $sum: "$orders.totalCustomerPay" },
                 else: 0,
               },
             },

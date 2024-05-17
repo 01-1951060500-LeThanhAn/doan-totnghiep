@@ -45,7 +45,7 @@ const getListCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         $sum: {
                             $cond: {
                                 if: { $isArray: "$orders" },
-                                then: { $sum: "$orders.totalPrice" },
+                                then: { $sum: "$orders.totalCustomerPay" },
                                 else: 0,
                             },
                         },
