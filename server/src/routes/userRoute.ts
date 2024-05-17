@@ -20,7 +20,9 @@ router.post(`/`, verifyTokenAndAdmin, registerUser);
 
 router.get(`/`, verifyTokenAndAdmin, getAllUsers);
 
-router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
+router.get(`/:id`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
+
+// router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
 router.patch(`/:id`, verifyTokenAndAuthorization, updateUser);
 
