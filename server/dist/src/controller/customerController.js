@@ -95,6 +95,17 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                 $unwind: "$orders",
             },
             {
+                $lookup: {
+                    from: "users",
+                    localField: "orders.userId",
+                    foreignField: "_id",
+                    as: "orders.user",
+                },
+            },
+            {
+                $unwind: "$orders",
+            },
+            {
                 $group: {
                     _id: "$_id",
                     totalSpending: {
@@ -120,7 +131,10 @@ const getInfoCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                         _id: 1,
                         products: 1,
                         generalId: 1,
-                        userId: 1,
+                        user: {
+                            username: 1,
+                            email: 1,
+                        },
                         totalPrice: 1,
                         totalCustomerPay: 1,
                         payment_status: 1,
@@ -183,11 +197,22 @@ const getHistoryOrder = (req, res) => __awaiter(void 0, void 0, void 0, function
                 },
             },
             {
+                $lookup: {
+                    from: "users",
+                    localField: "orders.userId",
+                    foreignField: "_id",
+                    as: "orders.user",
+                },
+            },
+            {
                 $project: {
                     _id: 0,
                     orders: {
                         _id: 1,
                         products: 1,
+                        user: {
+                            username: 1,
+                        },
                         totalPrice: 1,
                         payment_status: 1,
                         received_date: 1,

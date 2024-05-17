@@ -86,6 +86,17 @@ const getInfoCustomer = async (req: Request, res: Response) => {
         $unwind: "$orders",
       },
       {
+        $lookup: {
+          from: "users",
+          localField: "orders.userId",
+          foreignField: "_id",
+          as: "orders.user",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+      {
         $group: {
           _id: "$_id",
           totalSpending: {
@@ -94,6 +105,7 @@ const getInfoCustomer = async (req: Request, res: Response) => {
           totalOrders: {
             $sum: 1,
           },
+
           customerId: {
             $first: "$customerId",
           },
@@ -108,12 +120,14 @@ const getInfoCustomer = async (req: Request, res: Response) => {
           _id: 1,
           totalSpending: 1,
           totalOrders: 1,
-
           orders: {
             _id: 1,
             products: 1,
             generalId: 1,
-            userId: 1,
+            user: {
+              username: 1,
+              email: 1,
+            },
             totalPrice: 1,
             totalCustomerPay: 1,
             payment_status: 1,
@@ -180,11 +194,22 @@ const getHistoryOrder = async (req: Request, res: Response) => {
         },
       },
       {
+        $lookup: {
+          from: "users",
+          localField: "orders.userId",
+          foreignField: "_id",
+          as: "orders.user",
+        },
+      },
+      {
         $project: {
           _id: 0,
           orders: {
             _id: 1,
             products: 1,
+            user: {
+              username: 1,
+            },
             totalPrice: 1,
             payment_status: 1,
             received_date: 1,
