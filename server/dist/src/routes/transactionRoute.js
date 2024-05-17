@@ -10,4 +10,5 @@ const router = express_1.default.Router();
 router.get("/", auth_1.verifyTokenAndAuthorization, transactionController_1.getAllTransactions);
 router.get("/:id", auth_1.verifyTokenAndAuthorization, transactionController_1.getDetailTransaction);
 router.delete("/:id", auth_1.verifyTokenAndAdmin, transactionController_1.deleteTransaction);
+router.delete("/", auth_1.verifyTokenAndAuthorization, transactionController_1.deleteAllTransaction);
 exports.default = router;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTransaction = exports.getDetailTransaction = exports.getAllTransactions = void 0;
+exports.deleteAllTransaction = exports.deleteTransaction = exports.getDetailTransaction = exports.getAllTransactions = void 0;
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const getAllTransactions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -74,3 +74,20 @@ const deleteTransaction = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.deleteTransaction = deleteTransaction;
+const deleteAllTransaction = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield TransactionModel_1.default.deleteMany({}).then((results) => {
+            if (results.deletedCount === 0) {
+                res.status(400).json("List transaction is empty");
+            }
+            return res.status(200).json({
+                msg: `Transactions deleted`,
+            });
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({ msg: "Error deleting transactions" });
+    }
+});
+exports.deleteAllTransaction = deleteAllTransaction;

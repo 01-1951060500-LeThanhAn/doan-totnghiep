@@ -69,4 +69,25 @@ const deleteTransaction = async (req: Request, res: Response) => {
   }
 };
 
-export { getAllTransactions, getDetailTransaction, deleteTransaction };
+const deleteAllTransaction = async (req: Request, res: Response) => {
+  try {
+    await TransactionModel.deleteMany({}).then((results) => {
+      if (results.deletedCount === 0) {
+        res.status(400).json("List transaction is empty");
+      }
+      return res.status(200).json({
+        msg: `Transactions deleted`,
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Error deleting transactions" });
+  }
+};
+
+export {
+  getAllTransactions,
+  getDetailTransaction,
+  deleteTransaction,
+  deleteAllTransaction,
+};
