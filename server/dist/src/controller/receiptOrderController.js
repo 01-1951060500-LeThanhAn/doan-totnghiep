@@ -29,7 +29,7 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
         const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
         const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
-        const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+        const updatedBalanceDecreases = currentBalanceDecreases - totalPrice;
         const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
             balance_decreases: updatedBalanceDecreases,

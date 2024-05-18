@@ -18,7 +18,9 @@ const createReceipt = async (req: Request, res: Response) => {
     const currentBalanceDecreases = customer?.balance_decreases || 0;
     const remainingDecreases =
       currentBalanceIncreases - currentBalanceDecreases;
-    const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+
+    const updatedBalanceDecreases = currentBalanceDecreases - totalPrice;
+
     const updatedRemainingDecreases = Math.max(
       remainingDecreases - totalPrice,
       0
