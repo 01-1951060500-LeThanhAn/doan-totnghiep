@@ -81,6 +81,7 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
             export_price: 1,
             inventory_number: 1,
             pendingOrderQuantity: 1,
+            pendingWarehouseQuantity: 1,
             status: 1,
             img: 1,
             type: 1,

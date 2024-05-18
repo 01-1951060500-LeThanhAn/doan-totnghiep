@@ -89,6 +89,7 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
                         export_price: 1,
                         inventory_number: 1,
                         pendingOrderQuantity: 1,
+                        pendingWarehouseQuantity: 1,
                         status: 1,
                         img: 1,
                         type: 1,
