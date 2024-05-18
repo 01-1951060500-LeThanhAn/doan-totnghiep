@@ -28,12 +28,6 @@ const generalDepotSchema = new mongoose_1.default.Schema({
         ref: "users",
         default: null,
     },
-    products: [
-        {
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: "products",
-        },
-    ],
 }, {
     timestamps: true,
 });
