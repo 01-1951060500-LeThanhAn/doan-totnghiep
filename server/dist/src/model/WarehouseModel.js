@@ -106,4 +106,31 @@ WarehouseSchema.pre("save", function (next) {
         next();
     });
 });
+WarehouseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "generalId",
+            select: "name address createdAt code",
+        });
+        next();
+    });
+});
+WarehouseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "supplierId",
+            select: "supplier_name supplier_code address createdAt code",
+        });
+        next();
+    });
+});
+WarehouseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
+            path: "manager",
+            select: "username code address phone",
+        });
+        next();
+    });
+});
 exports.default = mongoose_1.default.model("purchase_orders", WarehouseSchema);

@@ -103,4 +103,29 @@ WarehouseSchema.pre("save", async function (next) {
 
   next();
 });
+
+WarehouseSchema.pre("find", async function (next) {
+  this.populate({
+    path: "generalId",
+    select: "name address createdAt code",
+  });
+  next();
+});
+
+WarehouseSchema.pre("find", async function (next) {
+  this.populate({
+    path: "supplierId",
+    select: "supplier_name supplier_code address createdAt code",
+  });
+  next();
+});
+
+WarehouseSchema.pre("find", async function (next) {
+  this.populate({
+    path: "manager",
+    select: "username code address phone",
+  });
+  next();
+});
+
 export default mongoose.model("purchase_orders", WarehouseSchema);
