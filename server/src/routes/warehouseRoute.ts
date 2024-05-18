@@ -1,5 +1,8 @@
 import express from "express";
-import { verifyTokenAndAdmin } from "../middleware/auth";
+import {
+  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
+} from "../middleware/auth";
 import {
   createWareHouse,
   deleteWarehouse,
@@ -9,6 +12,7 @@ import {
   getWareHouseBySupplier,
   getInfoWareHouse,
   updateWarehouse,
+  searchWarehouseOrder,
   getWareHouseByGeneral,
 } from "../controller/wareHouseController";
 
@@ -43,5 +47,11 @@ router.get(
 );
 
 router.get(`/income/total-warehouse`, verifyTokenAndAdmin, getIncomeWarehouse);
+
+router.get(
+  "/search/status-warehouse-orders",
+  verifyTokenAndAuthorization,
+  searchWarehouseOrder
+);
 
 export default router;

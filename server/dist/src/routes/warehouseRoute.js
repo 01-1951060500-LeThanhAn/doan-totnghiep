@@ -16,4 +16,5 @@ router.get("/income/total-warehouse-products", auth_1.verifyTokenAndAdmin, wareH
 router.get(`/income/total-warehouse-supplier`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseBySupplier);
 router.get(`/income/total-warehouse-general`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getWareHouseByGeneral);
 router.get(`/income/total-warehouse`, auth_1.verifyTokenAndAdmin, wareHouseController_1.getIncomeWarehouse);
+router.get("/search/status-warehouse-orders", auth_1.verifyTokenAndAuthorization, wareHouseController_1.searchWarehouseOrder);
 exports.default = router;

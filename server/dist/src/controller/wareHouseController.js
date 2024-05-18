@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -461,3 +461,20 @@ const getWareHouseByGeneral = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getWareHouseByGeneral = getWareHouseByGeneral;
+const searchWarehouseOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const keyword = req.query.keyword;
+    try {
+        const payment = new RegExp(keyword, "i");
+        const results = yield WarehouseModel_1.default.find({
+            payment_status: payment,
+        });
+        return res.status(200).json(results);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server not found!",
+        });
+    }
+});
+exports.searchWarehouseOrder = searchWarehouseOrder;
