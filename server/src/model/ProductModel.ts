@@ -46,6 +46,11 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    pendingWarehouseQuantity: {
+      required: true,
+      type: Number,
+      default: 0,
+    },
     status: {
       type: String,
       required: true,

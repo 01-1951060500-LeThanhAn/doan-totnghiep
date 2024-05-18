@@ -76,6 +76,12 @@ const createWareHouse = async (req: Request, res: Response) => {
       0
     );
 
+    for (const product of products) {
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingWarehouseQuantity: product.quantity },
+      });
+    }
+
     let totalPrice = 0;
     for (const product of products) {
       const productData = await ProductModel.findById(product.productId);
@@ -229,6 +235,12 @@ const updateWarehouse = async (req: Request, res: Response) => {
         remaining_decreases: updatedRemainingDecreases,
         ending_balance: updatedRemainingDecreases,
       });
+
+      for (const product of updatedWarehouseData.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.inventory_number },
+        });
+      }
     }
 
     if (updatedWarehouseData) {
@@ -289,6 +301,13 @@ const deleteWarehouse = async (req: Request, res: Response) => {
       ending_balance: updatedEndingBalance,
     });
 
+    if (deleteProductId.payment_status === "pending") {
+      for (const product of deleteProductId.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.inventory_number },
+        });
+      }
+    }
     res.status(200).json({
       message: "Xóa đơn nhập hàng thành công",
     });

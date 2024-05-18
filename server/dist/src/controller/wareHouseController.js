@@ -69,6 +69,11 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }));
         yield Promise.all([productUpdates]);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        for (const product of products) {
+            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                $inc: { pendingWarehouseQuantity: product.quantity },
+            });
+        }
         let totalPrice = 0;
         for (const product of products) {
             const productData = yield ProductModel_1.default.findById(product.productId);
@@ -180,6 +185,11 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 remaining_decreases: updatedRemainingDecreases,
                 ending_balance: updatedRemainingDecreases,
             });
+            for (const product of updatedWarehouseData.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.inventory_number },
+                });
+            }
         }
         if (updatedWarehouseData) {
             yield WarehouseModel_1.default.findByIdAndUpdate(updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData._id, {
@@ -228,6 +238,13 @@ const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedEndingBalance,
         });
+        if (deleteProductId.payment_status === "pending") {
+            for (const product of deleteProductId.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.inventory_number },
+                });
+            }
+        }
         res.status(200).json({
             message: "Xóa đơn nhập hàng thành công",
         });
