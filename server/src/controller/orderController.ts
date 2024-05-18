@@ -144,7 +144,7 @@ const updateOrder = async (req: Request, res: Response) => {
       const remainingDecreases =
         Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
       const updatedBalanceDecreases =
-        Number(currentBalanceDecreases) + totalPrice;
+        Number(currentBalanceDecreases) + Number(totalPrice);
       const updatedRemainingDecreases = Math.max(
         remainingDecreases - totalPrice,
         0
@@ -623,13 +623,15 @@ const getIncomeOrdersProduct = async (req: Request, res: Response) => {
 };
 
 const searchOrder = async (req: Request, res: Response) => {
+  const status = req.query.status as string;
   const keyword = req.query.keyword as string;
 
   try {
-    const titleReg = new RegExp(keyword, "i");
-
+    const payment = new RegExp(status, "i");
+    const order = new RegExp(keyword, "i");
     const results = await OrderModel.find({
-      order_status: titleReg,
+      payment_status: payment,
+      order_status: order,
     });
 
     return res.status(200).json(results);

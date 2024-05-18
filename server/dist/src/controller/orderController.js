@@ -118,7 +118,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
             const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
             const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-            const updatedBalanceDecreases = Number(currentBalanceDecreases) + totalPrice;
+            const updatedBalanceDecreases = Number(currentBalanceDecreases) + Number(totalPrice);
             const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
             yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
                 balance_decreases: updatedBalanceDecreases,
@@ -533,11 +533,14 @@ const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getIncomeOrdersProduct = getIncomeOrdersProduct;
 const searchOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = req.query.status;
     const keyword = req.query.keyword;
     try {
-        const titleReg = new RegExp(keyword, "i");
+        const payment = new RegExp(status, "i");
+        const order = new RegExp(keyword, "i");
         const results = yield OrderModel_1.default.find({
-            order_status: titleReg,
+            payment_status: payment,
+            order_status: order,
         });
         return res.status(200).json(results);
     }

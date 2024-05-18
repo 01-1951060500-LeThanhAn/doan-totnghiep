@@ -16,5 +16,5 @@ router.get("/income/total-orders", auth_1.verifyTokenAndAdmin, orderController_1
 router.get("/income/total-orders-general", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersGeneral);
 router.get("/income/total-orders-customer", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersCustomer);
 router.get("/income/total-orders-product", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersProduct);
-router.get("/search/category-orders", orderController_1.searchOrder);
+router.get("/search/status-orders", auth_1.verifyTokenAndAuthorization, orderController_1.searchOrder);
 exports.default = router;

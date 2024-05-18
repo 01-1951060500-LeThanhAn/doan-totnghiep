@@ -48,6 +48,6 @@ router.get(
   getIncomeOrdersProduct
 );
 
-router.get("/search/category-orders", searchOrder);
+router.get("/search/status-orders", verifyTokenAndAuthorization, searchOrder);
 
 export default router;
