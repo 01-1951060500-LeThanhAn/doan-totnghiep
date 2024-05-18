@@ -29,7 +29,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 
     for (const product of products) {
       await ProductModel.findByIdAndUpdate(product.productId, {
-        $inc: { pendingWarehouseQuantity: product.quantity },
+        $inc: { pendingWarehouseQuantity: product.inventory_number },
       });
     }
 

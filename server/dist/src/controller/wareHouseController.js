@@ -35,7 +35,7 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }
         for (const product of products) {
             yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                $inc: { pendingWarehouseQuantity: product.quantity },
+                $inc: { pendingWarehouseQuantity: product.inventory_number },
             });
         }
         const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
