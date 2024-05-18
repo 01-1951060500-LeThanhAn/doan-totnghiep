@@ -16,6 +16,7 @@ exports.deleteImportOrder = exports.getDetailImportOrder = exports.updateImportO
 const ImportOrderModel_1 = __importDefault(require("../model/ImportOrderModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
+const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
 const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products } = req.body;
@@ -23,7 +24,27 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             return res.status(400).json({ message: "Missing required fields" });
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        const supplier = yield SupplierModel_1.default.findById(supplierId);
+        if (!supplier) {
+            return res.status(400).json({ message: "supplierId not found" });
+        }
+        let totalPrice = 0;
+        for (const product of products) {
+            const productData = yield ProductModel_1.default.findById(product.productId);
+            if (!productData) {
+                return res
+                    .status(400)
+                    .json({ message: `Product not found: ${product.productId}` });
+            }
+            totalPrice = products.reduce((acc, product) => acc +
+                Number(product.inventory_number) * Number(productData.export_price), 0);
+        }
         const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
+        const currentBalance = supplier.balance_increases + supplier.opening_balance;
+        yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
+            balance_increases: currentBalance + totalPrice,
+            ending_balance: currentBalance + totalPrice,
+        });
         yield newImportOrder.save();
         res.status(200).json(newImportOrder);
     }

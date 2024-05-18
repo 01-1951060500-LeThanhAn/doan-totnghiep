@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ImportOrderModel from "../model/ImportOrderModel";
 import WarehouseModel from "../model/WarehouseModel";
 import ProductModel from "../model/ProductModel";
+import SupplierModel from "../model/SupplierModel";
 
 const createImportOrder = async (req: Request, res: Response) => {
   try {
@@ -13,11 +14,41 @@ const createImportOrder = async (req: Request, res: Response) => {
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
+    const supplier = await SupplierModel.findById(supplierId);
+
+    if (!supplier) {
+      return res.status(400).json({ message: "supplierId not found" });
+    }
+
+    let totalPrice = 0;
+    for (const product of products) {
+      const productData = await ProductModel.findById(product.productId);
+      if (!productData) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.productId}` });
+      }
+
+      totalPrice = products.reduce(
+        (acc: number, product: any) =>
+          acc +
+          Number(product.inventory_number) * Number(productData.export_price),
+        0
+      );
+    }
 
     const newImportOrder = new ImportOrderModel({
       ...req.body,
       totalQuantity,
     });
+
+    const currentBalance =
+      supplier.balance_increases + supplier.opening_balance;
+    await SupplierModel.findByIdAndUpdate(supplierId, {
+      balance_increases: currentBalance + totalPrice,
+      ending_balance: currentBalance + totalPrice,
+    });
+
     await newImportOrder.save();
     res.status(200).json(newImportOrder);
   } catch (error) {
