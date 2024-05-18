@@ -27,6 +27,12 @@ const createWareHouse = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "supplierId not found" });
     }
 
+    for (const product of products) {
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingWarehouseQuantity: product.quantity },
+      });
+    }
+
     const productUpdates = products?.map(async (product: any) => {
       const { productId, inventory_number } = product;
 
@@ -75,12 +81,6 @@ const createWareHouse = async (req: Request, res: Response) => {
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
-
-    for (const product of products) {
-      await ProductModel.findByIdAndUpdate(product.productId, {
-        $inc: { pendingWarehouseQuantity: product.quantity },
-      });
-    }
 
     let totalPrice = 0;
     for (const product of products) {
@@ -238,7 +238,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
 
       for (const product of updatedWarehouseData.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
-          $inc: { pendingOrderQuantity: -product.inventory_number },
+          $inc: { pendingWarehouseQuantity: -product.inventory_number },
         });
       }
     }
@@ -304,7 +304,7 @@ const deleteWarehouse = async (req: Request, res: Response) => {
     if (deleteProductId.payment_status === "pending") {
       for (const product of deleteProductId.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
-          $inc: { pendingOrderQuantity: -product.inventory_number },
+          $inc: { pendingWarehouseQuantity: -product.inventory_number },
         });
       }
     }

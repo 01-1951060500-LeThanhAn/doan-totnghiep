@@ -33,6 +33,11 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!supplier) {
             return res.status(400).json({ message: "supplierId not found" });
         }
+        for (const product of products) {
+            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                $inc: { pendingWarehouseQuantity: product.quantity },
+            });
+        }
         const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
             const { productId, inventory_number } = product;
             if (!productId || !inventory_number) {
@@ -69,11 +74,6 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         }));
         yield Promise.all([productUpdates]);
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
-        for (const product of products) {
-            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                $inc: { pendingWarehouseQuantity: product.quantity },
-            });
-        }
         let totalPrice = 0;
         for (const product of products) {
             const productData = yield ProductModel_1.default.findById(product.productId);
@@ -187,7 +187,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             });
             for (const product of updatedWarehouseData.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                    $inc: { pendingOrderQuantity: -product.inventory_number },
+                    $inc: { pendingWarehouseQuantity: -product.inventory_number },
                 });
             }
         }
@@ -241,7 +241,7 @@ const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (deleteProductId.payment_status === "pending") {
             for (const product of deleteProductId.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                    $inc: { pendingOrderQuantity: -product.inventory_number },
+                    $inc: { pendingWarehouseQuantity: -product.inventory_number },
                 });
             }
         }
