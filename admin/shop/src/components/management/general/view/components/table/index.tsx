@@ -48,7 +48,7 @@ export const columns: ColumnDef<ProductTableGeneral>[] = [
     accessorKey: "code",
     header: "Mã sản phẩm",
     cell: ({ row }) => (
-      <Link to={`/dashboard/management/general/${row.getValue("_id")}/detail`}>
+      <Link to={`/dashboard/product/${row.getValue("_id")}/detail`}>
         <p className="capitalize">{row.getValue("code")}</p>
       </Link>
     ),
@@ -306,7 +306,7 @@ export default function DetailGeneralTableData({ data, general }: Props) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      <p>Chưa có đơn nhập nào.</p>
+                      <p>Chưa có sản phẩm nào.</p>
                     </TableCell>
                   </TableRow>
                 )}

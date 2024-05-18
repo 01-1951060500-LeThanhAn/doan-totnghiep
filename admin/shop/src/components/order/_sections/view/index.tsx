@@ -17,9 +17,9 @@ const OrderDetailView = ({ id }: Props) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleDeleteOrder = () => {
+  const handleDeleteOrder = async () => {
     try {
-      dispatch(deleteOrderAsync(id));
+      await dispatch(deleteOrderAsync(id));
       toast.success("Xóa đơn hàng thành công");
 
       navigate(`/dashboard/orders`);

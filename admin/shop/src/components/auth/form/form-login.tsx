@@ -18,7 +18,9 @@ import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import useRole from "@/hooks/useRole";
 import { Label } from "../../ui/label";
-import { loginApi } from "@/api/loginApi";
+import { loginUser } from "@/api/userApi";
+import { saveToken } from "@/lib/saveToken";
+import { createUserLoginAsync } from "@/redux/slices/authSlice";
 
 const LoginForm = () => {
   const form = useForm<UserFormSchema>({
@@ -37,7 +39,12 @@ const LoginForm = () => {
   const onSubmit = async () => {
     try {
       const formData = form.getValues() as unknown as User;
-      await loginApi(formData, dispatch);
+      const response = await loginUser(formData);
+      if (response.data.success) {
+        saveToken(response.data.token);
+        await dispatch(createUserLoginAsync(formData));
+      }
+      toast.success("Đăng nhập thành công");
       navigate(`/dashboard`);
     } catch (error) {
       toast.error("Sai mật khẩu .Vui lòng đăng nhập lại");

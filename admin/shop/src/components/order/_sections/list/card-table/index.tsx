@@ -165,10 +165,12 @@ export const columns: ColumnDef<OrdersData>[] = [
   },
 
   {
-    accessorKey: "totalPrice",
+    accessorKey: "totalCustomerPay",
     header: "Khách phải trả",
     cell: ({ row }) => (
-      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalCustomerPay"))}
+      </p>
     ),
   },
 ];

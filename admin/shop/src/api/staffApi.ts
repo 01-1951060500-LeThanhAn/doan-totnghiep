@@ -1,4 +1,4 @@
-import { CreateStaffData } from "@/types/staff";
+import { CreateStaffData, UpdateStaffData } from "@/types/staff";
 import { adminApi } from ".";
 
 const createStaff = async (data: CreateStaffData) => {
@@ -6,4 +6,12 @@ const createStaff = async (data: CreateStaffData) => {
   return response;
 };
 
-export { createStaff };
+const updateStaff = async (staffId: string, data: UpdateStaffData) => {
+  const response = await adminApi.patch<UpdateStaffData>(
+    `/users/${staffId}`,
+    data
+  );
+  return response;
+};
+
+export { createStaff, updateStaff };

@@ -32,6 +32,14 @@ const getOrders = async () => {
   return response;
 };
 
+const getStatusOrders = async () => {
+  const response = await adminApi.get<OrdersData[]>(
+    "/orders/search/status-orders?keyword=pending"
+  );
+
+  return response;
+};
+
 const getDetailOrder = async (orderId: string) => {
   const response = await adminApi.get<DetailOrderData>(`/orders/${orderId}`);
 
@@ -44,4 +52,11 @@ const deleteOrder = async (orderId: string) => {
   return response;
 };
 
-export { createOrder, getOrders, getDetailOrder, updateOrder, deleteOrder };
+export {
+  createOrder,
+  getOrders,
+  getStatusOrders,
+  getDetailOrder,
+  updateOrder,
+  deleteOrder,
+};

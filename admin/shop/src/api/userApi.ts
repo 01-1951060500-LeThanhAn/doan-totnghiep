@@ -1,6 +1,7 @@
-import { UserData } from "@/types";
+import { User, UserData } from "@/types";
 import { adminApi, baseApi } from ".";
 import { toast } from "sonner";
+import { DetailUserResponse } from "@/types/user";
 
 type UserStatsData = {
   _id: number;
@@ -9,6 +10,11 @@ type UserStatsData = {
 
 const getUserInfo = () => {
   return baseApi.get(`/users/info-user`);
+};
+
+const loginUser = async (data: User) => {
+  const response = await baseApi.post("/users/login", data);
+  return response;
 };
 
 const getUserCreatedAccount = async () => {
@@ -28,11 +34,20 @@ const getAllUsers = async (): Promise<UserData[]> => {
 
 const updateUser = async (userId: string, data: UserData) => {
   try {
-    const response = await baseApi.put(`/users/${userId}`, data);
-
+    const response = await baseApi.patch(`/users/${userId}`, data);
     return response;
   } catch (error) {
     toast.error("Error update user:", error!);
+    throw error;
+  }
+};
+
+const getDetailUser = async (userId: string) => {
+  try {
+    const response = await adminApi.get<DetailUserResponse>(`/users/${userId}`);
+    return response;
+  } catch (error) {
+    toast.error("Error get detail user:", error!);
     throw error;
   }
 };
@@ -48,4 +63,6 @@ export {
   getAllUsers,
   updateUser,
   getRoles,
+  loginUser,
+  getDetailUser,
 };

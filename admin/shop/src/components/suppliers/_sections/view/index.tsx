@@ -21,7 +21,7 @@ const SupplierDetailView = ({ id }: Props) => {
       await dispatch(deleteSuppliersAsync(id));
       toast.success("Xóa nhà cung cấp thành công");
 
-      navigate(`/dashboard/customer`);
+      navigate(`/dashboard/supplier`);
     } catch (error) {
       console.log(error);
       toast.error("Xóa nhà cung cấp thất bại");

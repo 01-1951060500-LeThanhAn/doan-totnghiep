@@ -62,7 +62,12 @@ export type DetailCustomerAndOrders = {
       productId: string;
       quantity: number;
     }[];
+    user: {
+      username: string;
+      email: string;
+    }[];
     totalPrice: number;
+    totalCustomerPay: number;
     code: string;
     payment_status: string;
     received_date: string;

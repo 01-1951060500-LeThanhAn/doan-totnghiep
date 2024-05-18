@@ -1,6 +1,6 @@
-import { createReturnOrder } from "@/api/returnOrderApi";
+import { createReturnOrder, deleteReturnOrder } from "@/api/returnOrderApi";
 import { CreateReturnOrderData } from "@/types/return_order";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type ReturnOrderState = {
   returnOrders: CreateReturnOrderData[];
@@ -24,6 +24,14 @@ export const createReturnOrderAsync = createAsyncThunk(
   }
 );
 
+export const deleteReturnOrderAsync = createAsyncThunk(
+  "return-orders/deleteReturnOrderAsync",
+  async (orderId: string) => {
+    const response = await deleteReturnOrder(orderId);
+    return response.data;
+  }
+);
+
 export const returnOrderSlice = createSlice({
   name: "return-orders",
   initialState,
@@ -40,6 +48,24 @@ export const returnOrderSlice = createSlice({
       })
       .addCase(createReturnOrderAsync.rejected, (state) => {
         state.loading = false;
+        state.error = true;
+      })
+      .addCase(deleteReturnOrderAsync.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(
+        deleteReturnOrderAsync.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          const index = state.returnOrders.findIndex(
+            (item) => item._id === action.payload
+          );
+          state.returnOrders.splice(index, 1);
+          state.loading = false;
+          state.error = false;
+        }
+      )
+      .addCase(deleteReturnOrderAsync.rejected, (state) => {
         state.error = true;
       });
   },

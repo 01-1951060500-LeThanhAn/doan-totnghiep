@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -49,9 +49,7 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
     header: "Tên nhân viên",
     cell: ({ row }) => (
       <Link to={`/dashboard/management/staff/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("username")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("username")}</p>
       </Link>
     ),
   },
@@ -117,6 +115,17 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
         </p>
       );
     },
+  },
+  {
+    accessorKey: "action",
+    header: "",
+    cell: ({ row }) => (
+      <div>
+        <Link to={`/dashboard/management/staff/${row.getValue("_id")}/edit`}>
+          <Pencil />
+        </Link>
+      </div>
+    ),
   },
 ];
 

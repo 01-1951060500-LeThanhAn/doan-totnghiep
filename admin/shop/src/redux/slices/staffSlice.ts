@@ -1,5 +1,5 @@
-import { createStaff } from "@/api/staffApi";
-import { CreateStaffData } from "@/types/staff";
+import { createStaff, updateStaff } from "@/api/staffApi";
+import { CreateStaffData, UpdateStaffData } from "@/types/staff";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type GeneralState = {
@@ -21,6 +21,22 @@ export const createStaffAsync = createAsyncThunk(
   async (staff: CreateStaffData) => {
     const response = await createStaff(staff);
     return response.data;
+  }
+);
+
+export const updateStaffAsync = createAsyncThunk(
+  "staffs/updateStaffAsync",
+  async (updateData: { id: string | undefined; data: UpdateStaffData }) => {
+    try {
+      const response = await updateStaff(
+        updateData.id as string,
+        updateData.data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating supplier:", error);
+      throw error;
+    }
   }
 );
 
@@ -46,6 +62,24 @@ export const staffSlice = createSlice({
       )
       .addCase(createStaffAsync.rejected, (state) => {
         state.loading = false;
+        state.error = true;
+      })
+      .addCase(updateStaffAsync.pending, (state) => {
+        state.isEdit = true;
+        state.error = false;
+      })
+      .addCase(
+        updateStaffAsync.fulfilled,
+        (state, action: PayloadAction<UpdateStaffData>) => {
+          const index = state.staffs.findIndex(
+            (item) => item._id === action.payload._id
+          );
+          state.staffs[index] = action.payload;
+          state.isEdit = false;
+        }
+      )
+      .addCase(updateStaffAsync.rejected, (state) => {
+        state.isEdit = true;
         state.error = true;
       });
   },

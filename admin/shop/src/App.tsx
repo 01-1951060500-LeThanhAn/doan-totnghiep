@@ -64,6 +64,9 @@ import ViewReceiptCustomerPage from "./pages/receipts/receipt-customer/page";
 import ViewReceiptSupplierPage from "./pages/receipts/receipt-supplier/page";
 import AddReceiptSupplierPage from "./pages/receipts/receipt-supplier/add/page";
 import DetailReceiptSupplierPage from "./components/receipts/receipt-supplier/detail/page";
+import EditStaffPage from "./pages/management/staff/edit/page";
+import DetailReportGeneralPage from "./components/report/general/detail/page";
+import DetailReportInventoriesPage from "./components/report/general/view";
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -370,6 +373,33 @@ const App = () => {
         element={
           <DashBoardLayout>
             <AddStaffPage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/management/staff/:staffId/edit"
+        element={
+          <DashBoardLayout>
+            <EditStaffPage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/report/general/detail"
+        element={
+          <DashBoardLayout>
+            <DetailReportGeneralPage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/report/general/:generalId/inventories"
+        element={
+          <DashBoardLayout>
+            <DetailReportInventoriesPage />
           </DashBoardLayout>
         }
       />

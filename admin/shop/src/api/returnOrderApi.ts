@@ -26,4 +26,15 @@ const getDetailReturnOrder = async (orderId: string) => {
   return response;
 };
 
-export { createReturnOrder, getReturnOrders, getDetailReturnOrder };
+const deleteReturnOrder = async (orderId: string) => {
+  const response = await adminApi.delete<string>(`/return-order/${orderId}`);
+
+  return response;
+};
+
+export {
+  createReturnOrder,
+  getReturnOrders,
+  getDetailReturnOrder,
+  deleteReturnOrder,
+};

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useGetListUser from "@/hooks/useGetListUser";
+import useGetListUser from "@/hooks/use-get-users";
 import { CreateProductDataType, ProductData } from "@/types/product";
 
 type Props = {

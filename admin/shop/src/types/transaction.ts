@@ -14,6 +14,11 @@ export type OrderReportData = {
   payment_status: string;
   received_date: string | Date;
   order_status: string;
+  generalId: {
+    name: string;
+    address: string;
+    code: string;
+  };
 };
 
 export type WarehouseReportData = {

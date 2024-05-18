@@ -1,6 +1,7 @@
 import { Custombreadcumb } from "@/features/custom-breadcumb";
 import Header from "./header";
 import FormAddStaff from "./add/form-add-staff";
+import FormEditStaff from "./edit/form-edit-staff";
 
 const StaffMain = () => {
   return (
@@ -24,7 +25,11 @@ const StaffMain = () => {
         }
       />
 
-      <FormAddStaff />
+      {location.pathname === "/dashboard/management/staff/create" ? (
+        <FormAddStaff />
+      ) : (
+        <FormEditStaff />
+      )}
     </>
   );
 };

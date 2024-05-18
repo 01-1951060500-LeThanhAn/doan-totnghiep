@@ -42,6 +42,14 @@ const getDetailGoodReceivedNote = async (grnId: string) => {
   }
 };
 
+const getStatusWarehouseOrders = async () => {
+  const response = await adminApi.get<GoodReceivedNoteData[]>(
+    "/warehouse/search/status-warehouse-orders?keyword=pending"
+  );
+
+  return response;
+};
+
 const updateGoodReceivedNote = async (grnId: string) => {
   try {
     const response = await adminApi.patch(`/warehouse/${grnId}`);
@@ -67,6 +75,7 @@ const deleteGoodReceivedNote = async (grnId: string) => {
 export {
   createGoodReceivedNote,
   getGoodReceivedNote,
+  getStatusWarehouseOrders,
   getDetailGoodReceivedNote,
   updateGoodReceivedNote,
   deleteGoodReceivedNote,

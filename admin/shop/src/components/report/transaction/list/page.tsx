@@ -11,6 +11,7 @@ const ViewReportTransactionPage = () => {
   const data = transactions.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
+    general: transaction?.orderId?.generalId?.name,
     totalPrice:
       transaction?.warehouseId?.totalPrice || transaction?.orderId?.totalPrice,
     _id: transaction?.orderId?._id || transaction?.warehouseId?._id,

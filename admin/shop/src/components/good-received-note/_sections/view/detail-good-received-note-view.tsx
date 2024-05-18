@@ -21,7 +21,6 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
   const { currentUser } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
-
   const dispatch = useAppDispatch();
   const handleUpdateGoodReceivedNote = () => {
     try {
@@ -76,7 +75,7 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
                   </span>
                 </div>
                 <div className="flex items-center min-w-64 my-2 gap-x-4">
-                  <p className="">Còn lại: </p>
+                  <p className="">Đã thanh toán: </p>
                   <span className="text-red-500">
                     {formatPrice(data?.totalSupplierPay - data?.totalPrice)}
                   </span>
@@ -241,13 +240,13 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                   <p>Tiền cần trả nhà cung cấp: </p>
                   <p className="font-semibold">
-                    {formatPrice(data?.totalPrice)}
+                    {formatPrice(data?.totalSupplierPay)}
                   </p>
                 </div>
                 <div className="flex items-center gap-x-3">
                   <p>Đã trả : </p>
                   <p className="text-slate-400">
-                    {formatPrice(data?.totalPrice)}
+                    {formatPrice(data?.totalSupplierPay)}
                   </p>
                 </div>
                 <div className="flex items-center gap-x-3">

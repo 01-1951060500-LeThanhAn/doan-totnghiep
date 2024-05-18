@@ -57,6 +57,8 @@ export type ProductTableGeneral = {
   import_price: string;
   export_price: string;
   inventory_number: number;
+  pendingOrderQuantity: number;
+  pendingWarehouseQuantity: number;
   status: string;
   img: string;
   desc: string;

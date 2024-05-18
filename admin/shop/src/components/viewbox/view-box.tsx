@@ -19,18 +19,24 @@ const ViewBox = () => {
   return (
     <>
       <div className="my-4">
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
           <div
             className={`shadow-md flex items-center justify-between  rounded-xl ${
               theme === "dark" ? "bg-[#212B36]" : ""
             }`}
           >
-            <div className=" flex items-center text-slate-600 p-6 h-auto">
-              <div className="bg-[#f5f4f7] p-3">
-                <Eye color="red" />
+            <div className=" flex flex-wrap items-center text-slate-600 p-6 h-auto">
+              <div
+                className={`p-3 ${
+                  theme === "dark"
+                    ? "bg-[#2c3642] rounded-full"
+                    : "bg-[#e0e5ea] rounded-full"
+                }`}
+              >
+                <Eye />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Total Users</p>
+                <p className="text-sm text-slate-400">Nhân viên</p>
                 <span className="text-2xl font-bold">{users?.length}</span>
               </div>
             </div>
@@ -48,11 +54,17 @@ const ViewBox = () => {
             }`}
           >
             <div className=" flex items-center text-slate-600 p-6 h-auto">
-              <div className="bg-[#f5f4f7] p-3">
+              <div
+                className={`p-3 ${
+                  theme === "dark"
+                    ? "bg-[#2c3642] rounded-full"
+                    : "bg-[#e0e5ea] rounded-full"
+                }`}
+              >
                 <CircleDollarSign className="text-yellow-500" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Total Income</p>
+                <p className="text-sm text-slate-400">Doanh thu</p>
                 <span className="text-2xl font-bold">$20</span>
               </div>
             </div>
@@ -69,11 +81,17 @@ const ViewBox = () => {
             }`}
           >
             <div className=" flex items-center text-slate-600 p-6 h-auto">
-              <div className="bg-[#f5f4f7] p-3">
+              <div
+                className={`p-3 ${
+                  theme === "dark"
+                    ? "bg-[#2c3642] rounded-full"
+                    : "bg-[#e0e5ea] rounded-full"
+                }`}
+              >
                 <ShoppingBasket color="green" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Total Products</p>
+                <p className="text-sm text-slate-400">Sản phẩm</p>
                 <span className="text-2xl font-bold">{products?.length}</span>
               </div>
             </div>
@@ -90,11 +108,17 @@ const ViewBox = () => {
             }`}
           >
             <div className=" flex items-center text-slate-600 p-6 h-auto">
-              <div className="bg-[#f5f4f7] p-3">
+              <div
+                className={`p-3 ${
+                  theme === "dark"
+                    ? "bg-[#2c3642] rounded-full"
+                    : "bg-[#e0e5ea] rounded-full"
+                }`}
+              >
                 <ShoppingCart color="violet" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Total Order</p>
+                <p className="text-sm text-slate-400">Đơn hàng</p>
                 <span className="text-2xl font-bold">{orders?.length}</span>
               </div>
             </div>

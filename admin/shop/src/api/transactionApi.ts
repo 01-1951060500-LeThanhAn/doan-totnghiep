@@ -6,4 +6,9 @@ const getTransactions = async () => {
   return response;
 };
 
-export { getTransactions };
+const deleteAllTransaction = async () => {
+  const response = await adminApi.delete(`/transactions`);
+  return response;
+};
+
+export { getTransactions, deleteAllTransaction };

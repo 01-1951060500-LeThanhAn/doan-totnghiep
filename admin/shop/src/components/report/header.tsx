@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 type Props = {
   title: string;
-  text1: string;
+  text1: string | React.ReactNode;
   text2: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };

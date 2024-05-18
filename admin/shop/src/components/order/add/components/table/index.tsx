@@ -32,12 +32,24 @@ const AddOrderTable = ({ data }: Props) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã sản phẩm</TableHead>
-              <TableHead>Tên sản phẩm</TableHead>
-              <TableHead>Hình sản phẩm</TableHead>
-              <TableHead>Đơn giá</TableHead>
-              <TableHead>Số lượng đơn hàng</TableHead>
-              <TableHead>Chọn SP tạo đơn</TableHead>
+              <TableHead>
+                <p>Mã sản phẩm</p>
+              </TableHead>
+              <TableHead>
+                <p>Tên sản phẩm</p>
+              </TableHead>
+              <TableHead>
+                <p>Hình sản phẩm</p>
+              </TableHead>
+              <TableHead>
+                <p>Đơn giá</p>
+              </TableHead>
+              <TableHead>
+                <p>Số lượng đơn hàng</p>
+              </TableHead>
+              <TableHead>
+                <p>Chọn SP tạo đơn</p>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -64,13 +64,15 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   }, [form, defaultValues]);
 
   const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading, isEdit } = useAppSelector((state) => state.products);
-  const onAddSubmit = async () => {
+  const { isEdit } = useAppSelector((state) => state.products);
+  const handleCreateProduct = async () => {
     try {
+      setLoading(true);
       const formData = form.getValues() as CreateProductDataType;
 
       const data = new FormData();
@@ -89,6 +91,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       } as CreateProductDataType;
 
       dispatch(createProductAsync(newProducts));
+      setLoading(false);
       toast.success("Thêm sản phẩm thành công");
 
       navigate(`/dashboard/product`);
@@ -107,7 +110,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       }
     }
   };
-  const oneEditSubmit = async () => {
+  const handleEditProduct = async () => {
     try {
       const formData = form.getValues() as CreateProductDataType;
       const imageData = new FormData();
@@ -151,8 +154,8 @@ const FormProduct = ({ initialValues, productId }: Props) => {
           <form
             onSubmit={
               location.pathname === "/dashboard/add-product"
-                ? form.handleSubmit(onAddSubmit)
-                : form.handleSubmit(oneEditSubmit)
+                ? form.handleSubmit(handleCreateProduct)
+                : form.handleSubmit(handleEditProduct)
             }
             className="grid grid-cols-1 lg:grid-cols-3 gap-3 "
           >
@@ -271,7 +274,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                     </Button>
                   ) : (
                     <Button type="submit">
-                      <p>Thêm sản phẩm</p>
+                      <p>Tạo sản phẩm</p>
                     </Button>
                   )}
                 </>

@@ -69,11 +69,11 @@ const AddReceiptTable = () => {
                 <div className="my-2">
                   <FormField
                     control={control}
-                    name="totalPrice"
+                    name={`totalPrice`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input type="text" {...field} />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

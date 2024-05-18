@@ -8,6 +8,7 @@ type Props = {
 };
 const DetailCustomerPage = ({ customer }: Props) => {
   const { theme } = useTheme();
+
   return (
     <>
       <HomeLayout>

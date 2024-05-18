@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import HomeLayout from "@/layouts/home-layout";
-import { CreateStaffData } from "@/types/staff";
+import { CreateStaffData, UpdateStaffData } from "@/types/staff";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -27,21 +27,21 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { createStaffAsync } from "@/redux/slices/staffSlice";
+import { createStaffAsync, updateStaffAsync } from "@/redux/slices/staffSlice";
 
 type Props = {
-  initialValues: CreateStaffData;
+  id?: string;
+  initialValues: CreateStaffData | UpdateStaffData;
 };
 
-const FormStaff = ({ initialValues }: Props) => {
+const FormStaff = ({ initialValues, id }: Props) => {
   const defaultValues = useMemo(
     () => ({
       username: initialValues?.username ?? "",
       email: initialValues?.email ?? "",
+      address: initialValues?.address ?? "",
       password: initialValues?.password ?? "",
       confirmPassword: initialValues?.confirmPassword ?? "",
-      role: initialValues?.role ?? "",
-      generalId: initialValues?.generalId ?? "",
     }),
     [initialValues]
   );
@@ -53,11 +53,13 @@ const FormStaff = ({ initialValues }: Props) => {
 
   const { roles } = useRole();
   const { generals } = useGetGenerals();
-  const { loading } = useAppSelector((state) => state.staffs);
+  const { loading, isEdit } = useAppSelector((state) => state.staffs);
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     form.setValue("username", defaultValues?.username);
     form.setValue("email", defaultValues?.email);
+    form.setValue("address", defaultValues?.address);
     form.setValue("password", defaultValues?.password);
     form.setValue("confirmPassword", defaultValues?.confirmPassword);
   }, [form, defaultValues]);
@@ -75,12 +77,35 @@ const FormStaff = ({ initialValues }: Props) => {
     }
   };
 
+  const handleEditStaff = async () => {
+    try {
+      const formData = form.getValues() as UpdateStaffData;
+      await dispatch(
+        updateStaffAsync({
+          id,
+          data: formData,
+        })
+      );
+
+      toast.success("Cập nhật nhân viên thành công");
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error?.message);
+        toast.error(error?.message);
+      }
+    }
+  };
+
   return (
     <>
       <HomeLayout>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(hnadleCreateStaff)}
+            onSubmit={
+              location.pathname === "/dashboard/management/staff/create"
+                ? form.handleSubmit(hnadleCreateStaff)
+                : form.handleSubmit(handleEditStaff)
+            }
             className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4 h-full w-full"
           >
             <div className="col-span-1">
@@ -108,6 +133,21 @@ const FormStaff = ({ initialValues }: Props) => {
                       <p>Email nhân viên</p>
                       <FormControl>
                         <Input placeholder="Email nhân viên..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="my-3">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <p>Địa chỉ</p>
+                      <FormControl>
+                        <Input placeholder="Địa chỉ..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -164,8 +204,8 @@ const FormStaff = ({ initialValues }: Props) => {
                       <FormControl>
                         <div>
                           <Select
+                            value={field.value}
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Chọn vai trò" />
@@ -174,7 +214,7 @@ const FormStaff = ({ initialValues }: Props) => {
                             <SelectContent>
                               <SelectGroup>
                                 {roles.map((item) => (
-                                  <SelectItem key={item._id} value={item._id}>
+                                  <SelectItem key={item._id} value={item?._id}>
                                     {item.description}
                                   </SelectItem>
                                 ))}
@@ -240,19 +280,16 @@ const FormStaff = ({ initialValues }: Props) => {
                 </>
               ) : (
                 <>
-                  {/* {isEdit ? (
+                  {isEdit ? (
                     <Button disabled>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Please wait
                     </Button>
                   ) : (
                     <Button type="submit">
-                      <p>Cập nhật kho</p>
+                      <p>Cập nhật nhân viên</p>
                     </Button>
-                  )} */}
-                  <Button type="submit">
-                    <p>Cập nhật nhân viên</p>
-                  </Button>
+                  )}
                 </>
               )}
               <Button className="ml-3">

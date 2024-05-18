@@ -99,6 +99,11 @@ export const columns: ColumnDef<TransactionTableProps>[] = [
     ),
   },
   {
+    accessorKey: "general",
+    header: "Kho giao dịch",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("general")}</p>,
+  },
+  {
     accessorKey: "order_status",
     header: "Trạng thái giao dịch",
     cell: ({ row, table }) => {
@@ -134,7 +139,42 @@ export const columns: ColumnDef<TransactionTableProps>[] = [
       );
     },
   },
-
+  {
+    accessorKey: "payment_status",
+    header: "Trạng thái thanh toán",
+    cell: ({ row, table }) => {
+      const { theme } = table.options.meta as Data;
+      return (
+        <p className="capitalize">
+          {row.getValue("payment_status") === "unpaid" ? (
+            <>
+              {theme === "light" ? (
+                <Badge variant="default" className="capitalize">
+                  Chưa thanh toán
+                </Badge>
+              ) : (
+                <Badge variant="default" className="capitalize">
+                  Chưa thanh toán
+                </Badge>
+              )}
+            </>
+          ) : (
+            <>
+              {theme === "light" ? (
+                <Badge variant="secondary" className="capitalize">
+                  Đã thanh toán
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="capitalize">
+                  Đã thanh toán
+                </Badge>
+              )}
+            </>
+          )}
+        </p>
+      );
+    },
+  },
   {
     accessorKey: "totalPrice",
     header: "Gía trị",
@@ -207,7 +247,7 @@ export default function TransactionTableData({ data }: Props) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">
-                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                  <p>Columns</p> <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

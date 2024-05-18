@@ -36,7 +36,8 @@ const GeneralView = () => {
             <Link to={`/dashboard/management/staff`}>
               <div className="flex items-center gap-x-2">
                 <img
-                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1714748713/Screenshot_2024-05-03_215559-removebg-preview_pi2f8e.png"
+                  className="w-12 h-auto ml-2"
+                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715910435/pngtree-human-resources-line-icon-png-image_9020728-removebg-preview_ybqjcv.png"
                   alt=""
                 />
                 <div className="image">
@@ -56,11 +57,14 @@ const GeneralView = () => {
             <Link to={`/dashboard/management/category`}>
               <div className="flex items-center gap-x-2">
                 <img
-                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1714748713/Screenshot_2024-05-03_215559-removebg-preview_pi2f8e.png"
+                  className="w-12 h-auto ml-2"
+                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715910969/Screenshot_2024-05-17_085520-removebg-preview_shz9fd.png"
                   alt=""
                 />
                 <div className="image">
-                  <p className="text-base font-semibold">Quản lý sản phẩm</p>
+                  <p className="text-base font-semibold">
+                    Quản lý danh mục sản phẩm
+                  </p>
                   <p className="text-sm">Quản lý danh mục sản phẩm...</p>
                 </div>
               </div>
@@ -74,7 +78,7 @@ const GeneralView = () => {
             <Link to={`/dashboard/management/adjustment_price`}>
               <div className="flex items-center gap-x-2">
                 <img
-                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1714748713/Screenshot_2024-05-03_215559-removebg-preview_pi2f8e.png"
+                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715874798/Screenshot_2024-05-16_225111-removebg-preview_uqq6bw.png"
                   alt=""
                 />
                 <div className="image">

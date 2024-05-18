@@ -67,7 +67,9 @@ const MoredropDown = () => {
             className="md:w-full !justify-start !ml-2  space-x-2 !px-3"
           >
             <Menu />
-            <div className="hidden lg:block">More</div>
+            <div className="hidden lg:block">
+              <p>More</p>
+            </div>
           </Button>
         </DropdownMenuTrigger>
 

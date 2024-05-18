@@ -58,7 +58,6 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
           ? product.inventory_number
           : "",
         productId: product?.productId ?? undefined,
-        import_price: product?.import_price ? product.import_price : "",
       })),
     }),
     [initialValues]
@@ -90,6 +89,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
       );
 
       await createGoodReceivedNote(formData);
+
       toast.success("Thêm đơn nhập hàng thành công");
       setLoading(false);
       navigate(`/dashboard/good-received-note`);

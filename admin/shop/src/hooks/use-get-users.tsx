@@ -8,7 +8,6 @@ const useGetListUser = () => {
   useEffect(() => {
     const fetchListUsers = async () => {
       const response = await getAllUsers();
-
       setUsers(response);
     };
 

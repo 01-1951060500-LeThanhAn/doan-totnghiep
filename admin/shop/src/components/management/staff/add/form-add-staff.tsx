@@ -4,6 +4,8 @@ const FormAddStaff = () => {
   return (
     <FormStaff
       initialValues={{
+        address: "",
+        phone: "",
         _id: "",
         username: "",
         email: "",

@@ -33,6 +33,28 @@ const ReportView = () => {
               theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
             } rounded-lg p-3`}
           >
+            <Link to={`/dashboard/report/general/detail`}>
+              <div className="flex items-center gap-x-2">
+                <img
+                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715999814/Screenshot_2024-05-18_093518-removebg-preview_pytttw.png"
+                  alt=""
+                />
+                <div className="image">
+                  <p className="text-base font-semibold">
+                    Báo cáo tồn kho chi tiết
+                  </p>
+                  <p className="text-sm">
+                    Quản lý hàng hóa ở các trạng thái khác nhau...
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div
+            className={`${
+              theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
+            } rounded-lg p-3`}
+          >
             <Link to={`/dashboard/report/transaction`}>
               <div className="flex items-center gap-x-2">
                 <img
