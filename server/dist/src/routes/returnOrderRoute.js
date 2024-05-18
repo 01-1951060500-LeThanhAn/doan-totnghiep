@@ -10,4 +10,5 @@ const router = express_1.default.Router();
 router.post(`/`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.createReturnOrder);
 router.get(`/`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getReturnOrder);
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getDetailReturnOrder);
+router.delete(`/:id`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.deleteReturnOrder);
 exports.default = router;

@@ -83,4 +83,29 @@ const getDetailReturnOrder = async (req: Request, res: Response) => {
   }
 };
 
-export { createReturnOrder, getReturnOrder, getDetailReturnOrder };
+const deleteReturnOrder = async (req: Request, res: Response) => {
+  const returnOrderId = req.params.id;
+  if (!returnOrderId) {
+    return res.status(400).json({ message: "Id Return Order not found" });
+  }
+
+  try {
+    const returnOrder = await ReturnOrderModel.findByIdAndDelete(returnOrderId);
+    if (!returnOrder) {
+      return res.status(400).json({ message: "Return Order not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Return Order deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export {
+  createReturnOrder,
+  getReturnOrder,
+  getDetailReturnOrder,
+  deleteReturnOrder,
+};
