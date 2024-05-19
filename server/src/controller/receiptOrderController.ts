@@ -5,38 +5,44 @@ import OrderModel from "../model/OrderModel";
 
 const createReceipt = async (req: Request, res: Response) => {
   try {
-    const { customerId, totalPrice, orderId } = req.body;
+    const { customerId, products } = req.body;
 
-    if (!customerId || !orderId) {
+    if (!customerId || !products) {
       return res.status(400).json("Missing customerId or orderId");
     }
     const customer = await CustomerModel.findById(customerId);
     if (!customer) {
       return res.status(400).json("Customer not found");
     }
-    const currentBalanceIncreases = customer?.balance_increases || 0;
-    const currentBalanceDecreases = customer?.balance_decreases || 0;
-    const remainingDecreases =
-      currentBalanceIncreases - currentBalanceDecreases;
-    const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-    const updatedRemainingDecreases = Math.max(
-      remainingDecreases - totalPrice,
-      0
-    );
-    await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_decreases: updatedBalanceDecreases,
-      remaining_decreases: updatedRemainingDecreases,
-      ending_balance: updatedRemainingDecreases,
+
+    const productUpdates = products?.map(async (product: any) => {
+      const { totalPrice, orderId } = product;
+      const currentBalanceIncreases = customer?.balance_increases || 0;
+      const currentBalanceDecreases = customer?.balance_decreases || 0;
+      const remainingDecreases =
+        currentBalanceIncreases - currentBalanceDecreases;
+      const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - totalPrice,
+        0
+      );
+      await CustomerModel.findByIdAndUpdate(customerId, {
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
+
+      await OrderModel.findByIdAndUpdate(orderId, {
+        $inc: { totalPrice: -totalPrice },
+      });
     });
 
-    await OrderModel.findByIdAndUpdate(orderId, {
-      $inc: { totalPrice: -totalPrice },
-    });
+    await Promise.all([productUpdates]);
 
     const receiptOrder = new ReceiptModel({
       ...req.body,
+      products,
       customerId: customer._id,
-      totalPrice,
     });
 
     await receiptOrder.save();

@@ -39,7 +39,6 @@ const createReturnOrder = async (req: Request, res: Response) => {
         $inc: { inventory_number: quantityToReturn },
       });
 
-      // order.totalQuantity -= quantityToReturn;
       await order.save();
     }
 

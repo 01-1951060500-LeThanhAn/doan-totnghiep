@@ -18,28 +18,32 @@ const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { customerId, totalPrice, orderId } = req.body;
-        if (!customerId || !orderId) {
+        const { customerId, products } = req.body;
+        if (!customerId || !products) {
             return res.status(400).json("Missing customerId or orderId");
         }
         const customer = yield CustomerModel_1.default.findById(customerId);
         if (!customer) {
             return res.status(400).json("Customer not found");
         }
-        const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-        const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
-        const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
-        const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-        const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-        yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_decreases: updatedBalanceDecreases,
-            remaining_decreases: updatedRemainingDecreases,
-            ending_balance: updatedRemainingDecreases,
-        });
-        yield OrderModel_1.default.findByIdAndUpdate(orderId, {
-            $inc: { totalPrice: -totalPrice },
-        });
-        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, totalPrice }));
+        const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const { totalPrice, orderId } = product;
+            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
+            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
+            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
+            const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+                balance_decreases: updatedBalanceDecreases,
+                remaining_decreases: updatedRemainingDecreases,
+                ending_balance: updatedRemainingDecreases,
+            });
+            yield OrderModel_1.default.findByIdAndUpdate(orderId, {
+                $inc: { totalPrice: -totalPrice },
+            });
+        }));
+        yield Promise.all([productUpdates]);
+        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { products, customerId: customer._id }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }
