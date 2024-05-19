@@ -50,7 +50,19 @@ const getDetailStockAdjustment = async (req: Request, res: Response) => {
   }
 
   try {
-    const detailStockAdjustment = await StockAdjustmentModel.findById(stockId);
+    const detailStockAdjustment = await StockAdjustmentModel.findById(stockId)
+      .populate({
+        path: "staffId",
+        select: "username email",
+      })
+      .populate({
+        path: "generalId",
+        select: "name",
+      })
+      .populate({
+        path: "products",
+        populate: { path: "productId", select: "name_product" },
+      });
     if (!detailStockAdjustment) {
       return res.status(404).json({ message: "Stock adjustment not found" });
     }

@@ -56,7 +56,19 @@ const getDetailStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0,
         return res.status(401).json({ message: "Stock ID not found" });
     }
     try {
-        const detailStockAdjustment = yield StockAdjustmentModel_1.default.findById(stockId);
+        const detailStockAdjustment = yield StockAdjustmentModel_1.default.findById(stockId)
+            .populate({
+            path: "staffId",
+            select: "username email",
+        })
+            .populate({
+            path: "generalId",
+            select: "name",
+        })
+            .populate({
+            path: "products",
+            populate: { path: "productId", select: "name_product" },
+        });
         if (!detailStockAdjustment) {
             return res.status(404).json({ message: "Stock adjustment not found" });
         }
