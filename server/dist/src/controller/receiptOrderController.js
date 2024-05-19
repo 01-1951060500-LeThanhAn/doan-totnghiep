@@ -19,7 +19,7 @@ const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { customerId, products } = req.body;
-        if (!customerId || !products) {
+        if (!customerId || products.length === 0) {
             return res.status(400).json("Missing customerId or orderId");
         }
         const customer = yield CustomerModel_1.default.findById(customerId);
@@ -28,6 +28,9 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
             const { totalPrice, orderId } = product;
+            if (!orderId || !totalPrice) {
+                return res.status(400).json({ message: "Missing receipt  details" });
+            }
             const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
             const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
             const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
@@ -43,7 +46,7 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             });
         }));
         yield Promise.all([productUpdates]);
-        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { products, customerId: customer._id }));
+        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }
@@ -94,11 +97,8 @@ const getInfoReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const receipt = yield ReceiptCustomerModel_1.default.findById(receiptId)
             .populate("customerId staffId")
             .populate({
-            path: "orderId",
-            select: "products code",
-            populate: {
-                path: "products.productId",
-            },
+            path: "products.orderId",
+            select: " code",
         });
         if (!receipt) {
             return res.status(400).json({

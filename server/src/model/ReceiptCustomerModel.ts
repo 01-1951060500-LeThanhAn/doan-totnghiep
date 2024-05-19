@@ -21,10 +21,12 @@ const ReceiptCustomerSchema = new mongoose.Schema(
         orderId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "orders",
+          required: true,
         },
         totalPrice: {
           type: Number,
           default: 0,
+          required: true,
         },
       },
     ],
@@ -77,7 +79,7 @@ ReceiptCustomerSchema.pre("find", async function (next) {
 
 ReceiptCustomerSchema.pre("find", async function (next) {
   this.populate({
-    path: "orderId",
+    path: "products.orderId",
     select: "code payment_status",
   });
   next();

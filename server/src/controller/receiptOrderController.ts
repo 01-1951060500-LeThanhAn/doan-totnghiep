@@ -7,7 +7,7 @@ const createReceipt = async (req: Request, res: Response) => {
   try {
     const { customerId, products } = req.body;
 
-    if (!customerId || !products) {
+    if (!customerId || products.length === 0) {
       return res.status(400).json("Missing customerId or orderId");
     }
     const customer = await CustomerModel.findById(customerId);
@@ -17,6 +17,11 @@ const createReceipt = async (req: Request, res: Response) => {
 
     const productUpdates = products?.map(async (product: any) => {
       const { totalPrice, orderId } = product;
+
+      if (!orderId || !totalPrice) {
+        return res.status(400).json({ message: "Missing receipt  details" });
+      }
+
       const currentBalanceIncreases = customer?.balance_increases || 0;
       const currentBalanceDecreases = customer?.balance_decreases || 0;
       const remainingDecreases =
@@ -41,7 +46,6 @@ const createReceipt = async (req: Request, res: Response) => {
 
     const receiptOrder = new ReceiptModel({
       ...req.body,
-      products,
       customerId: customer._id,
     });
 
@@ -96,11 +100,8 @@ const getInfoReceipt = async (req: Request, res: Response) => {
     const receipt = await ReceiptModel.findById(receiptId)
       .populate("customerId staffId")
       .populate({
-        path: "orderId",
-        select: "products code",
-        populate: {
-          path: "products.productId",
-        },
+        path: "products.orderId",
+        select: " code",
       });
     if (!receipt) {
       return res.status(400).json({
