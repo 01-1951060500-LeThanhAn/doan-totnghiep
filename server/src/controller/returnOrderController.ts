@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OrderModel from "../model/OrderModel";
 import ReturnOrderModel from "../model/ReturnOrderModel";
 import ProductModel from "../model/ProductModel";
+import CustomerModel from "../model/CustomerModel";
 
 const createReturnOrder = async (req: Request, res: Response) => {
   try {
@@ -103,9 +104,77 @@ const deleteReturnOrder = async (req: Request, res: Response) => {
   }
 };
 
+const updateReturnOrders = async (req: Request, res: Response) => {
+  const returnOrderId = req.params.id;
+  if (!returnOrderId) {
+    return res.status(400).json({ message: "Id Return Order not found" });
+  }
+
+  try {
+    const originalReturnOrderData = await ReturnOrderModel.findById(
+      returnOrderId
+    ).populate("products.productId");
+
+    const updatedReturnOrderData = await ReturnOrderModel.findByIdAndUpdate(
+      returnOrderId,
+      {
+        refund_status: "refunded",
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedReturnOrderData) {
+      return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
+    }
+
+    const paymentStatusChangedToPaid =
+      originalReturnOrderData?.refund_status !== "refunded" &&
+      updatedReturnOrderData?.refund_status === "refunded";
+
+    if (paymentStatusChangedToPaid) {
+      const customerId = updatedReturnOrderData.customerId;
+      const totalPrice = updatedReturnOrderData.totalPrice;
+
+      const customer = await CustomerModel.findById(customerId);
+
+      const currentBalanceIncreases = customer?.balance_increases || 0;
+      const currentBalanceDecreases = customer?.balance_decreases || 0;
+      const remainingDecreases =
+        Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+      const updatedBalanceDecreases =
+        Number(currentBalanceDecreases) + totalPrice;
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - totalPrice,
+        0
+      );
+
+      await CustomerModel.findByIdAndUpdate(customerId, {
+        balance_increases: currentBalanceIncreases - totalPrice,
+        balance_decreases: currentBalanceIncreases - totalPrice,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
+    }
+
+    if (paymentStatusChangedToPaid) {
+      await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
+        $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
+      });
+    }
+
+    res.status(200).json(updatedReturnOrderData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   createReturnOrder,
   getReturnOrder,
   getDetailReturnOrder,
   deleteReturnOrder,
+  updateReturnOrders,
 };

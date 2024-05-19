@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteReturnOrder = exports.getDetailReturnOrder = exports.getReturnOrder = exports.createReturnOrder = void 0;
+exports.updateReturnOrders = exports.deleteReturnOrder = exports.getDetailReturnOrder = exports.getReturnOrder = exports.createReturnOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
+const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId, products } = req.body;
@@ -98,3 +99,49 @@ const deleteReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.deleteReturnOrder = deleteReturnOrder;
+const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const returnOrderId = req.params.id;
+    if (!returnOrderId) {
+        return res.status(400).json({ message: "Id Return Order not found" });
+    }
+    try {
+        const originalReturnOrderData = yield ReturnOrderModel_1.default.findById(returnOrderId).populate("products.productId");
+        const updatedReturnOrderData = yield ReturnOrderModel_1.default.findByIdAndUpdate(returnOrderId, {
+            refund_status: "refunded",
+        }, {
+            new: true,
+        });
+        if (!updatedReturnOrderData) {
+            return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
+        }
+        const paymentStatusChangedToPaid = (originalReturnOrderData === null || originalReturnOrderData === void 0 ? void 0 : originalReturnOrderData.refund_status) !== "refunded" &&
+            (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) === "refunded";
+        if (paymentStatusChangedToPaid) {
+            const customerId = updatedReturnOrderData.customerId;
+            const totalPrice = updatedReturnOrderData.totalPrice;
+            const customer = yield CustomerModel_1.default.findById(customerId);
+            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
+            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
+            const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+            const updatedBalanceDecreases = Number(currentBalanceDecreases) + totalPrice;
+            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+                balance_increases: currentBalanceIncreases - totalPrice,
+                balance_decreases: currentBalanceIncreases - totalPrice,
+                remaining_decreases: updatedRemainingDecreases,
+                ending_balance: updatedRemainingDecreases,
+            });
+        }
+        if (paymentStatusChangedToPaid) {
+            yield OrderModel_1.default.findByIdAndUpdate(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData._id, {
+                $inc: { totalPrice: -(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) },
+            });
+        }
+        res.status(200).json(updatedReturnOrderData);
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+exports.updateReturnOrders = updateReturnOrders;
