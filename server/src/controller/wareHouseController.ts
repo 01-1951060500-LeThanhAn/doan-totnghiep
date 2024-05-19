@@ -239,6 +239,15 @@ const updateWarehouse = async (req: Request, res: Response) => {
       for (const product of updatedWarehouseData.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
           $inc: { pendingWarehouseQuantity: -product.inventory_number },
+          $push: {
+            transactionHistory: {
+              orderId: updatedWarehouseData._id,
+              quantity: product.inventory_number,
+              generalId: updatedWarehouseData.generalId,
+              staffId: updatedWarehouseData.manager,
+              inventory_number: product.inventory_number,
+            },
+          },
         });
       }
     }

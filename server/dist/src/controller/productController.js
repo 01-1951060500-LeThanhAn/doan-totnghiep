@@ -105,8 +105,8 @@ const getTypeProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.getTypeProducts = getTypeProducts;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const products = yield ProductModel_1.default.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
-        res.status(200).json(products);
+        const updatedProduct = yield ProductModel_1.default.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        res.status(200).json(updatedProduct);
     }
     catch (error) {
         res.status(500).json(error);

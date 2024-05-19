@@ -32,6 +32,7 @@ const transactionRoute_1 = __importDefault(require("./src/routes/transactionRout
 const returnOrderRoute_1 = __importDefault(require("./src/routes/returnOrderRoute"));
 const receiptCustomerRoute_1 = __importDefault(require("./src/routes/receiptCustomerRoute"));
 const receiptSupplierRoute_1 = __importDefault(require("./src/routes/receiptSupplierRoute"));
+const stockAdjustmentRoute_1 = __importDefault(require("./src/routes/stockAdjustmentRoute"));
 dotenv_1.default.config();
 (0, index_1.default)();
 const app = (0, express_1.default)();
@@ -60,6 +61,7 @@ app.use("/ship", shippingRoute_1.default);
 app.use("/return-order", returnOrderRoute_1.default);
 app.use("/receipt-order", receiptCustomerRoute_1.default);
 app.use("/receipt-supplier", receiptSupplierRoute_1.default);
+app.use("/stock-adjustment", stockAdjustmentRoute_1.default);
 app.listen(port, () => {
     console.log(`Server is Fire at http://localhost:${port}`);
 });

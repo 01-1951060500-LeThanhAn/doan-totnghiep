@@ -18,6 +18,7 @@ import transactionRoute from "./src/routes/transactionRoute";
 import returnOrderRoute from "./src/routes/returnOrderRoute";
 import receiptCustomerRoute from "./src/routes/receiptCustomerRoute";
 import receiptSupplierRoute from "./src/routes/receiptSupplierRoute";
+import stockAdjustmentRoute from "./src/routes/stockAdjustmentRoute";
 
 dotenv.config();
 
@@ -54,7 +55,7 @@ app.use("/ship", shippingRoute);
 app.use("/return-order", returnOrderRoute);
 app.use("/receipt-order", receiptCustomerRoute);
 app.use("/receipt-supplier", receiptSupplierRoute);
-
+app.use("/stock-adjustment", stockAdjustmentRoute);
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);
 });

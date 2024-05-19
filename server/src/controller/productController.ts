@@ -14,6 +14,7 @@ const createProduct = async (req: Request, res: Response) => {
     if (!general) {
       return res.status(400).json({ message: "General not found" });
     }
+
     const product = new ProductModel({
       ...req.body,
       generalId: general._id,
@@ -94,12 +95,13 @@ const getTypeProducts = async (req: UserRequest, res: Response) => {
 
 const updateProduct = async (req: Request, res: Response) => {
   try {
-    const products = await ProductModel.findByIdAndUpdate(
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
       { new: true }
     );
-    res.status(200).json(products);
+
+    res.status(200).json(updatedProduct);
   } catch (error) {
     res.status(500).json(error);
   }

@@ -188,6 +188,15 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             for (const product of updatedWarehouseData.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
                     $inc: { pendingWarehouseQuantity: -product.inventory_number },
+                    $push: {
+                        transactionHistory: {
+                            orderId: updatedWarehouseData._id,
+                            quantity: product.inventory_number,
+                            generalId: updatedWarehouseData.generalId,
+                            staffId: updatedWarehouseData.manager,
+                            inventory_number: product.inventory_number,
+                        },
+                    },
                 });
             }
         }
