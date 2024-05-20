@@ -333,9 +333,9 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     product_name: { $first: "$product.name_product" },
                     product_code: { $first: "$product.code" },
                     quantity: "$products.inventory_number",
-                    price: "$import_price",
+                    price: "$products.export_price",
                     total_price: {
-                        $multiply: ["$products.inventory_number", "$products.import_price"],
+                        $multiply: ["$products.inventory_number", "$products.export_price"],
                     },
                 },
             },
@@ -385,16 +385,19 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                         month: { $month: "$createdAt" },
                         supplier: "$suppliers.supplier_name",
                         code: "$suppliers.supplier_code",
+                        name: "$suppliers.supplier_name",
                     },
                     total_quantity: { $sum: "$products.inventory_number" },
                     total_price: {
-                        $sum: "$totalPrice",
+                        $sum: "$totalSupplierPay",
                     },
                 },
             },
             {
                 $group: {
                     _id: "$_id.code",
+                    name: { $first: "$_id.name" },
+                    month: { $first: "$_id.month" },
                     total_quantity: { $sum: "$total_quantity" },
                     total_price: { $sum: "$total_price" },
                 },

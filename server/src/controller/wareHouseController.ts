@@ -397,9 +397,9 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
           product_name: { $first: "$product.name_product" },
           product_code: { $first: "$product.code" },
           quantity: "$products.inventory_number",
-          price: "$import_price",
+          price: "$products.export_price",
           total_price: {
-            $multiply: ["$products.inventory_number", "$products.import_price"],
+            $multiply: ["$products.inventory_number", "$products.export_price"],
           },
         },
       },
@@ -410,6 +410,7 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
           name: { $first: "$product_name" },
           code: { $first: "$product_code" },
           total_quantity: { $sum: "$quantity" },
+
           total_income: { $sum: "$total_price" },
         },
       },
@@ -450,16 +451,19 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
             month: { $month: "$createdAt" },
             supplier: "$suppliers.supplier_name",
             code: "$suppliers.supplier_code",
+            name: "$suppliers.supplier_name",
           },
           total_quantity: { $sum: "$products.inventory_number" },
           total_price: {
-            $sum: "$totalPrice",
+            $sum: "$totalSupplierPay",
           },
         },
       },
       {
         $group: {
           _id: "$_id.code",
+          name: { $first: "$_id.name" },
+          month: { $first: "$_id.month" },
           total_quantity: { $sum: "$total_quantity" },
           total_price: { $sum: "$total_price" },
         },

@@ -39,11 +39,11 @@ const ProductSchema = new mongoose_1.default.Schema({
         required: true,
     },
     import_price: {
-        type: String,
+        type: Number,
         required: true,
     },
     export_price: {
-        type: String,
+        type: Number,
         required: true,
     },
     inventory_number: {
