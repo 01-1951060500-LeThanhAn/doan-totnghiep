@@ -61,7 +61,10 @@ const getDetailStockAdjustment = async (req: Request, res: Response) => {
       })
       .populate({
         path: "products",
-        populate: { path: "productId", select: "name_product" },
+        populate: {
+          path: "productId",
+          select: "name_product type code img unit",
+        },
       });
     if (!detailStockAdjustment) {
       return res.status(404).json({ message: "Stock adjustment not found" });
