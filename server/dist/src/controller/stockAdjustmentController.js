@@ -69,7 +69,7 @@ const getDetailStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0,
             path: "products",
             populate: {
                 path: "productId",
-                select: "name_product type code img unit",
+                select: "name_product type code img unit inventory_number",
             },
         });
         if (!detailStockAdjustment) {

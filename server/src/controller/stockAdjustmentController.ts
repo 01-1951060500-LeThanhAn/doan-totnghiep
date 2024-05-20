@@ -63,7 +63,7 @@ const getDetailStockAdjustment = async (req: Request, res: Response) => {
         path: "products",
         populate: {
           path: "productId",
-          select: "name_product type code img unit",
+          select: "name_product type code img unit inventory_number",
         },
       });
     if (!detailStockAdjustment) {
