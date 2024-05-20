@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.getWareHouseByManager = exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -283,7 +283,7 @@ const getIncomeWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, funct
                         total_quantity: {
                             $sum: "$products.inventory_number",
                         },
-                        total_sold_products: "$totalPrice",
+                        total_sold_products: "$totalSupplierPay",
                     },
                 },
                 {
@@ -314,9 +314,6 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             {
-                $unwind: "$products",
-            },
-            {
                 $lookup: {
                     from: "products",
                     localField: "products.productId",
@@ -325,28 +322,30 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             {
+                $unwind: "$products",
+            },
+            {
                 $project: {
                     _id: {
                         month: "$createdAt",
                         productId: "$products.productId",
                     },
                     product_name: { $first: "$product.name_product" },
+                    export_price: { $first: "$product.export_price" },
                     product_code: { $first: "$product.code" },
                     quantity: "$products.inventory_number",
-                    price: "$products.export_price",
-                    total_price: {
-                        $multiply: ["$products.inventory_number", "$products.export_price"],
-                    },
+                    total_income: { $multiply: ["$quantity", "$export_price"] },
                 },
             },
             {
                 $group: {
                     _id: "$_id.productId",
+                    price: { $first: "$export_price" },
                     month: { $first: "$_id.month" },
                     name: { $first: "$product_name" },
                     code: { $first: "$product_code" },
                     total_quantity: { $sum: "$quantity" },
-                    total_income: { $sum: "$total_price" },
+                    total_income: { $sum: "$total_income" },
                 },
             },
         ]);
@@ -415,6 +414,56 @@ const getWareHouseByGeneral = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     try {
+        const incomeData = yield WarehouseModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "general",
+                    localField: "generalId",
+                    foreignField: "_id",
+                    as: "general",
+                },
+            },
+            {
+                $unwind: "$general",
+            },
+            {
+                $project: {
+                    generalId: 1,
+                    _id: {
+                        general: "$general.code",
+                        month: { $month: "$createdAt" },
+                    },
+                    total_quantity: {
+                        $sum: "$products.inventory_number",
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.general",
+                    general: { $first: "$general" },
+                    month: { $first: "$_id.month" },
+                    total_quantity: { $sum: "$total_quantity" },
+                },
+            },
+        ]);
+        res.status(200).json(incomeData);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching warehouse statistics" });
+    }
+});
+exports.getWareHouseByGeneral = getWareHouseByGeneral;
+const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
         const pipeline = [
             {
                 $match: {
@@ -423,56 +472,51 @@ const getWareHouseByGeneral = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             {
                 $lookup: {
-                    from: "purchase_orders",
-                    localField: "_id",
-                    foreignField: "generalId",
-                    as: "purchase_orders",
+                    from: "users",
+                    localField: "manager",
+                    foreignField: "_id",
+                    as: "users",
                 },
             },
             {
-                $unwind: "$purchase_orders",
+                $unwind: "$users",
             },
             {
                 $project: {
+                    generalId: 1,
                     _id: {
-                        general: "$purchase_orders.generalId",
+                        username: "$users.username",
+                        email: "$users.email",
                         month: { $month: "$createdAt" },
                     },
-                    quantity: {
-                        $sum: "$purchase_orders.products.inventory_number",
+                    total_quantity: {
+                        $sum: "$products.inventory_number",
                     },
                     total_price: {
-                        $sum: "$purchase_orders.totalPrice",
+                        $sum: "$totalSupplierPay",
                     },
                 },
             },
             {
                 $group: {
-                    _id: "$_id.general",
+                    _id: "$_id.code",
+                    email: { $first: "$_id.email" },
+                    username: { $first: "$_id.username" },
                     month: { $first: "$_id.month" },
-                    total_products: { $sum: "$quantity" },
+                    total_quantity: { $sum: "$total_quantity" },
                     total_price: { $sum: "$total_price" },
                 },
             },
         ];
-        const results = yield GeneralDepotModel_1.default.aggregate(pipeline);
-        const enrichedResults = [];
-        for (const result of results) {
-            const warehouseId = result._id;
-            const warehouse = yield GeneralDepotModel_1.default.findById(warehouseId);
-            if (warehouse) {
-                const enrichedResult = Object.assign(Object.assign({}, result), { name: warehouse.name, type: warehouse.type });
-                enrichedResults.push(enrichedResult);
-            }
-        }
-        res.status(200).json(enrichedResults);
+        const results = yield WarehouseModel_1.default.aggregate(pipeline);
+        res.status(200).json(results);
     }
     catch (err) {
         console.error(err);
         res.status(500).json({ message: "Error fetching warehouse statistics" });
     }
 });
-exports.getWareHouseByGeneral = getWareHouseByGeneral;
+exports.getWareHouseByManager = getWareHouseByManager;
 const searchWarehouseOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const keyword = req.query.keyword;
     try {

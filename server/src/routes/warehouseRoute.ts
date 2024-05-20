@@ -14,6 +14,7 @@ import {
   updateWarehouse,
   searchWarehouseOrder,
   getWareHouseByGeneral,
+  getWareHouseByManager,
 } from "../controller/wareHouseController";
 
 const router = express.Router();
@@ -44,6 +45,12 @@ router.get(
   `/income/total-warehouse-general`,
   verifyTokenAndAdmin,
   getWareHouseByGeneral
+);
+
+router.get(
+  `/income/total-warehouse-manager`,
+  verifyTokenAndAdmin,
+  getWareHouseByManager
 );
 
 router.get(`/income/total-warehouse`, verifyTokenAndAdmin, getIncomeWarehouse);

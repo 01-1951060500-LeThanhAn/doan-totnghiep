@@ -39,7 +39,6 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
       default: 0,
-      ref: "purchase_orders",
     },
     pendingOrderQuantity: {
       required: true,
