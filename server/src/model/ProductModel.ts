@@ -103,6 +103,17 @@ const ProductSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    stockAdjustmentHistory: {
+      type: [
+        {
+          stockAjustmentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "stock_adjustment",
+          },
+        },
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,

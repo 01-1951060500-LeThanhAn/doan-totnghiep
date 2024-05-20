@@ -95,7 +95,11 @@ const updateStockAdjustment = async (req: Request, res: Response) => {
   try {
     const updatedStockAdjustment = await StockAdjustmentModel.findByIdAndUpdate(
       inventoryId,
-      req.body,
+      {
+        $set: {
+          inventory_status: "completed",
+        },
+      },
       {
         new: true,
       }
@@ -111,22 +115,36 @@ const updateStockAdjustment = async (req: Request, res: Response) => {
       updatedStockAdjustment?.inventory_status === "completed";
 
     if (inventoryStatus) {
-      for (const product of updatedStockAdjustment.products) {
-        const productDoc = await ProductModel.findById(product.productId);
-        if (!productDoc) {
-          throw new Error("Product not found");
+      const productUpdates = updatedStockAdjustment.products.map(
+        async (productAdjustment) => {
+          const { productId, inventory_number, inventory_discrepancy } =
+            productAdjustment;
+
+          const product = await ProductModel.findByIdAndUpdate(
+            productId,
+            {
+              $inc: {
+                inventory_number: inventory_number + inventory_discrepancy,
+              },
+              $push: {
+                stockAdjustmentHistory: {
+                  stockAjustmentId: updatedStockAdjustment._id,
+                },
+              },
+            },
+            { new: true }
+          );
+
+          if (!product) {
+            console.error(`Error updating product ${productId}`);
+          }
+
+          return product;
         }
-        const inventoryDifference =
-          product.inventory_number - productDoc.inventory_number;
+      );
 
-        await ProductModel.findByIdAndUpdate(product.productId, {
-          $inc: {
-            inventory_number: inventoryDifference,
-          },
-        });
-      }
+      await Promise.all(productUpdates);
     }
-
     res.status(200).json(updatedStockAdjustment);
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });

@@ -94,7 +94,11 @@ const updateStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
         return res.status(400).json({ message: "Inventory ID is required" });
     }
     try {
-        const updatedStockAdjustment = yield StockAdjustmentModel_1.default.findByIdAndUpdate(inventoryId, req.body, {
+        const updatedStockAdjustment = yield StockAdjustmentModel_1.default.findByIdAndUpdate(inventoryId, {
+            $set: {
+                inventory_status: "completed",
+            },
+        }, {
             new: true,
         });
         if (!updatedStockAdjustment) {
@@ -104,18 +108,24 @@ const updateStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
         }
         const inventoryStatus = (updatedStockAdjustment === null || updatedStockAdjustment === void 0 ? void 0 : updatedStockAdjustment.inventory_status) === "completed";
         if (inventoryStatus) {
-            for (const product of updatedStockAdjustment.products) {
-                const productDoc = yield ProductModel_1.default.findById(product.productId);
-                if (!productDoc) {
-                    throw new Error("Product not found");
-                }
-                const inventoryDifference = product.inventory_number - productDoc.inventory_number;
-                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+            const productUpdates = updatedStockAdjustment.products.map((productAdjustment) => __awaiter(void 0, void 0, void 0, function* () {
+                const { productId, inventory_number, inventory_discrepancy } = productAdjustment;
+                const product = yield ProductModel_1.default.findByIdAndUpdate(productId, {
                     $inc: {
-                        inventory_number: inventoryDifference,
+                        inventory_number: inventory_number + inventory_discrepancy,
                     },
-                });
-            }
+                    $push: {
+                        stockAdjustmentHistory: {
+                            stockAjustmentId: updatedStockAdjustment._id,
+                        },
+                    },
+                }, { new: true });
+                if (!product) {
+                    console.error(`Error updating product ${productId}`);
+                }
+                return product;
+            }));
+            yield Promise.all(productUpdates);
         }
         res.status(200).json(updatedStockAdjustment);
     }

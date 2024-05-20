@@ -173,6 +173,9 @@ const getDetailProduct = (req, res) => __awaiter(void 0, void 0, void 0, functio
         })
             .populate({
             path: "transactionHistory.staffId",
+        })
+            .populate({
+            path: "stockAdjustmentHistory.stockAjustmentId",
         });
         if (!product) {
             return res.status(404).json({

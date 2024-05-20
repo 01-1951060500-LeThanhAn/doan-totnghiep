@@ -173,6 +173,9 @@ const getDetailProduct = async (req: Request, res: Response) => {
       })
       .populate({
         path: "transactionHistory.staffId",
+      })
+      .populate({
+        path: "stockAdjustmentHistory.stockAjustmentId",
       });
 
     if (!product) {
