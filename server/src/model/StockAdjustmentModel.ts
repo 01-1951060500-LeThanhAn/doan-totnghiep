@@ -31,6 +31,10 @@ const StockAdjustmentSchema = new mongoose.Schema(
           type: Number,
           default: 0,
         },
+        inventory_saved: {
+          type: Number,
+          default: 0,
+        },
         reason: {
           type: String,
           required: true,

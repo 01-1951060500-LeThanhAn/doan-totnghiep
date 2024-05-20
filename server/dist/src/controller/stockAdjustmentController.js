@@ -25,10 +25,16 @@ const createStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
             products.length === 0) {
             return res.status(400).json({ message: "Missing required fields" });
         }
+        const productInventories = yield Promise.all(products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const productDoc = yield ProductModel_1.default.findById(product.productId);
+            if (!productDoc) {
+                throw new Error(`Product not found: ${product.productId}`);
+            }
+            return Object.assign(Object.assign({}, product), { inventory_saved: productDoc.inventory_number });
+        })));
         const stockAdjustment = new StockAdjustmentModel_1.default(Object.assign(Object.assign({}, req.body), { staffId,
             generalId,
-            stocktaking_day,
-            products }));
+            stocktaking_day, products: productInventories }));
         yield stockAdjustment.save();
         return res
             .status(200)
@@ -69,7 +75,7 @@ const getDetailStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0,
             path: "products",
             populate: {
                 path: "productId",
-                select: "name_product type code img unit inventory_number",
+                select: "name_product img code unit type inventory_number",
             },
         });
         if (!detailStockAdjustment) {

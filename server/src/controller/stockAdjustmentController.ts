@@ -15,12 +15,22 @@ const createStockAdjustment = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    const productInventories = await Promise.all(
+      products.map(async (product: any) => {
+        const productDoc = await ProductModel.findById(product.productId);
+        if (!productDoc) {
+          throw new Error(`Product not found: ${product.productId}`);
+        }
+        return { ...product, inventory_saved: productDoc.inventory_number };
+      })
+    );
+
     const stockAdjustment = new StockAdjustmentModel({
       ...req.body,
       staffId,
       generalId,
       stocktaking_day,
-      products,
+      products: productInventories,
     });
 
     await stockAdjustment.save();
@@ -63,7 +73,7 @@ const getDetailStockAdjustment = async (req: Request, res: Response) => {
         path: "products",
         populate: {
           path: "productId",
-          select: "name_product type code img unit inventory_number",
+          select: "name_product img code unit type inventory_number",
         },
       });
     if (!detailStockAdjustment) {
