@@ -118,7 +118,7 @@ const FormOrder = ({ initialValues }: Props) => {
               <div className="my-2">
                 <AddOrderTable data={products as unknown as ProductData[]} />
               </div>
-              <p className="text-2xl font-semibold">Thông tin phiếu đơn hàng</p>
+              <p className="text-xl font-semibold">Thông tin phiếu đơn hàng</p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
                 <div className="my-2">
                   <FormField

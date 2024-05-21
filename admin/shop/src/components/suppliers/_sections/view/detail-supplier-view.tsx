@@ -13,7 +13,7 @@ const DetailSupplierView = ({ supplier }: Props) => {
     _id: item._id,
     code: item?.code,
     import_price: item?.import_price,
-    totalPrice: item?.totalPrice,
+    totalSupplierPay: item?.totalSupplierPay,
     totalQuantity: item?.totalQuantity,
     payment_status: item?.payment_status,
     order_status: item?.order_status,

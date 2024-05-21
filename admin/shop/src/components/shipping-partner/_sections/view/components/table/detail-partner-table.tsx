@@ -13,6 +13,7 @@ import { formatPrice } from "@/config/format-price";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 type Props = {
   data: DetailPartnerOrder[];
 };
@@ -33,7 +34,7 @@ const DetailPartnerTableData = ({ data }: Props) => {
         }`}
       >
         <CustomScrollbarTable>
-          <p className="text-2xl font-semibold">Bảng lịch sử chuyển hàng</p>
+          <p className="text-xl font-semibold">Bảng lịch sử vận chuyển hàng</p>
           <Table>
             <TableHeader>
               <TableRow>
@@ -41,7 +42,6 @@ const DetailPartnerTableData = ({ data }: Props) => {
                 <TableHead>Mã đơn hàng</TableHead>
                 <TableHead>Ngày nhận hàng</TableHead>
                 <TableHead>Tổng giá trị đơn hàng</TableHead>
-
                 <TableHead>Trạng thái hàng</TableHead>
                 <TableHead>Thanh toán</TableHead>
               </TableRow>
@@ -53,24 +53,30 @@ const DetailPartnerTableData = ({ data }: Props) => {
                     <TableCell>{index + 1}</TableCell>
 
                     <TableCell>
-                      <p>{item?.code}</p>
+                      <Link to={`/dashboard/orders/${item?._id}/detail`}>
+                        {" "}
+                        <p className="text-blue-400">{item?.code}</p>
+                      </Link>
+                    </TableCell>
+
+                    <TableCell>
+                      <p>
+                        {new Date(item?.received_date).toLocaleDateString()}
+                      </p>
                     </TableCell>
                     <TableCell>
-                      <p>{new Date(item?.received_date).toLocaleString()}</p>
-                    </TableCell>
-                    <TableCell>
-                      <p>{formatPrice(+item?.totalPrice)}</p>
+                      <p>{formatPrice(+item?.totalCustomerPay)}</p>
                     </TableCell>
                     <TableCell>
                       {item?.order_status === "pending" ? (
                         <>
                           {theme === "light" ? (
                             <Badge variant="default" className="capitalize">
-                              Đang giao
+                              <p>Đang giao</p>
                             </Badge>
                           ) : (
                             <Badge variant="default" className="capitalize">
-                              Đang giao
+                              <p>Đang giao</p>
                             </Badge>
                           )}
                         </>
@@ -78,11 +84,11 @@ const DetailPartnerTableData = ({ data }: Props) => {
                         <>
                           {theme === "light" ? (
                             <Badge variant="secondary" className="capitalize">
-                              Đã giao
+                              <p>Đã giao</p>
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="capitalize">
-                              Đã giao
+                              <p>Đã giao</p>
                             </Badge>
                           )}
                         </>
@@ -93,11 +99,11 @@ const DetailPartnerTableData = ({ data }: Props) => {
                         <>
                           {theme === "light" ? (
                             <Badge variant="default" className="capitalize">
-                              Chưa thanh toán
+                              <p>Chưa thanh toán</p>
                             </Badge>
                           ) : (
                             <Badge variant="default" className="capitalize">
-                              Chưa thanh toán
+                              <p>Chưa thanh toán</p>
                             </Badge>
                           )}
                         </>
@@ -105,11 +111,11 @@ const DetailPartnerTableData = ({ data }: Props) => {
                         <>
                           {theme === "light" ? (
                             <Badge variant="secondary" className="capitalize">
-                              Đã thanh toán
+                              <p> Đã thanh toán</p>
                             </Badge>
                           ) : (
                             <Badge variant="outline" className="capitalize">
-                              Đã thanh toán
+                              <p> Đã thanh toán</p>
                             </Badge>
                           )}
                         </>

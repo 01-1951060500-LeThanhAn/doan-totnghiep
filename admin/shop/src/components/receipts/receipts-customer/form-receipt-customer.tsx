@@ -44,14 +44,16 @@ const FormCustomerReceipt = ({ initialValues }: Props) => {
   const defaultValues = useMemo(
     () => ({
       code: initialValues?.code ?? "",
-      orderId: initialValues?.orderId ?? "",
       staffId: initialValues?.staffId ?? "",
       customerId: initialValues?.customerId ?? "",
       desc: initialValues?.desc ?? "",
       receipt_type: initialValues?.receipt_type ?? "",
       payment_method: initialValues?.payment_method ?? "",
       submitter: initialValues?.submitter ?? "",
-      totalPrice: initialValues?.totalPrice ?? "",
+      products: initialValues.products.map((product) => ({
+        totalPrice: product?.totalPrice ? product?.totalPrice : "",
+        orderId: product?.orderId ?? "",
+      })),
     }),
     [initialValues]
   );
@@ -70,6 +72,10 @@ const FormCustomerReceipt = ({ initialValues }: Props) => {
   const handleCreateCustomerReceipt = async () => {
     try {
       const formData = form.getValues() as CreateReceiptData;
+      console.log(formData);
+      formData.products = formData.products.filter(
+        (product) => product.orderId || product.totalPrice
+      );
 
       await dispatch(createReceiptAsync(formData));
       toast.success("Tạo phiếu thu thành công");

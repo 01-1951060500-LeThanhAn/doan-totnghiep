@@ -34,7 +34,7 @@ const OverStockingTableData = ({ data }: Props) => {
                   <TableHead>Tên sản phẩm</TableHead>
                   <TableHead>Đơn vị tính</TableHead>
                   <TableHead>Tồn kho</TableHead>
-                  <TableHead>Định mức tối đa</TableHead>
+
                   <TableHead>Cần xuất, bán</TableHead>
                   <TableHead>Đang giao dịch</TableHead>
                 </TableRow>
@@ -61,9 +61,7 @@ const OverStockingTableData = ({ data }: Props) => {
                       <TableCell>
                         <p>{item?.inventory_number}</p>
                       </TableCell>
-                      <TableCell>
-                        <p>0</p>
-                      </TableCell>
+
                       <TableCell>
                         <p>{item?.inventory_number}</p>
                       </TableCell>

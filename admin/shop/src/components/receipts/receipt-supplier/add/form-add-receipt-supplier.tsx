@@ -10,8 +10,12 @@ const FormAddReceiptSuppliers = () => {
           staffId: "",
           supplierId: "",
           desc: "",
-          totalPrice: "",
-          warehouseId: "",
+          products: [
+            {
+              totalPrice: 0,
+              warehouseId: "",
+            },
+          ],
           receipt_type: "",
           payment_method: "",
         }}

@@ -11,8 +11,12 @@ const FormAddCustomerReceipt = () => {
           staffId: "",
           customerId: "",
           desc: "",
-          totalPrice: "",
-          orderId: "",
+          products: [
+            {
+              orderId: "",
+              totalPrice: 0,
+            },
+          ],
           receipt_type: "",
           payment_method: "",
         }}

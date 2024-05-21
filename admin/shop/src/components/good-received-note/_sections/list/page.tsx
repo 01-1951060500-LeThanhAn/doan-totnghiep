@@ -41,7 +41,7 @@ const GoodReceivedPage = () => {
         breadcumbItem="Phiếu nhập hàng"
         breadcumbPage="Danh sách phiếu nhập hàng"
         linkBtn="/dashboard/good-received-note/create"
-        title="Thêm Phiếu nhập hàng"
+        title="Tạo phiếu nhập hàng"
       />
 
       <Tabs defaultValue="all">

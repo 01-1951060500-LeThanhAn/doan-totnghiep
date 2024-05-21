@@ -18,9 +18,13 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { formatPrice } from "@/config/format-price";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useTheme } from "next-themes";
+import { Badge } from "@/components/ui/badge";
 const AddReceiptTable = () => {
   const { control } = useFormContext();
   const { orders } = useGetOrders();
+  const { theme } = useTheme();
+
   return (
     <>
       <CustomScrollbarTable>
@@ -43,6 +47,9 @@ const AddReceiptTable = () => {
                 <p>Số lượng đơn mua</p>
               </TableHead>
               <TableHead>
+                <p>Trạng thái đơn hàng</p>
+              </TableHead>
+              <TableHead>
                 <p>Số tiền thanh toán</p>
               </TableHead>
               <TableHead>
@@ -51,7 +58,7 @@ const AddReceiptTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders?.map((item) => (
+            {orders?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.code}</p>
@@ -66,14 +73,43 @@ const AddReceiptTable = () => {
                 <TableCell>
                   <p>{item?.products[0]?.quantity}</p>
                 </TableCell>
+                <TableCell>
+                  <p className="capitalize">
+                    {item?.payment_status === "unpaid" ? (
+                      <>
+                        {theme === "light" ? (
+                          <Badge variant="default" className="capitalize">
+                            Chưa thanh toán
+                          </Badge>
+                        ) : (
+                          <Badge variant="default" className="capitalize">
+                            Chưa thanh toán
+                          </Badge>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {theme === "light" ? (
+                          <Badge variant="secondary" className="capitalize">
+                            Đã thanh toán
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="capitalize">
+                            Đã thanh toán
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </p>
+                </TableCell>
                 <div className="my-2">
                   <FormField
                     control={control}
-                    name={`totalPrice`}
+                    name={`products[${index}].totalPrice`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -83,7 +119,7 @@ const AddReceiptTable = () => {
                 <TableCell>
                   <FormField
                     control={control}
-                    name={`orderId`}
+                    name={`products[${index}].orderId`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>

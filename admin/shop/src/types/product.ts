@@ -38,6 +38,51 @@ export type ProductData = {
   updatedAt: string;
   pendingOrderQuantity: number;
   transactionHistory: TransactionHistory[];
+  stockAdjustmentHistory: StockAdjustmentHistory[];
+};
+
+export type StockAdjustmentHistory = {
+  stockAjustmentId: {
+    _id: string;
+    code: string;
+    generalId: {
+      _id: string;
+      name: string;
+      address: string;
+      code: string;
+    };
+    staffId: {
+      _id: string;
+      username: string;
+      phone: string;
+      address: string;
+    };
+    products: ProductStockAdjustmentReport[];
+    desc: string;
+    stocktaking_day: string;
+    inventory_status: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type ProductStockAdjustmentReport = {
+  productId: {
+    _id: string;
+    name_product: string;
+    code: string;
+    type: {
+      _id: string;
+      name: string;
+    };
+    createdAt: string;
+  };
+  inventory_number: number;
+  inventory_discrepancy: number;
+  inventory_saved: number;
+  inventory_total: number;
+  reason: string;
+  _id: string;
 };
 
 export type TransactionHistory = {
@@ -75,11 +120,11 @@ export type HistoryTableProps = {
   transactionDate: string | Date;
 };
 
-interface Category {
+export type Category = {
   _id: string;
   name: string;
-}
-interface Manager {
+};
+export type Manager = {
   _id: string;
   username: string;
   email: string;
@@ -87,14 +132,14 @@ interface Manager {
   address: string;
   picture: string;
   role: string;
-}
-interface GeneralId {
+};
+export type GeneralId = {
   _id: string;
   name: string;
   type: string;
   address: string;
   manager: string;
-}
+};
 export type ProductTableProps = {
   _id: string;
   name_product: string;

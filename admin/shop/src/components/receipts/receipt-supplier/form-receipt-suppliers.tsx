@@ -47,14 +47,15 @@ const FormSupplierReceipt = ({ initialValues }: Props) => {
   const defaultValues = useMemo(
     () => ({
       code: initialValues?.code ?? "",
-      warehouseId: initialValues?.warehouseId ?? "",
       staffId: initialValues?.staffId ?? "",
-      supplierId: initialValues?.supplierId ?? "",
       desc: initialValues?.desc ?? "",
       receipt_type: initialValues?.receipt_type ?? "",
       payment_method: initialValues?.payment_method ?? "",
       submitter: initialValues?.submitter ?? "",
-      totalPrice: initialValues?.totalPrice ?? "",
+      products: initialValues.products.map((product) => ({
+        totalPrice: product?.totalPrice ? product?.totalPrice : "",
+        warehouseId: product?.warehouseId ?? "",
+      })),
     }),
     [initialValues]
   );

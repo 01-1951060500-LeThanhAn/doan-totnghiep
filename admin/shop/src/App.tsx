@@ -1,15 +1,13 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/login/page";
-import { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import HomePage from "./pages/home/page";
 import { useAppDispatch } from "./hooks/hooks";
 import { logOut } from "./redux/slices/authSlice";
 import setAuthToken from "./lib/setAuthToken";
 import DashBoardLayout from "./layouts/layout";
-
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import EditProductPage from "./pages/products/product-edit/page";
-import AddProductPage from "./pages/products/product-add/page";
 import AddCustomerPage from "./pages/customer/add/page";
 import CustomerPage from "./components/customers/_sections/list/page";
 import DetailCustomerPage from "./components/customers/detail/page";
@@ -67,6 +65,15 @@ import DetailReceiptSupplierPage from "./components/receipts/receipt-supplier/de
 import EditStaffPage from "./pages/management/staff/edit/page";
 import DetailReportGeneralPage from "./components/report/general/detail/page";
 import DetailReportInventoriesPage from "./components/report/general/view";
+import ViewStockAdjustmentPage from "./pages/stock-adjustments/page";
+import AddStockAdjustmentPage from "./pages/stock-adjustments/add/page";
+import DetailStockAdjustmentPage from "./components/stock-adjustments/detail/page";
+import StockAdjustmentPage from "./pages/report/stock-adjustments/page";
+import { Loader2 } from "lucide-react";
+
+const AddProductPage = React.lazy(
+  () => import("./pages/products/product-add/page")
+);
 
 const App = () => {
   const dispatch = useAppDispatch();
@@ -104,9 +111,11 @@ const App = () => {
       <Route
         path="/dashboard/add-product"
         element={
-          <DashBoardLayout>
-            <AddProductPage />
-          </DashBoardLayout>
+          <Suspense fallback={<Loader2 className="animate-spin" />}>
+            <DashBoardLayout>
+              <AddProductPage />
+            </DashBoardLayout>
+          </Suspense>
         }
       />
       <Route
@@ -228,6 +237,34 @@ const App = () => {
           </DashBoardLayout>
         }
       />
+
+      <Route
+        path="/dashboard/stock_adjustments"
+        element={
+          <DashBoardLayout>
+            <ViewStockAdjustmentPage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/stock_adjustments/create"
+        element={
+          <DashBoardLayout>
+            <AddStockAdjustmentPage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/stock_adjustments/:stockAdjustmentId/detail"
+        element={
+          <DashBoardLayout>
+            <DetailStockAdjustmentPage />
+          </DashBoardLayout>
+        }
+      />
+
       <Route
         path="/dashboard/purchase-order"
         element={
@@ -580,6 +617,15 @@ const App = () => {
         element={
           <DashBoardLayout>
             <FinancePage />
+          </DashBoardLayout>
+        }
+      />
+
+      <Route
+        path="/dashboard/report/stock_adjustment"
+        element={
+          <DashBoardLayout>
+            <StockAdjustmentPage />
           </DashBoardLayout>
         }
       />

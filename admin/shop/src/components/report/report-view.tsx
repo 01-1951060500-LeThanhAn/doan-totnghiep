@@ -92,6 +92,29 @@ const ReportView = () => {
               </div>
             </Link>
           </div>
+          <div
+            className={`${
+              theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
+            } rounded-lg p-3`}
+          >
+            <Link to={`/dashboard/report/stock_adjustment`}>
+              <div className="flex items-center gap-x-2">
+                <img
+                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1716214422/Screenshot_2024-05-20_211137-removebg-preview_vroe5t.png"
+                  alt=""
+                />
+                <div className="image">
+                  <p className="text-base font-semibold">
+                    Báo cáo kiểm kê hàng hóa
+                  </p>
+                  <p className="text-sm">
+                    Quản lý các thông tin khi kiểm hàng, số lượng hàng hỏng và
+                    lý do
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </HomeLayout>
     </>

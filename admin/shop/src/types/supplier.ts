@@ -47,6 +47,7 @@ export type Historywarehouse = {
   code: string;
   import_price: number;
   totalPrice: number;
+  totalSupplierPay: number;
   totalQuantity: number;
   generalId: GeneralId;
   products: {

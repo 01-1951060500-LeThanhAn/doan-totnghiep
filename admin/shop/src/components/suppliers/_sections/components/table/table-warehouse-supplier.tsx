@@ -80,10 +80,12 @@ export const columns: ColumnDef<Historywarehouse>[] = [
     },
   },
   {
-    accessorKey: "totalPrice",
+    accessorKey: "totalSupplierPay",
     header: "Tổng tiền",
     cell: ({ row }) => (
-      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalSupplierPay"))}
+      </p>
     ),
   },
 

@@ -55,9 +55,10 @@ export type DetailPartnerOrder = {
 export type OrderPartnerTableData = {
   _id: string;
   generalId: string;
-  totalPrice: number;
+  totalCustomerPay: number;
   code: string;
   payment_status: string;
   received_date: string;
   order_status: string;
+  createdAt: string | Date;
 };

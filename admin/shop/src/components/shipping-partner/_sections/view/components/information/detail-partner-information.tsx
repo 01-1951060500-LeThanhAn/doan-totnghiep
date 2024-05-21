@@ -18,15 +18,15 @@ const DetailPartnerInformation = ({ data }: Props) => {
       >
         <div className="mb-4">
           <div className="flex items-center gap-3">
-            <p className="text-2xl font-semibold">Thông tin tổng quan</p>
+            <p className="text-xl font-semibold">Thông tin tổng quan</p>
             {data?.status === "active" ? (
               <Badge variant="outline" className="capitalize">
-                Đã kết nối
+                <p> Đã kết nối</p>
               </Badge>
             ) : (
               <>
                 <Badge variant="destructive" className="capitalize">
-                  Ngừng kết nối
+                  <p> Ngừng kết nối</p>
                 </Badge>
               </>
             )}

@@ -23,7 +23,7 @@ const PurchaseOrdersPage = () => {
         breadcumbItem="Đơn đặt hàng"
         breadcumbPage="Danh sách đơn đặt hàng"
         linkBtn="/dashboard/purchase-order/create"
-        title="Thêm đơn đặt hàng"
+        title="Tạo đơn đặt hàng"
       />
 
       <PurchaseOrderTableData data={data} />

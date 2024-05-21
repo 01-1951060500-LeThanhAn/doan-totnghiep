@@ -16,6 +16,7 @@ import customerSlice from "./slices/customerSlice";
 import receiptSlice from "./slices/receiptSlice";
 import receiptSupplierSlice from "./slices/receiptSupplierSlice";
 import transactionSlice from "./slices/transactionSlice";
+import stockAdjustmentSlice from "./slices/stockAdjustmentSlice";
 
 const rootRSlice = combineReducers({
   auth: authSlice,
@@ -35,6 +36,7 @@ const rootRSlice = combineReducers({
   receipt: receiptSlice,
   receiptSupplier: receiptSupplierSlice,
   transaction: transactionSlice,
+  stockAdjustment: stockAdjustmentSlice,
 });
 
 export const store = configureStore({

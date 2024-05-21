@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const links = [
-  { name: "Tổng quan", href: "/dashboard", icon: Home },
+  { name: "Dashboard", href: "/dashboard", icon: Home },
   {
     name: "Đơn hàng",
     href: "/dashboard/orders",
@@ -56,6 +56,10 @@ const links = [
       {
         name: "Chuyển hàng",
         href: "/dashboard/delivery-note",
+      },
+      {
+        name: "Kiểm hàng",
+        href: "/dashboard/stock_adjustments",
       },
     ],
   },

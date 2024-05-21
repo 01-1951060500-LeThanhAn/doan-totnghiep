@@ -51,7 +51,7 @@ const AddReceiptTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {goodReceivedNotes?.map((item) => (
+            {goodReceivedNotes?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.code}</p>
@@ -69,7 +69,7 @@ const AddReceiptTable = () => {
                 <div className="my-2">
                   <FormField
                     control={control}
-                    name="totalPrice"
+                    name={`products[${index}].totalPrice`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
@@ -83,7 +83,7 @@ const AddReceiptTable = () => {
                 <TableCell>
                   <FormField
                     control={control}
-                    name={`warehouseId`}
+                    name={`products[${index}].warehouseId`}
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>

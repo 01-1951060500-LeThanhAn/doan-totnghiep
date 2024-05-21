@@ -1,14 +1,15 @@
 export type CreateSupplierReceiptData = {
   code: string;
-
   submitter: string;
   supplierId: string;
-  warehouseId: string;
   staffId: string;
-  totalPrice: string;
   desc: string;
   receipt_type: string;
   payment_method: string;
+  products: {
+    warehouseId: string;
+    totalPrice: number;
+  }[];
 };
 
 export type UpdateSupplierReceiptData = CreateSupplierReceiptData;

@@ -28,6 +28,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { createReturnOrderAsync } from "@/redux/slices/returnOrderSlice";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   initialValues: CreateReturnOrderData;
@@ -52,6 +53,7 @@ const FormReturnOrder = ({ initialValues, selectedOrder }: Props) => {
 
   const { theme } = useTheme();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { loading } = useAppSelector((state) => state.returnOrders);
   const form = useForm<ReturnOrderFormSchema>({
     resolver: zodResolver(returnOrderSchema),
@@ -78,6 +80,7 @@ const FormReturnOrder = ({ initialValues, selectedOrder }: Props) => {
       console.log(formData);
       await dispatch(createReturnOrderAsync(formData));
       toast.success("Tạo đơn trả hàng thành công");
+      navigate(`/dashboard/return-order`);
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error("Tạo đơn trả hàng thất bại");

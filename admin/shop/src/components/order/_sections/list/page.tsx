@@ -50,7 +50,7 @@ const OrderPage = () => {
             <p>Tất cả đơn hàng</p>
           </TabsTrigger>
           <TabsTrigger value="pending">
-            <p>Đang giao dịch</p>
+            <p>Đang xử lý</p>
           </TabsTrigger>
         </TabsList>
         <TabsContent value="all">

@@ -3,12 +3,14 @@ export type CreateReceiptData = {
   _id: string;
   submitter: string;
   customerId: string;
-  orderId: string;
   staffId: string;
-  totalPrice: string;
   desc: string;
   receipt_type: string;
   payment_method: string;
+  products: {
+    orderId: string;
+    totalPrice: number;
+  }[];
 };
 
 export type UpdateReceiptData = CreateReceiptData;
@@ -23,6 +25,13 @@ export type ReceiptData = {
     code: string;
     phone: string;
   };
+  products: {
+    orderId: {
+      _id: string;
+      code: string;
+      payment_status: string;
+    };
+  }[];
   staffId: {
     _id: string;
     username: string;
