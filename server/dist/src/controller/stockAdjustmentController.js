@@ -107,10 +107,10 @@ const updateStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
         const inventoryStatus = (updatedStockAdjustment === null || updatedStockAdjustment === void 0 ? void 0 : updatedStockAdjustment.inventory_status) === "completed";
         if (inventoryStatus) {
             const productUpdates = updatedStockAdjustment.products.map((productAdjustment) => __awaiter(void 0, void 0, void 0, function* () {
-                const { productId, inventory_discrepancy, inventory_number } = productAdjustment;
+                const { productId, inventory_saved, inventory_discrepancy, inventory_number, inventory_total, } = productAdjustment;
                 const product = yield ProductModel_1.default.findByIdAndUpdate(productId, {
                     $inc: {
-                        inventory_number: inventory_discrepancy,
+                        inventory_number: inventory_number - inventory_discrepancy + inventory_total,
                     },
                     $push: {
                         stockAdjustmentHistory: {
@@ -119,7 +119,7 @@ const updateStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     },
                 }, { new: true });
                 if (!product) {
-                    console.error(`Error get product ${productId}`);
+                    console.error(`Error updating product ${productId}`);
                 }
                 return product;
             }));

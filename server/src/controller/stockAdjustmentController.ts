@@ -115,14 +115,20 @@ const updateStockAdjustment = async (req: Request, res: Response) => {
     if (inventoryStatus) {
       const productUpdates = updatedStockAdjustment.products.map(
         async (productAdjustment) => {
-          const { productId, inventory_discrepancy, inventory_number } =
-            productAdjustment;
+          const {
+            productId,
+            inventory_saved,
+            inventory_discrepancy,
+            inventory_number,
+            inventory_total,
+          } = productAdjustment;
 
           const product = await ProductModel.findByIdAndUpdate(
             productId,
             {
               $inc: {
-                inventory_number: inventory_discrepancy,
+                inventory_number:
+                  inventory_number - inventory_discrepancy + inventory_total,
               },
               $push: {
                 stockAdjustmentHistory: {
@@ -134,7 +140,7 @@ const updateStockAdjustment = async (req: Request, res: Response) => {
           );
 
           if (!product) {
-            console.error(`Error get product ${productId}`);
+            console.error(`Error updating product ${productId}`);
           }
 
           return product;

@@ -31,6 +31,10 @@ const StockAdjustmentSchema = new mongoose.Schema(
           type: Number,
           default: 0,
         },
+        inventory_total: {
+          type: Number,
+          default: 0,
+        },
         inventory_saved: {
           type: Number,
           default: 0,
@@ -79,6 +83,9 @@ StockAdjustmentSchema.pre("save", async function (next) {
       product.inventory_number -
       foundProductDoc.inventory_number +
       product.inventory_saved;
+
+    product.inventory_total =
+      product.inventory_number - foundProductDoc.inventory_number;
   }
 
   next();
