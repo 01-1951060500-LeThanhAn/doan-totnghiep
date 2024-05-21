@@ -4,38 +4,47 @@ import WarehouseModel from "../model/WarehouseModel";
 import ReceiptSupplierModel from "../model/ReceiptSupplierModel";
 const createReceiptSupplier = async (req: Request, res: Response) => {
   try {
-    const { supplierId, totalPrice, warehouseId } = req.body;
+    const { supplierId, products } = req.body;
 
-    if (!supplierId || !warehouseId) {
+    if (!supplierId || products.length === 0) {
       return res.status(400).json("Missing supplierId or warehouseId");
     }
     const supplier = await SupplierModel.findById(supplierId);
     if (!supplier) {
       return res.status(400).json("Supplier not found");
     }
-    const currentBalanceIncreases = supplier?.balance_increases || 0;
-    const currentBalanceDecreases = supplier?.balance_decreases || 0;
-    const remainingDecreases =
-      currentBalanceIncreases - currentBalanceDecreases;
-    const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-    const updatedRemainingDecreases = Math.max(
-      remainingDecreases - totalPrice,
-      0
-    );
-    await SupplierModel.findByIdAndUpdate(supplierId, {
-      balance_decreases: updatedBalanceDecreases,
-      remaining_decreases: updatedRemainingDecreases,
-      ending_balance: updatedRemainingDecreases,
+    const productUpdates = products?.map(async (product: any) => {
+      const { totalPrice, warehouseId } = product;
+
+      if (!warehouseId || !totalPrice) {
+        return res.status(400).json({ message: "Missing receipt  details" });
+      }
+
+      const currentBalanceIncreases = supplier?.balance_increases || 0;
+      const currentBalanceDecreases = supplier?.balance_decreases || 0;
+      const remainingDecreases =
+        currentBalanceIncreases - currentBalanceDecreases;
+      const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - totalPrice,
+        0
+      );
+      await SupplierModel.findByIdAndUpdate(supplierId, {
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
+
+      await WarehouseModel.findByIdAndUpdate(warehouseId, {
+        $inc: { totalPrice: -totalPrice },
+      });
     });
 
-    await WarehouseModel.findByIdAndUpdate(warehouseId, {
-      $inc: { totalPrice: -totalPrice },
-    });
+    await Promise.all([productUpdates]);
 
     const receiptOrder = new ReceiptSupplierModel({
       ...req.body,
       supplierId: supplier._id,
-      totalPrice,
     });
 
     await receiptOrder.save();

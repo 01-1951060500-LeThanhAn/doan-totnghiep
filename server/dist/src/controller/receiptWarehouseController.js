@@ -18,28 +18,35 @@ const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ReceiptSupplierModel_1 = __importDefault(require("../model/ReceiptSupplierModel"));
 const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { supplierId, totalPrice, warehouseId } = req.body;
-        if (!supplierId || !warehouseId) {
+        const { supplierId, products } = req.body;
+        if (!supplierId || products.length === 0) {
             return res.status(400).json("Missing supplierId or warehouseId");
         }
         const supplier = yield SupplierModel_1.default.findById(supplierId);
         if (!supplier) {
             return res.status(400).json("Supplier not found");
         }
-        const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
-        const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
-        const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
-        const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-        const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-        yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
-            balance_decreases: updatedBalanceDecreases,
-            remaining_decreases: updatedRemainingDecreases,
-            ending_balance: updatedRemainingDecreases,
-        });
-        yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
-            $inc: { totalPrice: -totalPrice },
-        });
-        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, totalPrice }));
+        const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+            const { totalPrice, warehouseId } = product;
+            if (!warehouseId || !totalPrice) {
+                return res.status(400).json({ message: "Missing receipt  details" });
+            }
+            const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
+            const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
+            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
+            const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
+                balance_decreases: updatedBalanceDecreases,
+                remaining_decreases: updatedRemainingDecreases,
+                ending_balance: updatedRemainingDecreases,
+            });
+            yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
+                $inc: { totalPrice: -totalPrice },
+            });
+        }));
+        yield Promise.all([productUpdates]);
+        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }

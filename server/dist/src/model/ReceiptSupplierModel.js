@@ -31,10 +31,20 @@ const ReceiptSupplierSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "users",
     },
-    warehouseId: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "purchase_orders",
-    },
+    products: [
+        {
+            warehouseId: {
+                type: mongoose_1.default.Schema.Types.ObjectId,
+                ref: "purchase_orders",
+                required: true,
+            },
+            totalPrice: {
+                type: Number,
+                default: 0,
+                required: true,
+            },
+        },
+    ],
     receipt_type: {
         type: String,
         enum: ["debt-customer", "receive-supplier"],
@@ -44,10 +54,6 @@ const ReceiptSupplierSchema = new mongoose_1.default.Schema({
         type: String,
         enum: ["banking", "money"],
         default: "money",
-    },
-    totalPrice: {
-        type: Number,
-        default: 0,
     },
     payment_status: {
         type: String,
