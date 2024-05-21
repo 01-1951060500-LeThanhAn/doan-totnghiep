@@ -67,7 +67,7 @@ const getInfoPartner = async (req: Request, res: Response) => {
             _id: 1,
             products: 1,
             generalId: 1,
-            totalPrice: 1,
+            totalCustomerPay: 1,
             payment_status: 1,
             code: 1,
             received_date: 1,
@@ -83,7 +83,7 @@ const getInfoPartner = async (req: Request, res: Response) => {
           _id: "$_id",
 
           totalSpending: {
-            $sum: "$orders.totalPrice",
+            $sum: "$orders.totalCustomerPay",
           },
           totalOrders: {
             $sum: 1,
