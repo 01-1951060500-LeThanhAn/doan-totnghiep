@@ -76,7 +76,9 @@ StockAdjustmentSchema.pre("save", async function (next) {
     }
 
     product.inventory_discrepancy =
-      product.inventory_number - foundProductDoc.inventory_number;
+      product.inventory_number -
+      foundProductDoc.inventory_number +
+      product.inventory_saved;
   }
 
   next();

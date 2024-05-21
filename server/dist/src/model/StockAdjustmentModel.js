@@ -81,7 +81,9 @@ StockAdjustmentSchema.pre("save", function (next) {
                 continue;
             }
             product.inventory_discrepancy =
-                product.inventory_number - foundProductDoc.inventory_number;
+                product.inventory_number -
+                    foundProductDoc.inventory_number +
+                    product.inventory_saved;
         }
         next();
     });
