@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchOrder = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -552,3 +552,45 @@ const searchOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.searchOrder = searchOrder;
+const searchDateOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { startDate, endDate } = req.query;
+    try {
+        let parsedStartDate = null;
+        let parsedEndDate = null;
+        if (startDate && endDate) {
+            parsedStartDate = new Date(startDate.toString());
+            parsedEndDate = new Date(endDate.toString());
+            if (isNaN(parsedStartDate.getTime()) || isNaN(parsedEndDate.getTime())) {
+                throw new Error("Invalid date format. Dates should be in YYYY-MM-DD format.");
+            }
+            if (parsedStartDate > parsedEndDate) {
+                throw new Error("Start date must be before end date.");
+            }
+        }
+        const query = {};
+        if (parsedStartDate && parsedEndDate) {
+            query.received_date = { $gte: parsedStartDate, $lte: parsedEndDate };
+        }
+        const populatedOrders = yield OrderModel_1.default.find(query)
+            .populate({
+            path: "partnerId",
+            select: "username phone address",
+        })
+            .populate({
+            path: "customerId",
+            select: "username code address phone createdAt",
+        })
+            .catch((error) => {
+            console.error("Error during population:", error);
+        });
+        return res.status(200).json(populatedOrders);
+    }
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "An error occurred during order search.",
+        });
+    }
+});
+exports.searchDateOrders = searchDateOrders;

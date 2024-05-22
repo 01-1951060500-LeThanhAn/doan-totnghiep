@@ -7,6 +7,7 @@ import {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  searchDateOrders,
   getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
   getIncomeOrdersProduct,
@@ -50,4 +51,9 @@ router.get(
 
 router.get("/search/status-orders", verifyTokenAndAuthorization, searchOrder);
 
+router.get(
+  "/search/date-orders",
+  verifyTokenAndAuthorization,
+  searchDateOrders
+);
 export default router;

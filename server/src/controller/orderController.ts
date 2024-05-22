@@ -643,6 +643,57 @@ const searchOrder = async (req: Request, res: Response) => {
   }
 };
 
+const searchDateOrders = async (req: Request, res: Response) => {
+  const { startDate, endDate } = req.query;
+
+  try {
+    let parsedStartDate: Date | null = null;
+    let parsedEndDate: Date | null = null;
+
+    if (startDate && endDate) {
+      parsedStartDate = new Date(startDate.toString());
+      parsedEndDate = new Date(endDate.toString());
+
+      if (isNaN(parsedStartDate.getTime()) || isNaN(parsedEndDate.getTime())) {
+        throw new Error(
+          "Invalid date format. Dates should be in YYYY-MM-DD format."
+        );
+      }
+
+      if (parsedStartDate > parsedEndDate) {
+        throw new Error("Start date must be before end date.");
+      }
+    }
+
+    const query: any = {};
+
+    if (parsedStartDate && parsedEndDate) {
+      query.received_date = { $gte: parsedStartDate, $lte: parsedEndDate };
+    }
+
+    const populatedOrders = await OrderModel.find(query)
+      .populate({
+        path: "partnerId",
+        select: "username phone address",
+      })
+      .populate({
+        path: "customerId",
+        select: "username code address phone createdAt",
+      })
+      .catch((error) => {
+        console.error("Error during population:", error);
+      });
+
+    return res.status(200).json(populatedOrders);
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "An error occurred during order search.",
+    });
+  }
+};
+
 export {
   createOrder,
   getAllOrder,
@@ -651,6 +702,7 @@ export {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  searchDateOrders,
   getIncomeOrdersGeneral,
   getIncomeOrdersCustomer,
   getIncomeOrdersProduct,

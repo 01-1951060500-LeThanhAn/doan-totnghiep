@@ -9,7 +9,6 @@ const OrderSchema = new mongoose.Schema(
     },
     partnerId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "partner",
     },
     userId: {

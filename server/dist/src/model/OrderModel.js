@@ -21,7 +21,6 @@ const OrderSchema = new mongoose_1.default.Schema({
     },
     partnerId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        required: true,
         ref: "partner",
     },
     userId: {
