@@ -251,11 +251,23 @@ const getTotalCustomer = (req, res) => __awaiter(void 0, void 0, void 0, functio
                     month: {
                         $month: "$createdAt",
                     },
+                    year: {
+                        $year: "$createdAt",
+                    },
+                    fullDate: {
+                        $dateToString: { format: "%Y-%m", date: "$createdAt" },
+                    },
                 },
             },
             {
                 $group: {
                     _id: "$month",
+                    year: {
+                        $first: "$year",
+                    },
+                    date: {
+                        $first: "$fullDate",
+                    },
                     total: {
                         $sum: 1,
                     },
