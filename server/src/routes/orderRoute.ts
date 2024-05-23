@@ -11,6 +11,7 @@ import {
   getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
   getIncomeOrdersProduct,
+  getIncomeOrdersArea,
 } from "../controller/orderController";
 import {
   verifyTokenAndAdmin,
@@ -41,6 +42,12 @@ router.get(
   "/income/total-orders-customer",
   verifyTokenAndAdmin,
   getIncomeOrdersCustomer
+);
+
+router.get(
+  "/income/total-orders-area",
+  verifyTokenAndAdmin,
+  getIncomeOrdersArea
 );
 
 router.get(
