@@ -499,14 +499,16 @@ const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, f
                     quantity: {
                         $first: "$orders.products.quantity",
                     },
-                    totalPrice: "$orders.totalPrice",
+                    totalPrice: "$orders.totalCustomerPay",
                     productName: "$products.name_product",
+                    productId: "$products._id",
                     productCode: "$products.code",
                 },
             },
             {
                 $group: {
                     _id: "$_id.customer",
+                    productId: { $first: "$productId" },
                     total_quantity: { $sum: "$quantity" },
                     totalPrice: { $sum: "$totalPrice" },
                     product_name: { $first: "$productName" },
