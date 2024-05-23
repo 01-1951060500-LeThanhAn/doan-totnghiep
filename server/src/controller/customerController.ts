@@ -260,13 +260,8 @@ const getTotalCustomer = async (req: Request, res: Response) => {
       },
       {
         $group: {
-          _id: "$month",
-          year: {
-            $first: "$year",
-          },
-          date: {
-            $first: "$fullDate",
-          },
+          _id: "$fullDate",
+
           total: {
             $sum: 1,
           },
