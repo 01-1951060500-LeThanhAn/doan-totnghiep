@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -396,6 +396,63 @@ const getRevenueOrdersMonth = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getRevenueOrdersMonth = getRevenueOrdersMonth;
+const getRevenueOrdersStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                    payment_status: "paid",
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "users",
+                },
+            },
+            {
+                $unwind: "$users",
+            },
+            {
+                $project: {
+                    _id: {
+                        _id: "$users._id",
+                        username: "$users.username",
+                        email: "$users.email",
+                        month: { $month: "$createdAt" },
+                    },
+                    total_quantity: {
+                        $sum: 1,
+                    },
+                    total_price: {
+                        $sum: "$totalCustomerPay",
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id._id",
+                    email: { $first: "$_id.email" },
+                    username: { $first: "$_id.username" },
+                    total_quantity: { $sum: "$total_quantity" },
+                    total_price: { $sum: "$total_price" },
+                },
+            },
+        ];
+        const results = yield OrderModel_1.default.aggregate(pipeline);
+        res.status(200).json(results);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching warehouse statistics" });
+    }
+});
+exports.getRevenueOrdersStaff = getRevenueOrdersStaff;
 const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
