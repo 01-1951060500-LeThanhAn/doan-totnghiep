@@ -328,7 +328,8 @@ const getIncomeOrders = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.getIncomeOrders = getIncomeOrders;
 const getRevenueOrdersMonth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
-    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+    const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
     try {
         const incomeData = yield OrderModel_1.default.aggregate([
             {
@@ -340,7 +341,7 @@ const getRevenueOrdersMonth = (req, res) => __awaiter(void 0, void 0, void 0, fu
             {
                 $project: {
                     _id: {
-                        $dateToString: { format: "%m", date: "$createdAt" },
+                        $dateToString: { format: "%m/%Y", date: "$createdAt" },
                     },
                     month: {
                         $month: "$createdAt",
@@ -362,6 +363,9 @@ const getRevenueOrdersMonth = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     total_income: { $sum: "$totalPrice" },
                     total_orders: { $sum: "$total_orders" },
                 },
+            },
+            {
+                $sort: { month: 1 },
             },
         ]);
         const statusData = yield OrderModel_1.default.aggregate([

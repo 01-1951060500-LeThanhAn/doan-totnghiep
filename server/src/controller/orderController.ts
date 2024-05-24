@@ -382,7 +382,8 @@ const getIncomeOrders = async (req: Request, res: Response) => {
 
 const getRevenueOrdersMonth = async (req: Request, res: Response) => {
   const date = new Date();
-  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
 
   try {
     const incomeData = await OrderModel.aggregate([
@@ -395,7 +396,7 @@ const getRevenueOrdersMonth = async (req: Request, res: Response) => {
       {
         $project: {
           _id: {
-            $dateToString: { format: "%m", date: "$createdAt" },
+            $dateToString: { format: "%m/%Y", date: "$createdAt" },
           },
           month: {
             $month: "$createdAt",
@@ -418,6 +419,9 @@ const getRevenueOrdersMonth = async (req: Request, res: Response) => {
           total_income: { $sum: "$totalPrice" },
           total_orders: { $sum: "$total_orders" },
         },
+      },
+      {
+        $sort: { month: 1 },
       },
     ]);
 
