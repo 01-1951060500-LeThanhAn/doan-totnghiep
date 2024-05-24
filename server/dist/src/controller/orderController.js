@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -581,6 +581,53 @@ const getIncomeOrdersArea = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getIncomeOrdersArea = getIncomeOrdersArea;
+const getIncomeOrdersCustomerGroup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const results = yield CustomerModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "customerId",
+                    as: "orders",
+                },
+            },
+            {
+                $unwind: "$orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        type: "$type",
+                    },
+                    totalPrice: "$orders.totalCustomerPay",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.type",
+                    totalCustomers: { $sum: 1 },
+                    totalOrders: { $sum: 1 },
+                    totalPrice: { $sum: "$totalPrice" },
+                },
+            },
+        ]);
+        res.status(200).json(results);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching income data by location" });
+    }
+});
+exports.getIncomeOrdersCustomerGroup = getIncomeOrdersCustomerGroup;
 const searchOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const status = req.query.status;
     const keyword = req.query.keyword;

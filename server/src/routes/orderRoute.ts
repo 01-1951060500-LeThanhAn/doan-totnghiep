@@ -10,6 +10,7 @@ import {
   searchDateOrders,
   getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
+  getIncomeOrdersCustomerGroup,
   getIncomeOrdersProduct,
   getIncomeOrdersArea,
 } from "../controller/orderController";
@@ -54,6 +55,12 @@ router.get(
   "/income/total-orders-product",
   verifyTokenAndAdmin,
   getIncomeOrdersProduct
+);
+
+router.get(
+  "/income/total-orders-customer-group",
+  verifyTokenAndAdmin,
+  getIncomeOrdersCustomerGroup
 );
 
 router.get("/search/status-orders", verifyTokenAndAuthorization, searchOrder);

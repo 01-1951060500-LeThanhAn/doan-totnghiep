@@ -673,6 +673,54 @@ const getIncomeOrdersArea = async (req: Request, res: Response) => {
   }
 };
 
+const getIncomeOrdersCustomerGroup = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const results = await CustomerModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            type: "$type",
+          },
+          totalPrice: "$orders.totalCustomerPay",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.type",
+          totalCustomers: { $sum: 1 },
+          totalOrders: { $sum: 1 },
+          totalPrice: { $sum: "$totalPrice" },
+        },
+      },
+    ]);
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by location" });
+  }
+};
+
 const searchOrder = async (req: Request, res: Response) => {
   const status = req.query.status as string;
   const keyword = req.query.keyword as string;
@@ -758,4 +806,5 @@ export {
   getIncomeOrdersCustomer,
   getIncomeOrdersProduct,
   getIncomeOrdersArea,
+  getIncomeOrdersCustomerGroup,
 };
