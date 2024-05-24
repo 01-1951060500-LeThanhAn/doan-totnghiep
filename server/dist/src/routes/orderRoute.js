@@ -12,7 +12,8 @@ router.get(`/`, auth_1.verifyTokenAndAuthorization, orderController_1.getAllOrde
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, orderController_1.getDetailOrder);
 router.patch(`/:id`, auth_1.verifyTokenAndAuthorization, orderController_1.updateOrder);
 router.delete("/:id", auth_1.verifyTokenAndAuthorization, orderController_1.deleteOrder);
-router.get("/income/total-orders", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrders);
+router.get("/income/revenue-orders-day", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrders);
+router.get("/income/revenue-orders-month", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersMonth);
 router.get("/income/total-orders-general", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersGeneral);
 router.get("/income/total-orders-customer", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersCustomer);
 router.get("/income/total-orders-area", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersArea);

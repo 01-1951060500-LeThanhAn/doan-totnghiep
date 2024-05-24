@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -280,7 +280,11 @@ const getIncomeOrders = (req, res) => __awaiter(void 0, void 0, void 0, function
                         $month: "$createdAt",
                     },
                     totalPrice: {
-                        $cond: [{ $eq: ["$payment_status", "paid"] }, "$totalPrice", 0],
+                        $cond: [
+                            { $eq: ["$payment_status", "paid"] },
+                            "$totalCustomerPay",
+                            0,
+                        ],
                     },
                     total_orders: { $sum: 1 },
                 },
@@ -322,6 +326,72 @@ const getIncomeOrders = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.getIncomeOrders = getIncomeOrders;
+const getRevenueOrdersMonth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const incomeData = yield OrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                    payment_status: "paid",
+                },
+            },
+            {
+                $project: {
+                    _id: {
+                        $dateToString: { format: "%m", date: "$createdAt" },
+                    },
+                    month: {
+                        $month: "$createdAt",
+                    },
+                    totalPrice: {
+                        $cond: [
+                            { $eq: ["$payment_status", "paid"] },
+                            "$totalCustomerPay",
+                            0,
+                        ],
+                    },
+                    total_orders: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    month: { $first: "$month" },
+                    total_income: { $sum: "$totalPrice" },
+                    total_orders: { $sum: "$total_orders" },
+                },
+            },
+        ]);
+        const statusData = yield OrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $group: {
+                    _id: "$order_status",
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+        const response = {
+            incomeData,
+            statusData: statusData.map((item) => ({
+                status: item._id,
+                count: item.count,
+            })),
+        };
+        res.status(200).json(response);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching income and status data" });
+    }
+});
+exports.getRevenueOrdersMonth = getRevenueOrdersMonth;
 const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));

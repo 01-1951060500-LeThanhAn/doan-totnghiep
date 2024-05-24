@@ -330,8 +330,83 @@ const getIncomeOrders = async (req: Request, res: Response) => {
           month: {
             $month: "$createdAt",
           },
+
           totalPrice: {
-            $cond: [{ $eq: ["$payment_status", "paid"] }, "$totalPrice", 0],
+            $cond: [
+              { $eq: ["$payment_status", "paid"] },
+              "$totalCustomerPay",
+              0,
+            ],
+          },
+          total_orders: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          month: { $first: "$month" },
+          total_income: { $sum: "$totalPrice" },
+          total_orders: { $sum: "$total_orders" },
+        },
+      },
+    ]);
+
+    const statusData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $group: {
+          _id: "$order_status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const response = {
+      incomeData,
+      statusData: statusData.map((item) => ({
+        status: item._id,
+        count: item.count,
+      })),
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income and status data" });
+  }
+};
+
+const getRevenueOrdersMonth = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          payment_status: "paid",
+        },
+      },
+      {
+        $project: {
+          _id: {
+            $dateToString: { format: "%m", date: "$createdAt" },
+          },
+          month: {
+            $month: "$createdAt",
+          },
+
+          totalPrice: {
+            $cond: [
+              { $eq: ["$payment_status", "paid"] },
+              "$totalCustomerPay",
+              0,
+            ],
           },
           total_orders: { $sum: 1 },
         },
@@ -800,6 +875,7 @@ export {
   deleteOrder,
   getDetailOrder,
   getIncomeOrders,
+  getRevenueOrdersMonth,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,

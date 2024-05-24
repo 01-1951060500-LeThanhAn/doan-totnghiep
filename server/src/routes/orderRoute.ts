@@ -7,6 +7,7 @@ import {
   getDetailOrder,
   getIncomeOrders,
   searchOrder,
+  getRevenueOrdersMonth,
   searchDateOrders,
   getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
@@ -31,7 +32,13 @@ router.patch(`/:id`, verifyTokenAndAuthorization, updateOrder);
 
 router.delete("/:id", verifyTokenAndAuthorization, deleteOrder);
 
-router.get("/income/total-orders", verifyTokenAndAdmin, getIncomeOrders);
+router.get("/income/revenue-orders-day", verifyTokenAndAdmin, getIncomeOrders);
+
+router.get(
+  "/income/revenue-orders-month",
+  verifyTokenAndAdmin,
+  getRevenueOrdersMonth
+);
 
 router.get(
   "/income/total-orders-general",
