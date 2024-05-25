@@ -20,7 +20,11 @@ import useRole from "@/hooks/useRole";
 import { Label } from "../../ui/label";
 import { loginUser } from "@/api/userApi";
 import { saveToken } from "@/lib/saveToken";
-import { createUserLoginAsync } from "@/redux/slices/authSlice";
+import {
+  loginFailed,
+  loginStart,
+  loginSuccess,
+} from "@/redux/slices/authSlice";
 
 const LoginForm = () => {
   const form = useForm<UserFormSchema>({
@@ -37,18 +41,21 @@ const LoginForm = () => {
 
   const navigate = useNavigate();
   const onSubmit = async () => {
+    dispatch(loginStart());
     try {
       const formData = form.getValues() as unknown as User;
       const response = await loginUser(formData);
       if (response.data.success) {
         saveToken(response.data.token);
-        await dispatch(createUserLoginAsync(formData));
+        dispatch(loginSuccess(response.data.user));
       }
       toast.success("Đăng nhập thành công");
       navigate(`/dashboard`);
     } catch (error) {
       toast.error("Sai mật khẩu .Vui lòng đăng nhập lại");
     }
+
+    dispatch(loginFailed());
   };
   return (
     <Form {...form}>

@@ -92,6 +92,12 @@ const DetailCustomerPage = ({ customer }: Props) => {
                 <span>{customer?.results?.tax_code}</span>
               </div>
             </div>
+            <div className="my-3">
+              <div className="flex items-center justify-between">
+                <p className="">Địa chỉ:</p>
+                <span>{customer?.results?.city}</span>
+              </div>
+            </div>
           </div>
         </div>
         <TableOrderCustomer orders={customer?.orders} />

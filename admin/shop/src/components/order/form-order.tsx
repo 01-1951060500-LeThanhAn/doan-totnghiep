@@ -278,7 +278,7 @@ const FormOrder = ({ initialValues }: Props) => {
                     name="partnerId"
                     render={({ field }) => (
                       <FormItem>
-                        <p>Người vận chuyển</p>
+                        <p>Đối tác giao hàng</p>
                         <FormControl>
                           <div>
                             <Select
@@ -286,7 +286,7 @@ const FormOrder = ({ initialValues }: Props) => {
                               defaultValue={field.value}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Chọn người vận chuyển" />
+                                <SelectValue placeholder="Chọn Đối tác giao hàng" />
                               </SelectTrigger>
 
                               <SelectContent>

@@ -3,11 +3,14 @@ import React from "react";
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
 };
 
-const CustomScrollbarTable = ({ children }: Props) => {
+const CustomScrollbarTable = ({ children, className }: Props) => {
   return (
-    <ScrollArea className="w-full whitespace-nowrap mb-12 lg:mb-0 rounded-md">
+    <ScrollArea
+      className={`w-full whitespace-nowrap mb-12 lg:mb-0 rounded-md ${className}`}
+    >
       {children}
       <ScrollBar orientation="horizontal" />
     </ScrollArea>

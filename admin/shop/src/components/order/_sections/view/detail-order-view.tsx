@@ -96,12 +96,14 @@ const DetailOrderView = ({ data, id }: Props) => {
                 <div className="flex items-center min-w-64 my-2 gap-x-4">
                   <p className="">Tổng chi tiêu : </p>
                   <span className="text-blue-600">
-                    {formatPrice(data?.totalPrice)}
+                    {formatPrice(data?.totalCustomerPay)}
                   </span>
                 </div>
                 <div className="flex items-center min-w-64 my-2 gap-x-4">
                   <p className="">Trả hàng: </p>
-                  <span className="text-red-500">0</span>
+                  <span className="text-red-500">
+                    {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                  </span>
                 </div>
               </div>
             </div>

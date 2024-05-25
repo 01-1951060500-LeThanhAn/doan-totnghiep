@@ -1,12 +1,13 @@
 import {
   Home,
   Handshake,
-  NotepadText,
   ShoppingCart,
   User2,
   Warehouse,
   Box,
   Receipt,
+  Truck,
+  LineChart,
 } from "lucide-react";
 
 const links = [
@@ -25,10 +26,7 @@ const links = [
         name: "Danh sách đơn hàng",
         href: "/dashboard/orders",
       },
-      {
-        name: "Kết nối đối tác",
-        href: "/dashboard/shipping-partner",
-      },
+
       {
         name: "Khách trả hàng",
         href: "/dashboard/return-order",
@@ -101,22 +99,22 @@ const links = [
     hideOnMobile: true,
   },
   {
-    name: "Báo cáo kho",
+    name: "Báo cáo",
     href: "/dashboard/report",
-    icon: NotepadText,
+    icon: LineChart,
     hideOnMobile: true,
     data: [
       {
-        name: "Báo cáo nhập kho",
+        name: "Báo cáo nhập hàng",
         href: "/dashboard/report/import",
       },
       {
-        name: "Báo cáo xuất kho",
-        href: "/dashboard/report/export",
+        name: "Báo cáo bán hàng",
+        href: "/dashboard/report/order/analytic_orders",
       },
       {
         name: "Báo cáo khách hàng",
-        href: "/dashboard/report/customer",
+        href: "/dashboard/report/customer/analytic_customers",
       },
       {
         name: "Báo cáo kho",
@@ -132,6 +130,22 @@ const links = [
     name: "Quản lý kho",
     href: "/dashboard/management",
     icon: Warehouse,
+  },
+  {
+    name: "Vận chuyển",
+    href: "/dashboard/shipments",
+    icon: Truck,
+    hideOnMobile: true,
+    data: [
+      {
+        name: "Quản lý vận đơn",
+        href: "/dashboard/shipments",
+      },
+      {
+        name: "Kết nối đối tác",
+        href: "/dashboard/shipping-partner",
+      },
+    ],
   },
 ];
 

@@ -65,6 +65,7 @@ export type OrdersData = {
   payment_method: string;
   note: string;
   total_ship: number;
+  totalQuantity: number;
   createdAt: string;
   totalCustomerPay: number;
 };
@@ -132,4 +133,16 @@ export type ProductId = {
   status: string;
   img: string;
   desc: string;
+};
+
+export type ShipmentsData = {
+  code: string;
+  received_date: string | Date;
+  customer: string;
+  phone: number;
+  partner: string;
+  order_status: string;
+  totalPrice: number;
+  totalShip: number;
+  createdAt: string | Date;
 };

@@ -50,9 +50,7 @@ export const columns: ColumnDef<OrdersData>[] = [
     header: "Mã đơn hàng",
     cell: ({ row }) => (
       <Link to={`/dashboard/orders/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("code")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("code")}</p>
       </Link>
     ),
   },
