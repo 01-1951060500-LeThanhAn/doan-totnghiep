@@ -12,11 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
-const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -453,6 +452,52 @@ const getRevenueOrdersStaff = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getRevenueOrdersStaff = getRevenueOrdersStaff;
+const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const incomeData = yield OrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "general",
+                    localField: "generalId",
+                    foreignField: "_id",
+                    as: "general",
+                },
+            },
+            {
+                $unwind: "$general",
+            },
+            {
+                $project: {
+                    _id: {
+                        name: "$general.name",
+                    },
+                    totalPrice: "$totalCustomerPay",
+                    totalOrders: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.name",
+                    totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$totalOrders" },
+                },
+            },
+        ]);
+        return res.status(200).json(incomeData);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getIncomeOrdersGeneral = getIncomeOrdersGeneral;
 const getRevenueOrdersProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -501,73 +546,7 @@ const getRevenueOrdersProducts = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.getRevenueOrdersProducts = getRevenueOrdersProducts;
-const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const date = new Date();
-    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
-    try {
-        const pipeline = [
-            {
-                $match: {
-                    createdAt: { $gte: previousMonth },
-                },
-            },
-            {
-                $lookup: {
-                    from: "orders",
-                    localField: "_id",
-                    foreignField: "generalId",
-                    as: "orders",
-                },
-            },
-            {
-                $unwind: "$orders",
-            },
-            {
-                $project: {
-                    _id: {
-                        general: "$orders.generalId",
-                        month: { $month: "$createdAt" },
-                    },
-                    count: {
-                        $first: "$orders.products.quantity",
-                    },
-                    totalPrice: {
-                        $cond: [
-                            { $eq: ["$orders.payment_status", "paid"] },
-                            "$orders.totalPrice",
-                            0,
-                        ],
-                    },
-                },
-            },
-            {
-                $group: {
-                    _id: "$_id.general",
-                    month: { $first: "$_id.month" },
-                    total_products: { $sum: "$count" },
-                    totalPrice: { $sum: "$totalPrice" },
-                },
-            },
-        ];
-        const results = yield GeneralDepotModel_1.default.aggregate(pipeline);
-        const enrichedResults = [];
-        for (const result of results) {
-            const warehouseId = result._id;
-            const warehouse = yield GeneralDepotModel_1.default.findById(warehouseId);
-            if (warehouse) {
-                const enrichedResult = Object.assign(Object.assign({}, result), { name: warehouse.name, type: warehouse.type });
-                enrichedResults.push(enrichedResult);
-            }
-        }
-        res.status(200).json(enrichedResults);
-    }
-    catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Error fetching income data" });
-    }
-});
-exports.getIncomeOrdersGeneral = getIncomeOrdersGeneral;
-const getIncomeOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     try {
@@ -608,13 +587,15 @@ const getIncomeOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, 
                     quantity: {
                         $first: "$orders.products.quantity",
                     },
-                    totalPrice: "$orders.totalPrice",
+                    totalOrders: { $sum: 1 },
+                    totalPrice: "$orders.totalCustomerPay",
                 },
             },
             {
                 $group: {
                     _id: "$_id.customer",
                     total_quantity: { $sum: "$quantity" },
+                    totalOrders: { $sum: "$totalOrders" },
                     totalPrice: { $sum: "$totalPrice" },
                 },
             },
@@ -625,7 +606,7 @@ const getIncomeOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, 
             const customerId = result._id;
             const customer = yield CustomerModel_1.default.findById(customerId);
             if (customer) {
-                const enrichedResult = Object.assign(Object.assign({}, result), { name: customer.username });
+                const enrichedResult = Object.assign(Object.assign({}, result), { name: customer.username, code: customer.code });
                 enrichedResults.push(enrichedResult);
             }
         }
@@ -636,7 +617,7 @@ const getIncomeOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0, 
         res.status(500).json({ message: "Error fetching income data by customer" });
     }
 });
-exports.getIncomeOrdersCustomer = getIncomeOrdersCustomer;
+exports.getRevenueOrdersCustomer = getRevenueOrdersCustomer;
 const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));

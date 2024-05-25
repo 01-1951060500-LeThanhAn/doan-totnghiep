@@ -16,8 +16,8 @@ router.get("/income/revenue-orders-day", auth_1.verifyTokenAndAdmin, orderContro
 router.get("/income/revenue-orders-month", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersMonth);
 router.get("/income/revenue-orders-staff", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersStaff);
 router.get("/income/revenue-orders-product", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersProducts);
+router.get("/income/revenue-orders-customer", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersCustomer);
 router.get("/income/total-orders-general", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersGeneral);
-router.get("/income/total-orders-customer", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersCustomer);
 router.get("/income/total-orders-area", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersArea);
 router.get("/income/total-orders-product", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersProduct);
 router.get("/income/total-orders-customer-group", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersCustomerGroup);

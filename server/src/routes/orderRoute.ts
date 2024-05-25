@@ -11,7 +11,7 @@ import {
   getRevenueOrdersStaff,
   getRevenueOrdersProducts,
   searchDateOrders,
-  getIncomeOrdersCustomer,
+  getRevenueOrdersCustomer,
   getIncomeOrdersGeneral,
   getIncomeOrdersCustomerGroup,
   getIncomeOrdersProduct,
@@ -55,15 +55,15 @@ router.get(
 );
 
 router.get(
-  "/income/total-orders-general",
+  "/income/revenue-orders-customer",
   verifyTokenAndAdmin,
-  getIncomeOrdersGeneral
+  getRevenueOrdersCustomer
 );
 
 router.get(
-  "/income/total-orders-customer",
+  "/income/total-orders-general",
   verifyTokenAndAdmin,
-  getIncomeOrdersCustomer
+  getIncomeOrdersGeneral
 );
 
 router.get(

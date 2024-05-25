@@ -516,6 +516,54 @@ const getRevenueOrdersStaff = async (req: Request, res: Response) => {
   }
 };
 
+const getIncomeOrdersGeneral = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "general",
+          localField: "generalId",
+          foreignField: "_id",
+          as: "general",
+        },
+      },
+      {
+        $unwind: "$general",
+      },
+      {
+        $project: {
+          _id: {
+            name: "$general.name",
+          },
+          totalPrice: "$totalCustomerPay",
+          totalOrders: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.name",
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
+        },
+      },
+    ]);
+
+    return res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getRevenueOrdersProducts = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -564,81 +612,7 @@ const getRevenueOrdersProducts = async (req: Request, res: Response) => {
   }
 };
 
-const getIncomeOrdersGeneral = async (req: Request, res: Response) => {
-  const date = new Date();
-  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
-
-  try {
-    const pipeline = [
-      {
-        $match: {
-          createdAt: { $gte: previousMonth },
-        },
-      },
-      {
-        $lookup: {
-          from: "orders",
-          localField: "_id",
-          foreignField: "generalId",
-          as: "orders",
-        },
-      },
-      {
-        $unwind: "$orders",
-      },
-      {
-        $project: {
-          _id: {
-            general: "$orders.generalId",
-            month: { $month: "$createdAt" },
-          },
-          count: {
-            $first: "$orders.products.quantity",
-          },
-          totalPrice: {
-            $cond: [
-              { $eq: ["$orders.payment_status", "paid"] },
-              "$orders.totalPrice",
-              0,
-            ],
-          },
-        },
-      },
-      {
-        $group: {
-          _id: "$_id.general",
-          month: { $first: "$_id.month" },
-          total_products: { $sum: "$count" },
-          totalPrice: { $sum: "$totalPrice" },
-        },
-      },
-    ];
-
-    const results = await GeneralDepotModel.aggregate(pipeline);
-
-    const enrichedResults = [];
-    for (const result of results) {
-      const warehouseId = result._id;
-      const warehouse = await GeneralDepotModel.findById(warehouseId);
-
-      if (warehouse) {
-        const enrichedResult = {
-          ...result,
-          name: warehouse.name,
-          type: warehouse.type,
-        };
-        enrichedResults.push(enrichedResult);
-      }
-    }
-
-    res.status(200).json(enrichedResults);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Error fetching income data" });
-  }
-};
-
-const getIncomeOrdersCustomer = async (req: Request, res: Response) => {
+const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
 
@@ -684,13 +658,16 @@ const getIncomeOrdersCustomer = async (req: Request, res: Response) => {
             $first: "$orders.products.quantity",
           },
 
-          totalPrice: "$orders.totalPrice",
+          totalOrders: { $sum: 1 },
+
+          totalPrice: "$orders.totalCustomerPay",
         },
       },
       {
         $group: {
           _id: "$_id.customer",
           total_quantity: { $sum: "$quantity" },
+          totalOrders: { $sum: "$totalOrders" },
           totalPrice: { $sum: "$totalPrice" },
         },
       },
@@ -709,6 +686,7 @@ const getIncomeOrdersCustomer = async (req: Request, res: Response) => {
         const enrichedResult = {
           ...result,
           name: customer.username,
+          code: customer.code,
         };
 
         enrichedResults.push(enrichedResult);
@@ -995,7 +973,7 @@ export {
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,
-  getIncomeOrdersCustomer,
+  getRevenueOrdersCustomer,
   getIncomeOrdersProduct,
   getIncomeOrdersArea,
   getIncomeOrdersCustomerGroup,
