@@ -512,7 +512,55 @@ const getRevenueOrdersStaff = async (req: Request, res: Response) => {
     res.status(200).json(results);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching warehouse statistics" });
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getRevenueOrdersProducts = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+  try {
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          _id: "$products._id",
+          productName: "$products.name_product",
+          productCode: "$products.code",
+          totalPrice: "$totalCustomerPay",
+          totalOrders: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name_product: { $first: "$productName" },
+          code: { $first: "$productCode" },
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
+        },
+      },
+    ]);
+
+    return res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -943,6 +991,7 @@ export {
   getIncomeOrders,
   getRevenueOrdersMonth,
   getRevenueOrdersStaff,
+  getRevenueOrdersProducts,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,

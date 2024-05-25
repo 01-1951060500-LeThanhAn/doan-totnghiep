@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getIncomeOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -449,10 +449,58 @@ const getRevenueOrdersStaff = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
     catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error fetching warehouse statistics" });
+        res.status(500).json({ message: "Server error" });
     }
 });
 exports.getRevenueOrdersStaff = getRevenueOrdersStaff;
+const getRevenueOrdersProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const incomeData = yield OrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "products.productId",
+                    foreignField: "_id",
+                    as: "products",
+                },
+            },
+            {
+                $unwind: "$products",
+            },
+            {
+                $project: {
+                    _id: "$products._id",
+                    productName: "$products.name_product",
+                    productCode: "$products.code",
+                    totalPrice: "$totalCustomerPay",
+                    totalOrders: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    name_product: { $first: "$productName" },
+                    code: { $first: "$productCode" },
+                    totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$totalOrders" },
+                },
+            },
+        ]);
+        return res.status(200).json(incomeData);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getRevenueOrdersProducts = getRevenueOrdersProducts;
 const getIncomeOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));

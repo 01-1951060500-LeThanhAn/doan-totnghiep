@@ -9,6 +9,7 @@ import {
   searchOrder,
   getRevenueOrdersMonth,
   getRevenueOrdersStaff,
+  getRevenueOrdersProducts,
   searchDateOrders,
   getIncomeOrdersCustomer,
   getIncomeOrdersGeneral,
@@ -45,6 +46,12 @@ router.get(
   "/income/revenue-orders-staff",
   verifyTokenAndAdmin,
   getRevenueOrdersStaff
+);
+
+router.get(
+  "/income/revenue-orders-product",
+  verifyTokenAndAdmin,
+  getRevenueOrdersProducts
 );
 
 router.get(
