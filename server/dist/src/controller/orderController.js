@@ -826,6 +826,11 @@ const getShipmentOrderPartner = (req, res) => __awaiter(void 0, void 0, void 0, 
                 $unwind: "$orders",
             },
             {
+                $match: {
+                    "orders.payment_status": "paid",
+                },
+            },
+            {
                 $project: {
                     _id: {
                         partner: "$orders.partnerId",
@@ -881,6 +886,11 @@ const getShipmentOrderGeneral = (req, res) => __awaiter(void 0, void 0, void 0, 
             },
             {
                 $unwind: "$orders",
+            },
+            {
+                $match: {
+                    "orders.payment_status": "paid",
+                },
             },
             {
                 $project: {

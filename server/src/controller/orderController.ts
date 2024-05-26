@@ -912,7 +912,11 @@ const getShipmentOrderPartner = async (req: Request, res: Response) => {
       {
         $unwind: "$orders",
       },
-
+      {
+        $match: {
+          "orders.payment_status": "paid",
+        },
+      },
       {
         $project: {
           _id: {
@@ -981,6 +985,11 @@ const getShipmentOrderGeneral = async (req: Request, res: Response) => {
       },
       {
         $unwind: "$orders",
+      },
+      {
+        $match: {
+          "orders.payment_status": "paid",
+        },
       },
       {
         $project: {
