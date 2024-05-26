@@ -14,6 +14,7 @@ import {
   getRevenueOrdersCustomer,
   getShipmentOrdersTime,
   getShipmentOrdersStaff,
+  getShipmentOrderPartner,
   getRevenueOrdersCustomerGroup,
   getIncomeOrdersGeneral,
   getIncomeOrdersCustomerGroup,
@@ -79,6 +80,12 @@ router.get(
   "/income/shipments-orders-staff",
   verifyTokenAndAdmin,
   getShipmentOrdersStaff
+);
+
+router.get(
+  "/income/shipments-orders-partner",
+  verifyTokenAndAdmin,
+  getShipmentOrderPartner
 );
 
 router.get(

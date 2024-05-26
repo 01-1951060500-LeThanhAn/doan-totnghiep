@@ -20,6 +20,7 @@ router.get("/income/revenue-orders-customer", auth_1.verifyTokenAndAdmin, orderC
 router.get("/income/revenue-orders-customer-group", auth_1.verifyTokenAndAdmin, orderController_1.getRevenueOrdersCustomerGroup);
 router.get("/income/shipments-orders-time", auth_1.verifyTokenAndAdmin, orderController_1.getShipmentOrdersTime);
 router.get("/income/shipments-orders-staff", auth_1.verifyTokenAndAdmin, orderController_1.getShipmentOrdersStaff);
+router.get("/income/shipments-orders-partner", auth_1.verifyTokenAndAdmin, orderController_1.getShipmentOrderPartner);
 router.get("/income/total-orders-general", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersGeneral);
 router.get("/income/total-orders-area", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersArea);
 router.get("/income/total-orders-product", auth_1.verifyTokenAndAdmin, orderController_1.getIncomeOrdersProduct);

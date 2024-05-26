@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrderPartner = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
+const PartnerModel_1 = __importDefault(require("../model/PartnerModel"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { customerId, userId, products } = req.body;
@@ -802,6 +803,68 @@ const getShipmentOrdersStaff = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getShipmentOrdersStaff = getShipmentOrdersStaff;
+const getShipmentOrderPartner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pineline = [
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "partnerId",
+                    as: "orders",
+                },
+            },
+            {
+                $unwind: "$orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        partner: "$orders.partnerId",
+                    },
+                    quantity: {
+                        $first: "$orders.products.quantity",
+                    },
+                    totalOrders: { $sum: 1 },
+                    totalPrice: "$orders.totalCustomerPay",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.partner",
+                    totalQuantity: { $sum: "$quantity" },
+                    totalOrders: { $sum: "$totalOrders" },
+                    totalPrice: { $sum: "$totalPrice" },
+                },
+            },
+        ];
+        const results = yield PartnerModel_1.default.aggregate(pineline);
+        const enrichedResults = [];
+        for (const result of results) {
+            const partnerId = result._id;
+            const partner = yield PartnerModel_1.default.findById(partnerId);
+            if (partner) {
+                const enrichedResult = Object.assign(Object.assign({}, result), { username: partner.username, code: partner.code });
+                enrichedResults.push(enrichedResult);
+            }
+        }
+        return res.status(200).json(enrichedResults);
+    }
+    catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: "Error fetching shipment data by partner" });
+    }
+});
+exports.getShipmentOrderPartner = getShipmentOrderPartner;
 const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));

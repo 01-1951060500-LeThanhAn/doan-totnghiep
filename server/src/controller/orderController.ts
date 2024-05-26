@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import OrderModel from "../model/OrderModel";
 import CustomerModel from "../model/CustomerModel";
 import ProductModel from "../model/ProductModel";
-import GeneralDepotModel from "../model/GeneralDepotModel";
 import TransactionModel from "../model/TransactionModel";
+import PartnerModel from "../model/PartnerModel";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -888,6 +888,82 @@ const getShipmentOrdersStaff = async (req: Request, res: Response) => {
   }
 };
 
+const getShipmentOrderPartner = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pineline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "partnerId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+
+      {
+        $project: {
+          _id: {
+            partner: "$orders.partnerId",
+          },
+
+          quantity: {
+            $first: "$orders.products.quantity",
+          },
+          totalOrders: { $sum: 1 },
+          totalPrice: "$orders.totalCustomerPay",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.partner",
+          totalQuantity: { $sum: "$quantity" },
+          totalOrders: { $sum: "$totalOrders" },
+          totalPrice: { $sum: "$totalPrice" },
+        },
+      },
+    ];
+
+    const results = await PartnerModel.aggregate(pineline);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const partnerId = result._id;
+
+      const partner = await PartnerModel.findById(partnerId);
+
+      if (partner) {
+        const enrichedResult = {
+          ...result,
+          username: partner.username,
+          code: partner.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    return res.status(200).json(enrichedResults);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error fetching shipment data by partner" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1161,6 +1237,7 @@ export {
   getRevenueOrdersCustomerGroup,
   getShipmentOrdersTime,
   getShipmentOrdersStaff,
+  getShipmentOrderPartner,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,
