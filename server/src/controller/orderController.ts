@@ -4,6 +4,7 @@ import CustomerModel from "../model/CustomerModel";
 import ProductModel from "../model/ProductModel";
 import TransactionModel from "../model/TransactionModel";
 import PartnerModel from "../model/PartnerModel";
+import GeneralDepotModel from "../model/GeneralDepotModel";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -964,6 +965,71 @@ const getShipmentOrderPartner = async (req: Request, res: Response) => {
   }
 };
 
+const getShipmentOrderGeneral = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+      {
+        $project: {
+          _id: {
+            code: "$orders.generalId",
+          },
+          quantity: {
+            $first: "$orders.products.quantity",
+          },
+          totalPrice: "$orders.totalCustomerPay",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.code",
+          totalOrders: { $sum: 1 },
+          totalQuantity: { $sum: "$quantity" },
+          totalPrice: { $sum: "$totalPrice" },
+        },
+      },
+    ];
+
+    const results = await GeneralDepotModel.aggregate(pipeline);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const generalId = result._id;
+
+      const general = await GeneralDepotModel.findById(generalId);
+
+      if (general) {
+        const enrichedResult = {
+          ...result,
+          name: general.name,
+          code: general.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    res.status(200).json(enrichedResults);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1238,6 +1304,7 @@ export {
   getShipmentOrdersTime,
   getShipmentOrdersStaff,
   getShipmentOrderPartner,
+  getShipmentOrderGeneral,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,

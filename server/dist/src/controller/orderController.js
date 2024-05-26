@@ -12,12 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrderPartner = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrderGeneral = exports.getShipmentOrderPartner = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const PartnerModel_1 = __importDefault(require("../model/PartnerModel"));
+const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { customerId, userId, products } = req.body;
@@ -865,6 +866,60 @@ const getShipmentOrderPartner = (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.getShipmentOrderPartner = getShipmentOrderPartner;
+const getShipmentOrderGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pipeline = [
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "generalId",
+                    as: "orders",
+                },
+            },
+            {
+                $unwind: "$orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        code: "$orders.generalId",
+                    },
+                    quantity: {
+                        $first: "$orders.products.quantity",
+                    },
+                    totalPrice: "$orders.totalCustomerPay",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.code",
+                    totalOrders: { $sum: 1 },
+                    totalQuantity: { $sum: "$quantity" },
+                    totalPrice: { $sum: "$totalPrice" },
+                },
+            },
+        ];
+        const results = yield GeneralDepotModel_1.default.aggregate(pipeline);
+        const enrichedResults = [];
+        for (const result of results) {
+            const generalId = result._id;
+            const general = yield GeneralDepotModel_1.default.findById(generalId);
+            if (general) {
+                const enrichedResult = Object.assign(Object.assign({}, result), { name: general.name, code: general.code });
+                enrichedResults.push(enrichedResult);
+            }
+        }
+        res.status(200).json(enrichedResults);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getShipmentOrderGeneral = getShipmentOrderGeneral;
 const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
