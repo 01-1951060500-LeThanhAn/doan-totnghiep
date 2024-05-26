@@ -752,6 +752,51 @@ const getRevenueOrdersCustomerGroup = async (req: Request, res: Response) => {
   }
 };
 
+const getShipmentOrdersTime = async (req: Request, res: Response) => {
+  const date = new Date();
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+
+  try {
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          order_status: "delivered",
+        },
+      },
+      {
+        $project: {
+          _id: {
+            $dateToString: { format: "%m/%Y", date: "$createdAt" },
+          },
+          totalPrice: "$totalCustomerPay",
+          total_orders: { $sum: 1 },
+          totalQuantity: {
+            $sum: "$products.quantity",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          total_income: { $sum: "$totalPrice" },
+          total_orders: { $sum: "$total_orders" },
+          totalQuantity: { $sum: "$totalQuantity" },
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+    ]);
+
+    res.status(200).json(incomeData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income and status data" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1023,6 +1068,7 @@ export {
   getRevenueOrdersStaff,
   getRevenueOrdersProducts,
   getRevenueOrdersCustomerGroup,
+  getShipmentOrdersTime,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,

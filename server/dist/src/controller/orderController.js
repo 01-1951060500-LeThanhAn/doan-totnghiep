@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -669,6 +669,50 @@ const getRevenueOrdersCustomerGroup = (req, res) => __awaiter(void 0, void 0, vo
     }
 });
 exports.getRevenueOrdersCustomerGroup = getRevenueOrdersCustomerGroup;
+const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+    const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+    try {
+        const incomeData = yield OrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                    order_status: "delivered",
+                },
+            },
+            {
+                $project: {
+                    _id: {
+                        $dateToString: { format: "%m/%Y", date: "$createdAt" },
+                    },
+                    totalPrice: "$totalCustomerPay",
+                    total_orders: { $sum: 1 },
+                    totalQuantity: {
+                        $sum: "$products.quantity",
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    total_income: { $sum: "$totalPrice" },
+                    total_orders: { $sum: "$total_orders" },
+                    totalQuantity: { $sum: "$totalQuantity" },
+                },
+            },
+            {
+                $sort: { month: 1 },
+            },
+        ]);
+        res.status(200).json(incomeData);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching income and status data" });
+    }
+});
+exports.getShipmentOrdersTime = getShipmentOrdersTime;
 const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
