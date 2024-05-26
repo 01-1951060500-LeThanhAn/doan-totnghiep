@@ -801,6 +801,93 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
   }
 };
 
+const getShipmentOrdersStaff = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+      {
+        $unwind: "$users",
+      },
+      {
+        $project: {
+          _id: {
+            _id: "$users._id",
+            username: "$users.username",
+            email: "$users.email",
+          },
+          totalDeliveredOrders: {
+            $cond: {
+              if: { $eq: ["$order_status", "delivered"] },
+              then: 1,
+              else: 0,
+            },
+          },
+          totalPendingOrders: {
+            $cond: {
+              if: { $eq: ["$order_status", "pending"] },
+              then: 1,
+              else: 0,
+            },
+          },
+          totalPriceDelivered: {
+            $cond: {
+              if: { $eq: ["$order_status", "delivered"] },
+              then: "$totalCustomerPay",
+              else: 0,
+            },
+          },
+          totalPricePending: {
+            $cond: {
+              if: { $eq: ["$order_status", "pending"] },
+              then: "$totalCustomerPay",
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id._id",
+          email: { $first: "$_id.email" },
+          username: { $first: "$_id.username" },
+          // totalOrders: {
+          //   $sum: { $add: ["$totalDeliveredOrders", "$totalPendingOrders"] },
+          // },
+          // totalPrice: {
+          //   $sum: { $add: ["$totalPriceDelivered", "$totalPricePending"] },
+          // },
+          totalDeliveredOrders: { $sum: "$totalDeliveredOrders" },
+          totalPendingOrders: { $sum: "$totalPendingOrders" },
+          totalPriceDelivered: { $sum: "$totalPriceDelivered" },
+          totalPricePending: { $sum: "$totalPricePending" },
+        },
+      },
+    ];
+
+    const results = await OrderModel.aggregate(pipeline);
+
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1073,6 +1160,7 @@ export {
   getRevenueOrdersProducts,
   getRevenueOrdersCustomerGroup,
   getShipmentOrdersTime,
+  getShipmentOrdersStaff,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,

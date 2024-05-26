@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -717,6 +717,91 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getShipmentOrdersTime = getShipmentOrdersTime;
+const getShipmentOrdersStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "users",
+                },
+            },
+            {
+                $unwind: "$users",
+            },
+            {
+                $project: {
+                    _id: {
+                        _id: "$users._id",
+                        username: "$users.username",
+                        email: "$users.email",
+                    },
+                    totalDeliveredOrders: {
+                        $cond: {
+                            if: { $eq: ["$order_status", "delivered"] },
+                            then: 1,
+                            else: 0,
+                        },
+                    },
+                    totalPendingOrders: {
+                        $cond: {
+                            if: { $eq: ["$order_status", "pending"] },
+                            then: 1,
+                            else: 0,
+                        },
+                    },
+                    totalPriceDelivered: {
+                        $cond: {
+                            if: { $eq: ["$order_status", "delivered"] },
+                            then: "$totalCustomerPay",
+                            else: 0,
+                        },
+                    },
+                    totalPricePending: {
+                        $cond: {
+                            if: { $eq: ["$order_status", "pending"] },
+                            then: "$totalCustomerPay",
+                            else: 0,
+                        },
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id._id",
+                    email: { $first: "$_id.email" },
+                    username: { $first: "$_id.username" },
+                    // totalOrders: {
+                    //   $sum: { $add: ["$totalDeliveredOrders", "$totalPendingOrders"] },
+                    // },
+                    // totalPrice: {
+                    //   $sum: { $add: ["$totalPriceDelivered", "$totalPricePending"] },
+                    // },
+                    totalDeliveredOrders: { $sum: "$totalDeliveredOrders" },
+                    totalPendingOrders: { $sum: "$totalPendingOrders" },
+                    totalPriceDelivered: { $sum: "$totalPriceDelivered" },
+                    totalPricePending: { $sum: "$totalPricePending" },
+                },
+            },
+        ];
+        const results = yield OrderModel_1.default.aggregate(pipeline);
+        res.status(200).json(results);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getShipmentOrdersStaff = getShipmentOrdersStaff;
 const getIncomeOrdersProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));

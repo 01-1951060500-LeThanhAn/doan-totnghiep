@@ -13,6 +13,7 @@ import {
   searchDateOrders,
   getRevenueOrdersCustomer,
   getShipmentOrdersTime,
+  getShipmentOrdersStaff,
   getRevenueOrdersCustomerGroup,
   getIncomeOrdersGeneral,
   getIncomeOrdersCustomerGroup,
@@ -72,6 +73,12 @@ router.get(
   "/income/shipments-orders-time",
   verifyTokenAndAdmin,
   getShipmentOrdersTime
+);
+
+router.get(
+  "/income/shipments-orders-staff",
+  verifyTokenAndAdmin,
+  getShipmentOrdersStaff
 );
 
 router.get(
