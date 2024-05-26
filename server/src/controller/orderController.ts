@@ -780,8 +780,8 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
       {
         $group: {
           _id: "$_id",
-          total_income: { $sum: "$totalPrice" },
-          total_orders: { $sum: "$total_orders" },
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$total_orders" },
           totalQuantity: { $sum: "$totalQuantity" },
         },
       },

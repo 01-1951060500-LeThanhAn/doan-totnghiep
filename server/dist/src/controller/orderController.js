@@ -696,8 +696,8 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
             {
                 $group: {
                     _id: "$_id",
-                    total_income: { $sum: "$totalPrice" },
-                    total_orders: { $sum: "$total_orders" },
+                    totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$total_orders" },
                     totalQuantity: { $sum: "$totalQuantity" },
                 },
             },
