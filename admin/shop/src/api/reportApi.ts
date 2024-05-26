@@ -8,6 +8,9 @@ import {
   ReportRevenueByCustomerGroupData,
   ReportRevenueByProductData,
   ReportRevenueByStaffData,
+  ReportShipmentByPartner,
+  ReportShipmentByStaff,
+  ReportShipmentsByTime,
 } from "@/types/report";
 import { adminApi } from ".";
 
@@ -74,6 +77,34 @@ const getOrderRevenueByCustomerGroup = async () => {
   return response.data;
 };
 
+const getOrderShipmentByTime = async () => {
+  const response = await adminApi.get<ReportShipmentsByTime[]>(
+    `/orders/income/shipments-orders-time`
+  );
+  return response.data;
+};
+
+const getOrderShipmentByStaff = async () => {
+  const response = await adminApi.get<ReportShipmentByStaff[]>(
+    `/orders/income/shipments-orders-staff`
+  );
+  return response.data;
+};
+
+const getOrderShipmentByPartner = async () => {
+  const response = await adminApi.get<ReportShipmentByPartner[]>(
+    `/orders/income/shipments-orders-partner`
+  );
+  return response.data;
+};
+
+const getOrderShipmentByGeneral = async () => {
+  const response = await adminApi.get<ReportShipmentByPartner[]>(
+    `/orders/income/shipments-orders-general`
+  );
+  return response.data;
+};
+
 export {
   getTotalCustomers,
   getOrderCustomerbyProducts,
@@ -84,4 +115,8 @@ export {
   getOrderRevenueByProduct,
   getOrderRevenueByCustomerGroup,
   getOrderRevenueByCustomer,
+  getOrderShipmentByTime,
+  getOrderShipmentByPartner,
+  getOrderShipmentByStaff,
+  getOrderShipmentByGeneral,
 };

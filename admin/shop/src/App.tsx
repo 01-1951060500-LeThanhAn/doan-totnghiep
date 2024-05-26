@@ -4,7 +4,7 @@ import { useAppDispatch } from "./hooks/hooks";
 import { logOut } from "./redux/slices/authSlice";
 import setAuthToken from "./lib/setAuthToken";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-
+import { toast } from "sonner";
 import routes from "./routes";
 
 const App = () => {
@@ -14,6 +14,7 @@ const App = () => {
     if (localStorage.getItem("token") === null) {
       dispatch(logOut());
       navigate("/dashboard/login");
+      toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
     } else {
       setAuthToken(localStorage.getItem("token"));
     }

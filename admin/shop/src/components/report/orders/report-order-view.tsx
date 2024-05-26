@@ -35,9 +35,7 @@ const ReportOrderView = () => {
               theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
             } rounded-lg p-3`}
           >
-            <Link
-              to={`/dashboard/report/order/analytic_customers/customer_by_product`}
-            >
+            <Link to={`/dashboard/report/order/analytic_orders/shipments`}>
               <div className="flex flex-col items-center gap-x-2">
                 <Truck />
                 <div className="my-2">

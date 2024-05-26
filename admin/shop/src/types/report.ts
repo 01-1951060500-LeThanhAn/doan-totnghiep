@@ -82,3 +82,27 @@ export type ReportRevenueByCustomerGroupData = {
   totalOrders: number;
   totalPrice: number;
 };
+
+export type ReportShipmentsByTime = ReportRevenueByCustomerGroupData;
+
+export type ReportShipmentByStaff = {
+  _id: string;
+  email: string;
+  username: string;
+  totalDeliveredOrders: number;
+  totalPendingOrders: number;
+  totalPriceDelivered: number;
+  totalPricePending: number;
+};
+
+export type ReportShipmentByPartner = {
+  _id: string;
+  code: string;
+  username: string;
+  name: string;
+  totalQuantity: number;
+  totalPrice: number;
+  totalOrders: number;
+};
+
+export type ReportShipmentByGeneral = ReportShipmentByPartner;
