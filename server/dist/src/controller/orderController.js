@@ -686,6 +686,9 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     _id: {
                         $dateToString: { format: "%m/%Y", date: "$createdAt" },
                     },
+                    month: {
+                        $month: "$createdAt",
+                    },
                     totalPrice: "$totalCustomerPay",
                     total_orders: { $sum: 1 },
                     totalQuantity: {
@@ -696,6 +699,7 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
             {
                 $group: {
                     _id: "$_id",
+                    month: { $first: "$month" },
                     totalPrice: { $sum: "$totalPrice" },
                     totalOrders: { $sum: "$total_orders" },
                     totalQuantity: { $sum: "$totalQuantity" },

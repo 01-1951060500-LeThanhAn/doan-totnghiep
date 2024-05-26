@@ -770,6 +770,9 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
           _id: {
             $dateToString: { format: "%m/%Y", date: "$createdAt" },
           },
+          month: {
+            $month: "$createdAt",
+          },
           totalPrice: "$totalCustomerPay",
           total_orders: { $sum: 1 },
           totalQuantity: {
@@ -780,6 +783,7 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
       {
         $group: {
           _id: "$_id",
+          month: { $first: "$month" },
           totalPrice: { $sum: "$totalPrice" },
           totalOrders: { $sum: "$total_orders" },
           totalQuantity: { $sum: "$totalQuantity" },
