@@ -5,6 +5,7 @@ import ReportShipmentsByStatus from "../_sections/components/shipments_status";
 import ReportShipmentByStaff from "../_sections/components/shipments_staff";
 import ReportShipmentByPartner from "../_sections/components/shipments_partner";
 import ReportShipmentByGeneral from "../_sections/components/shipments_general";
+import ReportShipmentByCustomer from "../_sections/components/shipments_customer";
 
 const ViewReportShipments = () => {
   return (
@@ -27,6 +28,9 @@ const ViewReportShipments = () => {
             <TabsTrigger value="shipments_general">
               <p>Báo cáo giao hàng theo chi nhánh</p>
             </TabsTrigger>
+            <TabsTrigger value="shipments_customer">
+              <p>Báo cáo giao hàng theo khách hàng</p>
+            </TabsTrigger>
           </TabsList>
         </CustomScrollbarTable>
         <TabsContent value="shipments_time">
@@ -43,6 +47,9 @@ const ViewReportShipments = () => {
         </TabsContent>
         <TabsContent value="shipments_general">
           <ReportShipmentByGeneral />
+        </TabsContent>
+        <TabsContent value="shipments_customer">
+          <ReportShipmentByCustomer />
         </TabsContent>
       </Tabs>
     </>

@@ -17,10 +17,11 @@ import { useForm } from "react-hook-form";
 import { useAppDispatch } from "@/hooks/hooks";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { updateStaffAsync } from "@/redux/slices/staffSlice";
 import { useNavigate } from "react-router-dom";
+import FormUploadStaff from "./components/form-upload-staff";
 
 type Props = {
   id?: string;
@@ -34,6 +35,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
       email: initialValues?.email ?? "",
       address: initialValues?.address ?? "",
       phone: initialValues?.phone ?? "",
+      picture: initialValues?.picture ?? "",
     }),
     [initialValues]
   );
@@ -43,6 +45,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
     defaultValues,
   });
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   useEffect(() => {
@@ -56,10 +59,24 @@ const FormStaff = ({ initialValues, id }: Props) => {
     try {
       setLoading(true);
       const formData = form.getValues() as UpdateStaffData;
+      const data = new FormData();
+      data.append("file", file as File);
+      data.append("upload_preset", "ecommerce");
+      data.append("cloud_name", "dhwufmyi4");
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dhwufmyi4/image/upload`,
+        data
+      );
+
+      const updatedStaff = {
+        ...formData,
+        picture: res.data?.url,
+      } as UpdateStaffData;
+
       await dispatch(
         updateStaffAsync({
           id,
-          data: formData,
+          data: updatedStaff,
         })
       );
       setLoading(false);
@@ -145,8 +162,12 @@ const FormStaff = ({ initialValues, id }: Props) => {
               </div>
             </div>
 
+            <div className="col-span-1  mt-4">
+              <FormUploadStaff name="picture" setFile={setFile} />
+            </div>
+
             <div></div>
-            <div className="mb-12">
+            <div className="mb-12 col-end-4">
               {loading ? (
                 <Button disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

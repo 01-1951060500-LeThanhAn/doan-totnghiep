@@ -22,4 +22,15 @@ export type StaffData = {
   };
 };
 
-export type UpdateStaffData = CreateStaffData;
+export type UpdateStaffData = {
+  _id: string;
+  username: string;
+  address: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+  generalId: string;
+  phone: string;
+  picture: string;
+};

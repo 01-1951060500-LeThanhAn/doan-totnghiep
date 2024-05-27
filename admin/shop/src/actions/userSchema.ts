@@ -8,8 +8,7 @@ export const formUserSchema = z.object({
 
 export const userChema = z.object({
   email: z.string().min(1, "Email is required"),
-  username: z.string().min(1, "Usernamw is required"),
-  picture: z.string().optional(),
+  username: z.string().min(1, "Username is required"),
 });
 
 export type UserFormSchema = z.infer<typeof formUserSchema>;

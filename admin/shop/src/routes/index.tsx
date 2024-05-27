@@ -20,6 +20,7 @@ import DebtCustomersPage from "@/components/report/finance/debt-customers/list/p
 import DebtSuppliersPage from "@/components/report/finance/debt-suppliers/list/page";
 import DetailReportGeneralPage from "@/components/report/general/detail/page";
 import DetailReportInventoriesPage from "@/components/report/general/view";
+import ReportPaymentPage from "@/components/report/orders/payments/page";
 import ReportRevenuePage from "@/components/report/orders/revenue/page";
 import ReportShipmentPage from "@/components/report/orders/shipments/page";
 import DetailReturnOrderPage from "@/components/return-order/detail/page";
@@ -734,6 +735,15 @@ const routes = [
       </DashBoardLayout>
     ),
     name: "Báo cáo thông tin giao hàng",
+  },
+  {
+    path: "/dashboard/report/order/analytic_orders/payments",
+    element: (
+      <DashBoardLayout>
+        <ReportPaymentPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo thanh toán",
   },
 ];
 

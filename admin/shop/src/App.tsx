@@ -24,11 +24,15 @@ const App = () => {
     if (token) {
       try {
         const decodedToken = jwtDecode<JwtPayload>(token);
+
         if (decodedToken && decodedToken.exp) {
           const expireTime = decodedToken.exp * 1000;
+
           if (Date.now() > expireTime) {
             localStorage.removeItem("token");
             localStorage.removeItem("userInfo");
+            dispatch(logOut());
+            navigate("/dashboard/login");
           }
         }
       } catch (error) {

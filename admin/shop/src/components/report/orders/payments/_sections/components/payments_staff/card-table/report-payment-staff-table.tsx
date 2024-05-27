@@ -34,65 +34,65 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
 import { formatPrice } from "@/config/format-price";
-import { ReportShipmentByGeneral } from "@/types/report";
-import { Link } from "react-router-dom";
+import { ReportPaymentByStaff } from "@/types/report";
 
-export const columns: ColumnDef<ReportShipmentByGeneral>[] = [
+export const columns: ColumnDef<ReportPaymentByStaff>[] = [
   {
-    accessorKey: "name",
-    header: "Tên chi nhánh",
+    accessorKey: "username",
+    header: "Tên nhân viên",
     cell: ({ row }) => (
-      <p className="capitalize text-blue-400 ">{row.getValue("name")}</p>
+      <p className="capitalize text-blue-400 ">{row.getValue("username")}</p>
     ),
   },
   {
-    accessorKey: "_id",
-    header: "",
+    accessorKey: "email",
+    header: "Email nhân viên",
+    cell: ({ row }) => <p className="capitalize ">{row.getValue("email")}</p>,
+  },
+  {
+    accessorKey: "totalPriceDeliveredOnline",
+    header: "Thanh toán chuyển khoản",
     cell: ({ row }) => (
-      <p className="capitalize text-blue-400 ">{row.getValue("")}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalPriceDeliveredOnline"))}
+      </p>
     ),
   },
   {
-    accessorKey: "code",
-    header: "Mã chi nhánh",
+    accessorKey: "totalPriceDeliveredOffline",
+    header: "Thanh toán tiền mặt",
     cell: ({ row }) => (
-      <Link to={`/dashboard/general/${row.getValue("_id")}/detail`}>
-        {" "}
-        <p className="capitalize text-blue-400">{row.getValue("code")}</p>
-      </Link>
-    ),
-  },
-
-  {
-    accessorKey: "totalOrders",
-    header: "SL đơn hàng đã thanh toán",
-    cell: ({ row }) => (
-      <p className="capitalize ">{row.getValue("totalOrders")}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalPriceDeliveredOffline"))}
+      </p>
     ),
   },
 
   {
-    accessorKey: "totalQuantity",
-    header: "SL hàng đã thanh toán",
+    accessorKey: "totalPricePending",
+    header: "Tổng tiền hàng chưa giao",
     cell: ({ row }) => (
-      <p className="capitalize ">{row.getValue("totalQuantity")}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalPricePending"))}
+      </p>
     ),
   },
-
   {
-    accessorKey: "totalPrice",
-    header: "Tổng doanh thu",
+    accessorKey: "totalPriceDelivered",
+    header: "Tổng tiền hàng đã thanh toán",
     cell: ({ row }) => (
-      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+      <p className="capitalize">
+        {formatPrice(row.getValue("totalPriceDelivered"))}
+      </p>
     ),
   },
 ];
 
 type Props = {
-  data: ReportShipmentByGeneral[];
+  data: ReportPaymentByStaff[];
 };
 
-export default function ReportShipmentGeneralTable({ data }: Props) {
+export default function ReportPaymentStaffTable({ data }: Props) {
   const [startIndex, setStartIndex] = React.useState(0);
   const [endIndex, setEndIndex] = React.useState(4);
   const [loading, setLoading] = React.useState(false);
@@ -133,7 +133,7 @@ export default function ReportShipmentGeneralTable({ data }: Props) {
   return (
     <CustomScrollbarTable>
       <div
-        className={`w-full rounded-xl mb-4 ${
+        className={`w-full mt-4 rounded-xl mb-4 ${
           theme === "dark" ? "shadow-md bg-[#212B36]" : "shadow-md"
         }`}
       >

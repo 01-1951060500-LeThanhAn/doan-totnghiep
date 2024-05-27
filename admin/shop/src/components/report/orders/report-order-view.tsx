@@ -1,11 +1,5 @@
 import HomeLayout from "@/layouts/home-layout";
-import {
-  Box,
-  CircleDollarSign,
-  CreditCard,
-  ShoppingCart,
-  Truck,
-} from "lucide-react";
+import { Box, CircleDollarSign, CreditCard, Truck } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
 const ReportOrderView = () => {
@@ -67,29 +61,11 @@ const ReportOrderView = () => {
               theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
             } rounded-lg p-3`}
           >
-            <Link
-              to={`/dashboard/report/order/analytic_customers/customer_by_group`}
-            >
+            <Link to={`/dashboard/report/order/analytic_orders/payments`}>
               <div className="flex flex-col items-center gap-x-2">
                 <CreditCard />
                 <div className="my-2">
                   <p className="text-base text-center">Báo cáo thanh toán</p>
-                </div>
-              </div>
-            </Link>
-          </div>
-          <div
-            className={`${
-              theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
-            } rounded-lg p-3`}
-          >
-            <Link
-              to={`/dashboard/report/order/analytic_customers/customer_by_group`}
-            >
-              <div className="flex flex-col items-center gap-x-2">
-                <ShoppingCart />
-                <div className="my-2">
-                  <p className="text-base text-center">Báo cáo đơn hàng</p>
                 </div>
               </div>
             </Link>

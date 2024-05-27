@@ -7,5 +7,6 @@ export type DetailUserResponse = {
     role: string;
     createdAt: string;
     updatedAt: string;
+    picture: string | undefined;
   };
 };

@@ -48,6 +48,9 @@ export type OrdersData = {
     address: string;
     code: string;
   };
+  userId: {
+    username: string;
+  };
   partnerId: {
     _id: string;
     username: string;
@@ -67,6 +70,7 @@ export type OrdersData = {
   total_ship: number;
   totalQuantity: number;
   createdAt: string;
+  updatedAt: string;
   totalCustomerPay: number;
 };
 

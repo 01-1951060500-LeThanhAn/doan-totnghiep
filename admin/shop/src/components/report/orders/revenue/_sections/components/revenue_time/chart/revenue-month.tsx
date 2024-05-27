@@ -58,8 +58,11 @@ const RevenueMonthChart = () => {
                 {
                   label: "Doanh thu",
                   data: revenueMonth.map((data) => data.total_income),
-                  backgroundColor: "#174fea",
-                  borderColor: "#ec3737",
+                  backgroundColor: "#FFA0B4",
+                  borderColor: "#FF6384",
+                  pointStyle: "circle",
+                  pointRadius: 10,
+                  pointHoverRadius: 15,
                 },
               ],
             }}

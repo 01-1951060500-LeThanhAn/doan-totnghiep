@@ -34,13 +34,13 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
 import { formatPrice } from "@/config/format-price";
-import { ReportShipmentByGeneral } from "@/types/report";
+import { ReportRevenueByCustomerData } from "@/types/report";
 import { Link } from "react-router-dom";
 
-export const columns: ColumnDef<ReportShipmentByGeneral>[] = [
+export const columns: ColumnDef<ReportRevenueByCustomerData>[] = [
   {
     accessorKey: "name",
-    header: "Tên chi nhánh",
+    header: "Tên khách hàng",
     cell: ({ row }) => (
       <p className="capitalize text-blue-400 ">{row.getValue("name")}</p>
     ),
@@ -54,9 +54,9 @@ export const columns: ColumnDef<ReportShipmentByGeneral>[] = [
   },
   {
     accessorKey: "code",
-    header: "Mã chi nhánh",
+    header: "Mã khách hàng",
     cell: ({ row }) => (
-      <Link to={`/dashboard/general/${row.getValue("_id")}/detail`}>
+      <Link to={`/dashboard/customer/${row.getValue("_id")}/detail`}>
         {" "}
         <p className="capitalize text-blue-400">{row.getValue("code")}</p>
       </Link>
@@ -64,24 +64,16 @@ export const columns: ColumnDef<ReportShipmentByGeneral>[] = [
   },
 
   {
-    accessorKey: "totalOrders",
-    header: "SL đơn hàng đã thanh toán",
+    accessorKey: "total_quantity",
+    header: "SL hàng giao",
     cell: ({ row }) => (
-      <p className="capitalize ">{row.getValue("totalOrders")}</p>
-    ),
-  },
-
-  {
-    accessorKey: "totalQuantity",
-    header: "SL hàng đã thanh toán",
-    cell: ({ row }) => (
-      <p className="capitalize ">{row.getValue("totalQuantity")}</p>
+      <p className="capitalize ">{row.getValue("total_quantity")}</p>
     ),
   },
 
   {
     accessorKey: "totalPrice",
-    header: "Tổng doanh thu",
+    header: "Tiền hàng",
     cell: ({ row }) => (
       <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
     ),
@@ -89,10 +81,10 @@ export const columns: ColumnDef<ReportShipmentByGeneral>[] = [
 ];
 
 type Props = {
-  data: ReportShipmentByGeneral[];
+  data: ReportRevenueByCustomerData[];
 };
 
-export default function ReportShipmentGeneralTable({ data }: Props) {
+export default function ReportShipmentCustomerTable({ data }: Props) {
   const [startIndex, setStartIndex] = React.useState(0);
   const [endIndex, setEndIndex] = React.useState(4);
   const [loading, setLoading] = React.useState(false);
@@ -133,7 +125,7 @@ export default function ReportShipmentGeneralTable({ data }: Props) {
   return (
     <CustomScrollbarTable>
       <div
-        className={`w-full rounded-xl mb-4 ${
+        className={`w-full rounded-xl mb-4 mt-4 ${
           theme === "dark" ? "shadow-md bg-[#212B36]" : "shadow-md"
         }`}
       >

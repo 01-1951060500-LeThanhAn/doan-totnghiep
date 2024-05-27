@@ -4,6 +4,7 @@ import { Bar, Line } from "react-chartjs-2";
 
 const ShipmentTimeChart = () => {
   const { shipmentTimes } = useGetShipmentsByTime();
+
   const { theme } = useTheme();
   return (
     <>
@@ -57,8 +58,8 @@ const ShipmentTimeChart = () => {
               {
                 label: "Tổng tiền hàng",
                 data: shipmentTimes.map((data) => data.totalPrice),
-                backgroundColor: "#174fea",
-                borderColor: "rgba(253, 135, 135, 0.8)",
+                backgroundColor: "#FFA0B4",
+                borderColor: "#FF6384",
               },
             ],
           }}
@@ -70,7 +71,7 @@ const ShipmentTimeChart = () => {
             },
             plugins: {
               title: {
-                text: "Báo cáo tổng tiền hàng theo tháng",
+                text: "Báo cáo tổng tiền hàng đã giao theo tháng",
                 color: `${theme === "dark" ? "white" : "black"}`,
               },
             },

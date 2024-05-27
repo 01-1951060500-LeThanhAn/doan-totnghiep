@@ -38,7 +38,7 @@ const ShipmentGeneralChart = () => {
             },
             plugins: {
               title: {
-                text: "Báo cáo số lượng hàng  được tạo ở mỗi chi nhánh",
+                text: "Báo cáo số lượng hàng được tạo ở mỗi chi nhánh",
                 color: `${theme === "dark" ? "white" : "black"}`,
               },
             },
@@ -56,7 +56,7 @@ const ShipmentGeneralChart = () => {
             labels: shipmentGeneral.map((data) => data.name),
             datasets: [
               {
-                label: "Tổng doanh thu tiền hàng  ở mỗi chi nhánh",
+                label: "Tổng doanh thu tiền hàng ở mỗi chi nhánh",
                 data: shipmentGeneral.map((data) => data.totalPrice),
                 backgroundColor: "#82CDFF",
                 borderColor: "#82CDFF",

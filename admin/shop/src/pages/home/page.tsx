@@ -6,7 +6,7 @@ import HomeLayout from "@/layouts/home-layout";
 
 const HomePage = () => {
   return (
-    <DashBoardLayout className="">
+    <DashBoardLayout>
       <HomeLayout>
         <Header />
         <ViewBox />

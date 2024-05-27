@@ -75,6 +75,9 @@ export type ReportRevenueByCustomerData = {
   totalPrice: number;
   code: string;
   name: string;
+  date: string;
+  month: number;
+  payment_method: string;
 };
 export type ReportRevenueByCustomerGroupData = {
   _id: string;
@@ -106,3 +109,31 @@ export type ReportShipmentByPartner = {
 };
 
 export type ReportShipmentByGeneral = ReportShipmentByPartner;
+
+export type ReportPaymentByTime = {
+  _id: string;
+  month: number;
+  date: string;
+  totalPrice: number;
+  totalOrders: number;
+};
+
+export type ReportPaymentByStaff = {
+  _id: string;
+  email: string;
+  username: string;
+  totalPriceDelivered: number;
+  totalPriceDeliveredOnline: number;
+  totalPriceDeliveredOffline: number;
+  totalDeliveredOrders: number;
+};
+
+export type ReportPaymentByOrder = {
+  updatedAt: string | Date;
+  payment_method: string;
+  code: string;
+  username: string;
+  general: string;
+  customer: string;
+  totalPrice: number;
+};
