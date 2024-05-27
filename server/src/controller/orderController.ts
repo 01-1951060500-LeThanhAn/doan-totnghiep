@@ -1105,6 +1105,115 @@ const getPaymentOrderTime = async (req: Request, res: Response) => {
   }
 };
 
+const getPaymentOrderStaff = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+      {
+        $unwind: "$users",
+      },
+      {
+        $project: {
+          _id: {
+            _id: "$users._id",
+            username: "$users.username",
+            email: "$users.email",
+          },
+          totalDeliveredOrders: {
+            $cond: {
+              if: { $eq: ["$order_status", "delivered"] },
+              then: 1,
+              else: 0,
+            },
+          },
+          totalPendingOrders: {
+            $cond: {
+              if: { $eq: ["$order_status", "pending"] },
+              then: 1,
+              else: 0,
+            },
+          },
+          totalPriceDeliveredOnline: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ["$order_status", "delivered"] },
+                  { $eq: ["$payment_method", "online"] },
+                ],
+              },
+              then: {
+                $multiply: ["$totalCustomerPay"],
+              },
+              else: 0,
+            },
+          },
+          totalPriceDeliveredOffline: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ["$order_status", "delivered"] },
+                  { $eq: ["$payment_method", "offline"] },
+                ],
+              },
+              then: "$totalCustomerPay",
+              else: 0,
+            },
+          },
+          totalPricePending: {
+            $cond: {
+              if: { $eq: ["$order_status", "pending"] },
+              then: "$totalCustomerPay",
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id._id",
+          email: { $first: "$_id.email" },
+          username: { $first: "$_id.username" },
+          totalDeliveredOrders: { $sum: "$totalDeliveredOrders" },
+          totalPendingOrders: { $sum: "$totalPendingOrders" },
+          totalPriceDelivered: {
+            $sum: {
+              $add: [
+                "$totalPriceDeliveredOnline",
+                "$totalPriceDeliveredOffline",
+              ],
+            },
+          },
+          totalPriceDeliveredOnline: { $sum: "$totalPriceDeliveredOnline" },
+          totalPriceDeliveredOffline: { $sum: "$totalPriceDeliveredOffline" },
+          totalPricePending: { $sum: "$totalPricePending" },
+        },
+      },
+    ];
+
+    const results = await OrderModel.aggregate(pipeline);
+
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1381,6 +1490,7 @@ export {
   getShipmentOrderPartner,
   getShipmentOrderGeneral,
   getPaymentOrderTime,
+  getPaymentOrderStaff,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,
