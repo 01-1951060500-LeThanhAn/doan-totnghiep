@@ -618,7 +618,7 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
 
   try {
-    const pineline = [
+    const results = await CustomerModel.aggregate([
       {
         $match: {
           createdAt: { $gte: previousMonth },
@@ -652,29 +652,39 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       {
         $project: {
           _id: {
-            month: { $month: "$createdAt" },
             customer: "$orders.customerId",
+            payment_method: "$orders.payment_method",
           },
+          date: {
+            $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
+          },
+          month: { $month: "$createdAt" },
           quantity: {
             $first: "$orders.products.quantity",
           },
 
           totalOrders: { $sum: 1 },
-
           totalPrice: "$orders.totalCustomerPay",
         },
       },
+
       {
         $group: {
           _id: "$_id.customer",
+          payment_method: {
+            $first: "$_id.payment_method",
+          },
+          date: { $first: "$date" },
+          month: { $first: "$month" },
           total_quantity: { $sum: "$quantity" },
           totalOrders: { $sum: "$totalOrders" },
           totalPrice: { $sum: "$totalPrice" },
         },
       },
-    ];
-
-    const results = await CustomerModel.aggregate(pineline);
+      {
+        $sort: { month: 1 },
+      },
+    ]);
 
     const enrichedResults = [];
 
@@ -1039,6 +1049,59 @@ const getShipmentOrderGeneral = async (req: Request, res: Response) => {
   }
 };
 
+const getPaymentOrderTime = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await OrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          payment_status: "paid",
+        },
+      },
+      {
+        $project: {
+          _id: {
+            $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
+          },
+          date: {
+            $dateToString: { format: "%m/%Y", date: "$createdAt" },
+          },
+          month: { $month: "$createdAt" },
+
+          totalPrice: {
+            $cond: [
+              { $eq: ["$payment_status", "paid"] },
+              "$totalCustomerPay",
+              0,
+            ],
+          },
+          total_orders: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          month: { $first: "$month" },
+          date: { $first: "$date" },
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$total_orders" },
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+    ]);
+
+    res.status(200).json(incomeData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching income and status data" });
+  }
+};
+
 const getIncomeOrdersProduct = async (req: Request, res: Response) => {
   const date = new Date();
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1314,6 +1377,7 @@ export {
   getShipmentOrdersStaff,
   getShipmentOrderPartner,
   getShipmentOrderGeneral,
+  getPaymentOrderTime,
   searchOrder,
   searchDateOrders,
   getIncomeOrdersGeneral,
