@@ -1040,7 +1040,7 @@ const getPaymentOrderStaff = (req, res) => __awaiter(void 0, void 0, void 0, fun
                         $cond: {
                             if: {
                                 $and: [
-                                    { $eq: ["$order_status", "delivered"] },
+                                    { $eq: ["$payment_status", "paid"] },
                                     { $eq: ["$payment_method", "online"] },
                                 ],
                             },
@@ -1054,7 +1054,7 @@ const getPaymentOrderStaff = (req, res) => __awaiter(void 0, void 0, void 0, fun
                         $cond: {
                             if: {
                                 $and: [
-                                    { $eq: ["$order_status", "delivered"] },
+                                    { $eq: ["$payment_status", "paid"] },
                                     { $eq: ["$payment_method", "offline"] },
                                 ],
                             },
@@ -1064,7 +1064,7 @@ const getPaymentOrderStaff = (req, res) => __awaiter(void 0, void 0, void 0, fun
                     },
                     totalPricePending: {
                         $cond: {
-                            if: { $eq: ["$order_status", "pending"] },
+                            if: { $eq: ["$payment_status", "unpaid"] },
                             then: "$totalCustomerPay",
                             else: 0,
                         },

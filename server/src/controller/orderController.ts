@@ -1152,7 +1152,7 @@ const getPaymentOrderStaff = async (req: Request, res: Response) => {
             $cond: {
               if: {
                 $and: [
-                  { $eq: ["$order_status", "delivered"] },
+                  { $eq: ["$payment_status", "paid"] },
                   { $eq: ["$payment_method", "online"] },
                 ],
               },
@@ -1166,7 +1166,7 @@ const getPaymentOrderStaff = async (req: Request, res: Response) => {
             $cond: {
               if: {
                 $and: [
-                  { $eq: ["$order_status", "delivered"] },
+                  { $eq: ["$payment_status", "paid"] },
                   { $eq: ["$payment_method", "offline"] },
                 ],
               },
@@ -1176,7 +1176,7 @@ const getPaymentOrderStaff = async (req: Request, res: Response) => {
           },
           totalPricePending: {
             $cond: {
-              if: { $eq: ["$order_status", "pending"] },
+              if: { $eq: ["$payment_status", "unpaid"] },
               then: "$totalCustomerPay",
               else: 0,
             },
