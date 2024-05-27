@@ -696,9 +696,7 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             {
                 $project: {
-                    _id: {
-                        $dateToString: { format: "%m/%Y", date: "$createdAt" },
-                    },
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
                     month: {
                         $month: "$createdAt",
                     },
@@ -719,7 +717,7 @@ const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
             {
-                $sort: { month: 1 },
+                $sort: { _id: 1 },
             },
         ]);
         res.status(200).json(incomeData);

@@ -778,9 +778,7 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
       },
       {
         $project: {
-          _id: {
-            $dateToString: { format: "%m/%Y", date: "$createdAt" },
-          },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           month: {
             $month: "$createdAt",
           },
@@ -801,7 +799,7 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
         },
       },
       {
-        $sort: { month: 1 },
+        $sort: { _id: 1 },
       },
     ]);
 
