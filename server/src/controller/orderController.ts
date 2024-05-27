@@ -778,7 +778,7 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
       },
       {
         $project: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: { $dateToString: { format: "%m/%Y", date: "$createdAt" } },
           month: {
             $month: "$createdAt",
           },
@@ -799,7 +799,7 @@ const getShipmentOrdersTime = async (req: Request, res: Response) => {
         },
       },
       {
-        $sort: { _id: 1 },
+        $sort: { month: 1 },
       },
     ]);
 
@@ -1083,13 +1083,18 @@ const getPaymentOrderTime = async (req: Request, res: Response) => {
         $group: {
           _id: "$_id",
           month: { $first: "$month" },
+
           date: { $first: "$date" },
           totalPrice: { $sum: "$totalPrice" },
           totalOrders: { $sum: "$total_orders" },
         },
       },
       {
-        $sort: { month: 1 },
+        $sort: {
+          month: 1,
+          date: 1,
+          _id: 1,
+        },
       },
     ]);
 
