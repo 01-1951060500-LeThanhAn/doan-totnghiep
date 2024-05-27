@@ -18,13 +18,16 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { Input } from "@/components/ui/input";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import React from "react";
+import CustomPagination from "@/features/custom-pagination";
 type Props = {
   data: ProductData[];
 };
 
 const StockAdjustmentTable = ({ data }: Props) => {
   const { control } = useFormContext();
-
+  const [startIndex, setStartIndex] = React.useState(0);
+  const [endIndex, setEndIndex] = React.useState(4);
   return (
     <>
       <CustomScrollbarTable>
@@ -53,7 +56,7 @@ const StockAdjustmentTable = ({ data }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((item, index) => (
+            {data?.slice(startIndex, endIndex)?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.name_product}</p>
@@ -132,6 +135,12 @@ const StockAdjustmentTable = ({ data }: Props) => {
             ))}
           </TableBody>
         </Table>
+        <CustomPagination
+          startIndex={startIndex}
+          setStartIndex={setStartIndex}
+          endIndex={endIndex}
+          setEndIndex={setEndIndex}
+        />
       </CustomScrollbarTable>
     </>
   );

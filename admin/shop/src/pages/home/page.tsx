@@ -1,8 +1,8 @@
 import DashBoardLayout from "@/layouts/layout";
-import Chart from "@/components/charts/chart";
 import Header from "@/components/header/header";
 import ViewBox from "@/components/viewbox/view-box";
 import HomeLayout from "@/layouts/home-layout";
+import HomeChart from "@/components/charts";
 
 const HomePage = () => {
   return (
@@ -10,7 +10,7 @@ const HomePage = () => {
       <HomeLayout>
         <Header />
         <ViewBox />
-        <Chart />
+        <HomeChart />
       </HomeLayout>
     </DashBoardLayout>
   );

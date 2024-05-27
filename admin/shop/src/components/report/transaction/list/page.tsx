@@ -5,6 +5,7 @@ import TransactionTableData from "./card-table";
 import { TransactionTableProps } from "@/types/transaction";
 import * as XLSX from "xlsx";
 import saveAs from "file-saver";
+import HomeLayout from "@/layouts/home-layout";
 
 const ViewReportTransactionPage = () => {
   const { transactions } = useGetTransactions();
@@ -62,7 +63,9 @@ const ViewReportTransactionPage = () => {
         file="Xuất file báo cáo"
         onClick={handleExportToExcel}
       />
-      <TransactionTableData data={data as TransactionTableProps[]} />
+      <HomeLayout>
+        <TransactionTableData data={data as TransactionTableProps[]} />
+      </HomeLayout>
     </>
   );
 };

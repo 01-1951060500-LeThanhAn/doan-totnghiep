@@ -7,9 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import useGetDetailUser from "@/hooks/use-get-detail-user";
 
 const Header = () => {
   const { currentUser } = useAppSelector((state) => state.auth);
+  const { user } = useGetDetailUser(currentUser?._id);
 
   return (
     <>
@@ -28,7 +30,9 @@ const Header = () => {
               <Avatar>
                 <AvatarImage
                   className="w-12 h-12 rounded-full object-cover"
-                  src={currentUser?.picture ? currentUser?.picture : undefined}
+                  src={
+                    user?.results?.picture ? user?.results?.picture : undefined
+                  }
                   alt=""
                 />
                 <AvatarFallback>{currentUser?.username}</AvatarFallback>

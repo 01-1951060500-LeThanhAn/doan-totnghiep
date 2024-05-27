@@ -25,7 +25,7 @@ const RevenueCustomerChart = () => {
               {
                 label: "Tổng tiền",
                 data: revenueCustomer.map((item) => item.totalPrice),
-                backgroundColor: ["rgba(250, 192, 19, 0.8)"],
+                backgroundColor: ["#5CBEFF"],
                 borderRadius: 5,
               },
             ],

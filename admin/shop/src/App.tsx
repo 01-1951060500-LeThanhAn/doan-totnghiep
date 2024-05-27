@@ -10,15 +10,7 @@ import routes from "./routes";
 const App = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (localStorage.getItem("token") === null) {
-      dispatch(logOut());
-      navigate("/dashboard/login");
-      toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
-    } else {
-      setAuthToken(localStorage.getItem("token"));
-    }
-  }, [dispatch, navigate]);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -33,13 +25,16 @@ const App = () => {
             localStorage.removeItem("userInfo");
             dispatch(logOut());
             navigate("/dashboard/login");
+            toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
+          } else {
+            setAuthToken(localStorage.getItem("token"));
           }
         }
       } catch (error) {
         console.error("Error decoding token:", error);
       }
     }
-  }, []);
+  }, [dispatch, navigate]);
 
   return (
     <>

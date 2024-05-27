@@ -19,13 +19,16 @@ import { Input } from "@/components/ui/input";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatPrice } from "@/config/format-price";
+import React from "react";
+import CustomPagination from "@/features/custom-pagination";
 type Props = {
   data: ProductData[];
 };
 
 const AddOrderTable = ({ data }: Props) => {
   const { control } = useFormContext();
-
+  const [startIndex, setStartIndex] = React.useState(0);
+  const [endIndex, setEndIndex] = React.useState(4);
   return (
     <>
       <CustomScrollbarTable>
@@ -53,7 +56,7 @@ const AddOrderTable = ({ data }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((item, index) => (
+            {data?.slice(startIndex, endIndex)?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.code}</p>
@@ -120,6 +123,13 @@ const AddOrderTable = ({ data }: Props) => {
             ))}
           </TableBody>
         </Table>
+
+        <CustomPagination
+          startIndex={startIndex}
+          setStartIndex={setStartIndex}
+          endIndex={endIndex}
+          setEndIndex={setEndIndex}
+        />
       </CustomScrollbarTable>
     </>
   );

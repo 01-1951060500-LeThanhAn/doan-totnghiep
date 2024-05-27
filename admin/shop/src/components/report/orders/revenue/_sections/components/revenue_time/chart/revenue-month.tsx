@@ -44,43 +44,37 @@ const RevenueMonthChart = () => {
       <div
         className={`${
           theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
-        } rounded-lg p-3`}
+        } rounded-lg p-3 w-full h-[350px]`}
       >
-        <div
-          className={` ${
-            theme === "dark" ? "bg-[#212B36]" : "bg-white"
-          } w-full h-[320px]`}
-        >
-          <Line
-            data={{
-              labels: revenueMonth.map((data) => data.month),
-              datasets: [
-                {
-                  label: "Doanh thu",
-                  data: revenueMonth.map((data) => data.total_income),
-                  backgroundColor: "#FFA0B4",
-                  borderColor: "#FF6384",
-                  pointStyle: "circle",
-                  pointRadius: 10,
-                  pointHoverRadius: 15,
-                },
-              ],
-            }}
-            options={{
-              elements: {
-                line: {
-                  tension: 0.5,
-                },
+        <Line
+          data={{
+            labels: revenueMonth.map((data) => data.month),
+            datasets: [
+              {
+                label: "Doanh thu",
+                data: revenueMonth.map((data) => data.total_income),
+                backgroundColor: "#FFA0B4",
+                borderColor: "#FF6384",
+                pointStyle: "circle",
+                pointRadius: 10,
+                pointHoverRadius: 15,
               },
-              plugins: {
-                title: {
-                  text: "Tổng doanh thu tháng bán hàng của công ty",
-                  color: `${theme === "dark" ? "white" : "black"}`,
-                },
+            ],
+          }}
+          options={{
+            elements: {
+              line: {
+                tension: 0.5,
               },
-            }}
-          />
-        </div>
+            },
+            plugins: {
+              title: {
+                text: "Tổng doanh thu tháng bán hàng của công ty",
+                color: `${theme === "dark" ? "white" : "black"}`,
+              },
+            },
+          }}
+        />
       </div>
     </>
   );
