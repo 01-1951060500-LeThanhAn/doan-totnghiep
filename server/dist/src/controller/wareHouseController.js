@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWareHouseByManager = exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.getWareHouseByOrders = exports.getWareHouseByManager = exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -275,22 +275,27 @@ const getIncomeWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 {
                     $match: {
                         createdAt: { $gte: previousMonth },
+                        payment_status: "delivered",
                     },
                 },
                 {
                     $project: {
-                        _id: { $month: "$createdAt" },
-                        total_quantity: {
+                        _id: {
+                            $dateToString: { format: "%m/%Y", date: "$createdAt" },
+                        },
+                        totalQuantity: {
                             $sum: "$products.inventory_number",
                         },
-                        total_sold_products: "$totalSupplierPay",
+                        totalOrders: { $sum: 1 },
+                        totalPrice: "$totalSupplierPay",
                     },
                 },
                 {
                     $group: {
                         _id: "$_id",
-                        total_income: { $sum: "$total_quantity" },
-                        total_sold_products: { $sum: "$total_sold_products" },
+                        totalQuantity: { $sum: "$totalQuantity" },
+                        totalPrice: { $sum: "$totalPrice" },
+                        totalOrders: { $sum: "$totalOrders" },
                     },
                 },
             ]),
@@ -318,7 +323,7 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     from: "products",
                     localField: "products.productId",
                     foreignField: "_id",
-                    as: "product",
+                    as: "products",
                 },
             },
             {
@@ -326,26 +331,20 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             {
                 $project: {
-                    _id: {
-                        month: "$createdAt",
-                        productId: "$products.productId",
-                    },
-                    product_name: { $first: "$product.name_product" },
-                    export_price: { $first: "$product.export_price" },
-                    product_code: { $first: "$product.code" },
-                    quantity: "$products.inventory_number",
-                    total_income: { $multiply: ["$quantity", "$export_price"] },
+                    _id: "$products._id",
+                    productName: "$products.name_product",
+                    productCode: "$products.code",
+                    totalPrice: "$totalSupplierPay",
+                    totalOrders: { $sum: 1 },
                 },
             },
             {
                 $group: {
-                    _id: "$_id.productId",
-                    price: { $first: "$export_price" },
-                    month: { $first: "$_id.month" },
-                    name: { $first: "$product_name" },
-                    code: { $first: "$product_code" },
-                    total_quantity: { $sum: "$quantity" },
-                    total_income: { $sum: "$total_income" },
+                    _id: "$_id",
+                    name_product: { $first: "$productName" },
+                    code: { $first: "$productCode" },
+                    totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$totalOrders" },
                 },
             },
         ]);
@@ -384,21 +383,23 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                         month: { $month: "$createdAt" },
                         supplier: "$suppliers.supplier_name",
                         code: "$suppliers.supplier_code",
+                        _id: "$suppliers._id",
                         name: "$suppliers.supplier_name",
                     },
-                    total_quantity: { $sum: "$products.inventory_number" },
-                    total_price: {
+                    totalQuantity: { $sum: "$products.inventory_number" },
+                    totalPrice: {
                         $sum: "$totalSupplierPay",
                     },
                 },
             },
             {
                 $group: {
-                    _id: "$_id.code",
+                    _id: "$_id._id",
                     name: { $first: "$_id.name" },
+                    code: { $first: "$_id.code" },
                     month: { $first: "$_id.month" },
-                    total_quantity: { $sum: "$total_quantity" },
-                    total_price: { $sum: "$total_price" },
+                    totalQuantity: { $sum: "$totalQuantity" },
+                    totalPrice: { $sum: "$totalPrice" },
                 },
             },
         ]);
@@ -489,10 +490,10 @@ const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, fu
                         email: "$users.email",
                         month: { $month: "$createdAt" },
                     },
-                    total_quantity: {
+                    totalQuantity: {
                         $sum: "$products.inventory_number",
                     },
-                    total_price: {
+                    totalPrice: {
                         $sum: "$totalSupplierPay",
                     },
                 },
@@ -503,8 +504,8 @@ const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     email: { $first: "$_id.email" },
                     username: { $first: "$_id.username" },
                     month: { $first: "$_id.month" },
-                    total_quantity: { $sum: "$total_quantity" },
-                    total_price: { $sum: "$total_price" },
+                    totalQuantity: { $sum: "$totalQuantity" },
+                    totalPrice: { $sum: "$totalPrice" },
                 },
             },
         ];
@@ -517,6 +518,56 @@ const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.getWareHouseByManager = getWareHouseByManager;
+const getWareHouseByOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const incomeData = yield SupplierModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "supplierId",
+                    as: "purchase_orders",
+                },
+            },
+            {
+                $unwind: "$purchase_orders",
+            },
+            {
+                $project: {
+                    _id: {
+                        _id: "$purchase_orders._id",
+                        code: "$purchase_orders.code",
+                    },
+                    totalQuantity: { $sum: "$purchase_orders.products.inventory_number" },
+                    totalPrice: {
+                        $sum: "$purchase_orders.totalSupplierPay",
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id._id",
+                    code: { $first: "$_id.code" },
+                    totalQuantity: { $sum: "$totalQuantity" },
+                    totalPrice: { $first: "$totalPrice" },
+                },
+            },
+        ]);
+        res.status(200).json(incomeData);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching income data by supplier" });
+    }
+});
+exports.getWareHouseByOrders = getWareHouseByOrders;
 const searchWarehouseOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const keyword = req.query.keyword;
     try {

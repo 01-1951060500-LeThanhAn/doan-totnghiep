@@ -14,6 +14,7 @@ import {
   updateWarehouse,
   searchWarehouseOrder,
   getWareHouseByGeneral,
+  getWareHouseByOrders,
   getWareHouseByManager,
 } from "../controller/wareHouseController";
 
@@ -51,6 +52,12 @@ router.get(
   `/income/total-warehouse-manager`,
   verifyTokenAndAdmin,
   getWareHouseByManager
+);
+
+router.get(
+  `/income/total-warehouse-orders`,
+  verifyTokenAndAdmin,
+  getWareHouseByOrders
 );
 
 router.get(`/income/total-warehouse`, verifyTokenAndAdmin, getIncomeWarehouse);
