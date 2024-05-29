@@ -208,6 +208,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "import",
             transaction_date: Date.now(),
+            totalPrice: updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.totalSupplierPay,
             warehouseId: updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData._id,
         });
         yield transactionHistory.save();

@@ -11,6 +11,7 @@ const TransactionSchema = new mongoose_1.default.Schema({
         enum: ["import", "export", "order"],
     },
     transaction_date: { type: Date, required: true, default: Date.now },
+    totalPrice: { type: Number, required: true, default: 0 },
     orderId: { type: mongoose_1.default.Types.ObjectId, ref: "orders" },
     shipId: { type: mongoose_1.default.Types.ObjectId, ref: "shipping_warehouse" },
     warehouseId: { type: mongoose_1.default.Types.ObjectId, ref: "purchase_orders" },

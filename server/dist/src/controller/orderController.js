@@ -145,7 +145,6 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                                     generalId: updatedOrder.generalId,
                                     staffId: updatedOrder.userId,
                                     inventory_number: product.inventory_number,
-                                    totalPrice: totalPrice,
                                 },
                             },
                         });
@@ -169,6 +168,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             transaction_type: "order",
             transaction_date: Date.now(),
             orderId: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id,
+            totalPrice: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.totalCustomerPay,
         });
         yield transactionHistory.save();
         res.status(200).json(updatedOrder);

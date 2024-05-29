@@ -261,6 +261,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
     const transactionHistory = new TransactionModel({
       transaction_type: "import",
       transaction_date: Date.now(),
+      totalPrice: updatedWarehouseData?.totalSupplierPay,
       warehouseId: updatedWarehouseData?._id,
     });
 

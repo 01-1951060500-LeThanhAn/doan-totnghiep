@@ -178,7 +178,6 @@ const updateOrder = async (req: Request, res: Response) => {
                   generalId: updatedOrder.generalId,
                   staffId: updatedOrder.userId,
                   inventory_number: product.inventory_number,
-                  totalPrice: totalPrice,
                 },
               },
             });
@@ -205,6 +204,7 @@ const updateOrder = async (req: Request, res: Response) => {
       transaction_type: "order",
       transaction_date: Date.now(),
       orderId: updatedOrder?._id,
+      totalPrice: updatedOrder?.totalCustomerPay,
     });
 
     await transactionHistory.save();
