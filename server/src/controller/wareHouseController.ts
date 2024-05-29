@@ -374,7 +374,8 @@ const getIncomeWarehouse = async (req: Request, res: Response) => {
 
 const getWareHouseByProduct = async (req: Request, res: Response) => {
   const date = new Date();
-  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
 
   try {
     const incomeData = await WarehouseModel.aggregate([
@@ -454,6 +455,7 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
             name: "$suppliers.supplier_name",
           },
           totalQuantity: { $sum: "$products.inventory_number" },
+          totalOrders: { $sum: 1 },
           totalPrice: {
             $sum: "$totalSupplierPay",
           },
@@ -467,6 +469,7 @@ const getWareHouseBySupplier = async (req: Request, res: Response) => {
           month: { $first: "$_id.month" },
           totalQuantity: { $sum: "$totalQuantity" },
           totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
         },
       },
     ]);
@@ -483,46 +486,65 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
   const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
 
   try {
-    const incomeData = await WarehouseModel.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: previousMonth },
-        },
-      },
+    const incomeData = [
       {
         $lookup: {
-          from: "general",
-          localField: "generalId",
-          foreignField: "_id",
-          as: "general",
+          from: "purchase_orders",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "purchase_orders",
         },
       },
       {
-        $unwind: "$general",
+        $unwind: "$purchase_orders",
+      },
+      {
+        $match: {
+          "purchase_orders.payment_status": "delivered",
+        },
       },
       {
         $project: {
-          generalId: 1,
           _id: {
-            general: "$general.code",
-            month: { $month: "$createdAt" },
+            code: "$purchase_orders.generalId",
           },
-          total_quantity: {
-            $sum: "$products.inventory_number",
+          quantity: {
+            $first: "$purchase_orders.products.inventory_number",
           },
+          totalPrice: "$purchase_orders.totalSupplierPay",
         },
       },
       {
         $group: {
-          _id: "$_id.general",
-          general: { $first: "$general" },
-          month: { $first: "$_id.month" },
-          total_quantity: { $sum: "$total_quantity" },
+          _id: "$_id.code",
+          totalOrders: { $sum: 1 },
+          totalQuantity: { $sum: "$quantity" },
+          totalPrice: { $sum: "$totalPrice" },
         },
       },
-    ]);
+    ];
 
-    res.status(200).json(incomeData);
+    const results = await GeneralDepotModel.aggregate(incomeData);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const generalId = result._id;
+
+      const general = await GeneralDepotModel.findById(generalId);
+
+      if (general) {
+        const enrichedResult = {
+          ...result,
+          name: general.name,
+          code: general.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    return res.status(200).json(enrichedResults);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching warehouse statistics" });

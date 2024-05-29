@@ -311,7 +311,8 @@ const getIncomeWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.getIncomeWarehouse = getIncomeWarehouse;
 const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
-    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+    const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
     try {
         const incomeData = yield WarehouseModel_1.default.aggregate([
             {
@@ -389,6 +390,7 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                         name: "$suppliers.supplier_name",
                     },
                     totalQuantity: { $sum: "$products.inventory_number" },
+                    totalOrders: { $sum: 1 },
                     totalPrice: {
                         $sum: "$totalSupplierPay",
                     },
@@ -402,6 +404,7 @@ const getWareHouseBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
                     month: { $first: "$_id.month" },
                     totalQuantity: { $sum: "$totalQuantity" },
                     totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$totalOrders" },
                 },
             },
         ]);
@@ -417,45 +420,54 @@ const getWareHouseByGeneral = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     try {
-        const incomeData = yield WarehouseModel_1.default.aggregate([
-            {
-                $match: {
-                    createdAt: { $gte: previousMonth },
-                },
-            },
+        const incomeData = [
             {
                 $lookup: {
-                    from: "general",
-                    localField: "generalId",
-                    foreignField: "_id",
-                    as: "general",
+                    from: "purchase_orders",
+                    localField: "_id",
+                    foreignField: "generalId",
+                    as: "purchase_orders",
                 },
             },
             {
-                $unwind: "$general",
+                $unwind: "$purchase_orders",
+            },
+            {
+                $match: {
+                    "purchase_orders.payment_status": "delivered",
+                },
             },
             {
                 $project: {
-                    generalId: 1,
                     _id: {
-                        general: "$general.code",
-                        month: { $month: "$createdAt" },
+                        code: "$purchase_orders.generalId",
                     },
-                    total_quantity: {
-                        $sum: "$products.inventory_number",
+                    quantity: {
+                        $first: "$purchase_orders.products.inventory_number",
                     },
+                    totalPrice: "$purchase_orders.totalSupplierPay",
                 },
             },
             {
                 $group: {
-                    _id: "$_id.general",
-                    general: { $first: "$general" },
-                    month: { $first: "$_id.month" },
-                    total_quantity: { $sum: "$total_quantity" },
+                    _id: "$_id.code",
+                    totalOrders: { $sum: 1 },
+                    totalQuantity: { $sum: "$quantity" },
+                    totalPrice: { $sum: "$totalPrice" },
                 },
             },
-        ]);
-        res.status(200).json(incomeData);
+        ];
+        const results = yield GeneralDepotModel_1.default.aggregate(incomeData);
+        const enrichedResults = [];
+        for (const result of results) {
+            const generalId = result._id;
+            const general = yield GeneralDepotModel_1.default.findById(generalId);
+            if (general) {
+                const enrichedResult = Object.assign(Object.assign({}, result), { name: general.name, code: general.code });
+                enrichedResults.push(enrichedResult);
+            }
+        }
+        return res.status(200).json(enrichedResults);
     }
     catch (err) {
         console.error(err);
