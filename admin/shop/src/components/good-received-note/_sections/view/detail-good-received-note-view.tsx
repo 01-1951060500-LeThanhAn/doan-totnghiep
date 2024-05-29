@@ -22,15 +22,17 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
   const [loading, setLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
   const dispatch = useAppDispatch();
-  const handleUpdateGoodReceivedNote = () => {
+
+  const handleUpdateGoodReceivedNote = async () => {
     try {
       setLoading(true);
-      dispatch(updateGRNAsync(id));
-      setOrderStatus("entered");
-      toast.success("Thanh toán đơn hàng thành công");
+      await dispatch(updateGRNAsync(id));
       setLoading(false);
+      toast.success("Thanh toán đơn hàng thành công");
+      setOrderStatus("entered");
     } catch (error) {
       console.log(error);
+      setLoading(false);
       toast.error("Thanh toán đơn hàng thất bại");
     }
   };

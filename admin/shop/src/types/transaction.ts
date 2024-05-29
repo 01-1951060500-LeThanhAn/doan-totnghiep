@@ -1,6 +1,7 @@
 export type TransactionData = {
   _id: string;
   transaction_type: string | Date;
+  totalPrice: number;
   transaction_date: string | Date;
   warehouseId?: WarehouseReportData;
   orderId?: OrderReportData;

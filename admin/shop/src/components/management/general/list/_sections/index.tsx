@@ -7,7 +7,7 @@ const GeneralView = () => {
   return (
     <>
       <HomeLayout>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 mt-4 lg:grid-cols-2 gap-3">
           <div
             className={`${
               theme === "dark" ? "bg-[#212B36] " : "shadow-lg"

@@ -11,7 +11,7 @@ type Props = {
 const Header = ({ title, text1, text2, onClick }: Props) => {
   return (
     <>
-      <div className="border-b p-6 flex  flex-wrap gap-y-3 nowrap justify-between items-center">
+      <div className="border-b p-6 flex flex-wrap gap-y-3 nowrap justify-between items-center">
         <div className="flex items-center">
           <div className="p-2 cursor-pointer border">
             {" "}

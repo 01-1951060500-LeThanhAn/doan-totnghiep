@@ -20,6 +20,7 @@ import DebtCustomersPage from "@/components/report/finance/debt-customers/list/p
 import DebtSuppliersPage from "@/components/report/finance/debt-suppliers/list/page";
 import DetailReportGeneralPage from "@/components/report/general/detail/page";
 import DetailReportInventoriesPage from "@/components/report/general/view";
+import ReportRevenueGrnPage from "@/components/report/good-received-note/revenue/page";
 import ReportPaymentPage from "@/components/report/orders/payments/page";
 import ReportRevenuePage from "@/components/report/orders/revenue/page";
 import ReportShipmentPage from "@/components/report/orders/shipments/page";
@@ -61,6 +62,7 @@ import FinancePage from "@/pages/report/finance/page";
 import OverStockingPage from "@/pages/report/general/overstocking/page";
 import ReportGeneralPage from "@/pages/report/general/page";
 import ReportTransactionPage from "@/pages/report/general/transaction/page";
+import ReportGoodReceivedNotePage from "@/pages/report/good-received-note/page";
 import ReportOrderPage from "@/pages/report/orders/page";
 import ReportPage from "@/pages/report/page";
 import StockAdjustmentPage from "@/pages/report/stock-adjustments/page";
@@ -744,6 +746,24 @@ const routes = [
       </DashBoardLayout>
     ),
     name: "Báo cáo thanh toán",
+  },
+  {
+    path: "/dashboard/report/grn/analytic_grn",
+    element: (
+      <DashBoardLayout>
+        <ReportGoodReceivedNotePage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo nhập hàng",
+  },
+  {
+    path: "/dashboard/report/grn/analytic_grn/revenue",
+    element: (
+      <DashBoardLayout>
+        <ReportRevenueGrnPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo kho nhập hàng",
   },
 ];
 

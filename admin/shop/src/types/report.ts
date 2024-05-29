@@ -137,3 +137,38 @@ export type ReportPaymentByOrder = {
   customer: string;
   totalPrice: number;
 };
+
+export type ReportWarehouseByTime = {
+  _id: string;
+  totalQuantity: number;
+  totalOrders: number;
+  totalPrice: number;
+};
+
+export type ReportWarehouseByStaff = {
+  _id: string;
+  email: string;
+  username: string;
+  totalQuantity: number;
+  totalOrders: number;
+  totalPrice: number;
+};
+
+export type ReportWarehouseByProduct = {
+  _id: string;
+  name_product: string;
+  code: string;
+  totalOrders: number;
+  totalPrice: number;
+};
+
+export type ReportWarehouseByGeneral = {
+  _id: string;
+  name: string;
+  code: string;
+  totalOrders: number;
+  totalPrice: number;
+  totalQuantity: number;
+};
+
+export type ReportWarehouseBySupplier = ReportWarehouseByGeneral;

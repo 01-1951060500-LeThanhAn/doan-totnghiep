@@ -106,7 +106,7 @@ const links = [
     data: [
       {
         name: "Báo cáo nhập hàng",
-        href: "/dashboard/report/import",
+        href: "/dashboard/report/grn/analytic_grn",
       },
       {
         name: "Báo cáo bán hàng",
@@ -130,6 +130,20 @@ const links = [
     name: "Quản lý kho",
     href: "/dashboard/management",
     icon: Warehouse,
+    data: [
+      {
+        name: "Quản lý nhập kho",
+        href: "/dashboard/good-received-note",
+      },
+      {
+        name: "Quản lý xuất kho",
+        href: "/dashboard/orders",
+      },
+      {
+        name: "Quản lý kiểm kê hàng hóa",
+        href: "/dashboard/stock_adjustments",
+      },
+    ],
   },
   {
     name: "Vận chuyển",

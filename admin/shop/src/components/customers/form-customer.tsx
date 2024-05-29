@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import useGetCityandDistrict from "@/hooks/useGetCityandDistrict";
+import useGetCityandDistrict from "@/hooks/use-get-city-and-district";
 import { Textarea } from "../ui/textarea";
 
 import { Button } from "@/components/ui/button";

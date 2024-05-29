@@ -13,8 +13,7 @@ const ViewReportTransactionPage = () => {
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
     general: transaction?.orderId?.generalId?.name,
-    totalPrice:
-      transaction?.warehouseId?.totalPrice || transaction?.orderId?.totalPrice,
+    totalPrice: transaction?.totalPrice,
     _id: transaction?.orderId?._id || transaction?.warehouseId?._id,
     totalQuantity:
       transaction?.warehouseId?.totalQuantity ||
@@ -63,7 +62,7 @@ const ViewReportTransactionPage = () => {
         file="Xuất file báo cáo"
         onClick={handleExportToExcel}
       />
-      <HomeLayout>
+      <HomeLayout className="mt-4">
         <TransactionTableData data={data as TransactionTableProps[]} />
       </HomeLayout>
     </>

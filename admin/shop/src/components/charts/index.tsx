@@ -5,6 +5,7 @@ import { defaults } from "chart.js/auto";
 import TransactionTableData from "../report/transaction/list/card-table";
 import useGetTransactions from "../report/transaction/hooks/use-get-all-transaction";
 import { TransactionTableProps } from "@/types/transaction";
+import RevenueSupplierChart from "../report/good-received-note/revenue/_sections/components/revenue_supplier/chart/revenue-supplier";
 defaults.maintainAspectRatio = false;
 defaults.responsive = true;
 
@@ -14,8 +15,7 @@ const HomeChart = () => {
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
     general: transaction?.orderId?.generalId?.name,
-    totalPrice:
-      transaction?.warehouseId?.totalPrice || transaction?.orderId?.totalPrice,
+    totalPrice: transaction?.totalPrice,
     _id: transaction?.orderId?._id || transaction?.warehouseId?._id,
     totalQuantity:
       transaction?.warehouseId?.totalQuantity ||
@@ -41,9 +41,14 @@ const HomeChart = () => {
         </div>
       </div>
 
-      <div className="mt-3 mb-16 lg:mb-8">
+      <div className="mt-3 mb-3 lg:mb-3">
         <RevenueCustomerChart />
       </div>
+
+      <div className="mt-3 mb-16 lg:mb-8">
+        <RevenueSupplierChart />
+      </div>
+
       <div className="mb-16 -mt-12 md:-mt-5 lg:mb-8">
         <TransactionTableData data={data as TransactionTableProps[]} />
       </div>

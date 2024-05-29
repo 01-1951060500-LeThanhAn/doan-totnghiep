@@ -33,6 +33,12 @@ const App = () => {
       } catch (error) {
         console.error("Error decoding token:", error);
       }
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      dispatch(logOut());
+      navigate("/dashboard/login");
+      toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
     }
   }, [dispatch, navigate]);
 
