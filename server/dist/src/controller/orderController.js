@@ -145,6 +145,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                                     generalId: updatedOrder.generalId,
                                     staffId: updatedOrder.userId,
                                     inventory_number: product.inventory_number,
+                                    totalPrice: totalPrice,
                                 },
                             },
                         });
