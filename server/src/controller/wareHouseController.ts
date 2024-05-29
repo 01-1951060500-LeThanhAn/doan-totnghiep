@@ -381,6 +381,7 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
       {
         $match: {
           createdAt: { $gte: previousMonth },
+          payment_status: "delivered",
         },
       },
       {
@@ -414,10 +415,10 @@ const getWareHouseByProduct = async (req: Request, res: Response) => {
       },
     ]);
 
-    res.status(200).json(incomeData);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching income data by product" });
+    return res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by customer" });
   }
 };
 

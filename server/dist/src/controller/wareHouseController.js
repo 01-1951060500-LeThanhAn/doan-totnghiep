@@ -317,6 +317,7 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
             {
                 $match: {
                     createdAt: { $gte: previousMonth },
+                    payment_status: "delivered",
                 },
             },
             {
@@ -349,11 +350,11 @@ const getWareHouseByProduct = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 },
             },
         ]);
-        res.status(200).json(incomeData);
+        return res.status(200).json(incomeData);
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Error fetching income data by product" });
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching income data by customer" });
     }
 });
 exports.getWareHouseByProduct = getWareHouseByProduct;
