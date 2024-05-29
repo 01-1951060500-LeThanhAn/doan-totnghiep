@@ -494,6 +494,9 @@ const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     totalQuantity: {
                         $sum: "$products.inventory_number",
                     },
+                    totalOrders: {
+                        $sum: 1,
+                    },
                     totalPrice: {
                         $sum: "$totalSupplierPay",
                     },
@@ -507,6 +510,7 @@ const getWareHouseByManager = (req, res) => __awaiter(void 0, void 0, void 0, fu
                     month: { $first: "$_id.month" },
                     totalQuantity: { $sum: "$totalQuantity" },
                     totalPrice: { $sum: "$totalPrice" },
+                    totalOrders: { $sum: "$totalOrders" },
                 },
             },
         ];

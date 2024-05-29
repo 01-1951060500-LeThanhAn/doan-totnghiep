@@ -561,6 +561,9 @@ const getWareHouseByManager = async (req: Request, res: Response) => {
           totalQuantity: {
             $sum: "$products.inventory_number",
           },
+          totalOrders: {
+            $sum: 1,
+          },
           totalPrice: {
             $sum: "$totalSupplierPay",
           },
@@ -574,6 +577,7 @@ const getWareHouseByManager = async (req: Request, res: Response) => {
           month: { $first: "$_id.month" },
           totalQuantity: { $sum: "$totalQuantity" },
           totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
         },
       },
     ];
