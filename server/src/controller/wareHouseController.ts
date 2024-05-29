@@ -347,6 +347,7 @@ const getIncomeWarehouse = async (req: Request, res: Response) => {
             _id: {
               $dateToString: { format: "%m/%Y", date: "$createdAt" },
             },
+            month: { $month: "$createdAt" },
             totalQuantity: {
               $sum: "$products.inventory_number",
             },
@@ -357,10 +358,14 @@ const getIncomeWarehouse = async (req: Request, res: Response) => {
         {
           $group: {
             _id: "$_id",
+            month: { $first: "$month" },
             totalQuantity: { $sum: "$totalQuantity" },
             totalPrice: { $sum: "$totalPrice" },
             totalOrders: { $sum: "$totalOrders" },
           },
+        },
+        {
+          $sort: { month: 1 },
         },
       ]),
     ]);
