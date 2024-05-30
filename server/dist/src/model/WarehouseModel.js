@@ -58,6 +58,11 @@ const WarehouseSchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "supplier",
     },
+    payment_method: {
+        type: String,
+        enum: ["online", "offline"],
+        default: "offline",
+    },
     payment_status: {
         type: String,
         enum: ["delivered", "pending"],
