@@ -670,6 +670,108 @@ const getWareHouseByOrders = async (req: Request, res: Response) => {
   }
 };
 
+const getPaymentWarehouseStaff = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "manager",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+      {
+        $unwind: "$users",
+      },
+      {
+        $project: {
+          _id: {
+            _id: "$users._id",
+            username: "$users.username",
+            email: "$users.email",
+          },
+          totalDeliveredOrders: {
+            $cond: {
+              if: { $eq: ["$order_status", "entered"] },
+              then: 1,
+              else: 0,
+            },
+          },
+
+          totalPriceDeliveredOnline: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ["$payment_status", "delivered"] },
+                  { $eq: ["$payment_method", "online"] },
+                ],
+              },
+              then: {
+                $multiply: ["$totalSupplierPay"],
+              },
+              else: 0,
+            },
+          },
+          totalPriceDeliveredOffline: {
+            $cond: {
+              if: {
+                $and: [
+                  { $eq: ["$payment_status", "delivered"] },
+                  { $eq: ["$payment_method", "offline"] },
+                ],
+              },
+              then: "$totalSupplierPay",
+              else: 0,
+            },
+          },
+          totalPricePending: {
+            $cond: {
+              if: { $eq: ["$payment_status", "pending"] },
+              then: "$totalSupplierPay",
+              else: 0,
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id._id",
+          email: { $first: "$_id.email" },
+          username: { $first: "$_id.username" },
+          totalDeliveredOrders: { $sum: "$totalDeliveredOrders" },
+          totalPriceDelivered: {
+            $sum: {
+              $add: [
+                "$totalPriceDeliveredOnline",
+                "$totalPriceDeliveredOffline",
+              ],
+            },
+          },
+          totalPriceDeliveredOnline: { $sum: "$totalPriceDeliveredOnline" },
+          totalPriceDeliveredOffline: { $sum: "$totalPriceDeliveredOffline" },
+          totalPricePending: { $sum: "$totalPricePending" },
+        },
+      },
+    ];
+
+    const results = await WarehouseModel.aggregate(pipeline);
+
+    return res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const searchWarehouseOrder = async (req: Request, res: Response) => {
   const keyword = req.query.keyword as string;
 
@@ -700,4 +802,5 @@ export {
   searchWarehouseOrder,
   getWareHouseByManager,
   getWareHouseByOrders,
+  getPaymentWarehouseStaff,
 };

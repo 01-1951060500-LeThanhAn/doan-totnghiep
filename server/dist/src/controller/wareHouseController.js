@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getWareHouseByOrders = exports.getWareHouseByManager = exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
+exports.getPaymentWarehouseStaff = exports.getWareHouseByOrders = exports.getWareHouseByManager = exports.searchWarehouseOrder = exports.updateWarehouse = exports.getInfoWareHouse = exports.getWareHouseByGeneral = exports.getWareHouseBySupplier = exports.getIncomeWarehouse = exports.deleteWarehouse = exports.getWareHouse = exports.getWareHouseByProduct = exports.createWareHouse = void 0;
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
@@ -591,6 +591,105 @@ const getWareHouseByOrders = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getWareHouseByOrders = getWareHouseByOrders;
+const getPaymentWarehouseStaff = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "manager",
+                    foreignField: "_id",
+                    as: "users",
+                },
+            },
+            {
+                $unwind: "$users",
+            },
+            {
+                $project: {
+                    _id: {
+                        _id: "$users._id",
+                        username: "$users.username",
+                        email: "$users.email",
+                    },
+                    totalDeliveredOrders: {
+                        $cond: {
+                            if: { $eq: ["$order_status", "entered"] },
+                            then: 1,
+                            else: 0,
+                        },
+                    },
+                    totalPriceDeliveredOnline: {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    { $eq: ["$payment_status", "delivered"] },
+                                    { $eq: ["$payment_method", "online"] },
+                                ],
+                            },
+                            then: {
+                                $multiply: ["$totalSupplierPay"],
+                            },
+                            else: 0,
+                        },
+                    },
+                    totalPriceDeliveredOffline: {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    { $eq: ["$payment_status", "delivered"] },
+                                    { $eq: ["$payment_method", "offline"] },
+                                ],
+                            },
+                            then: "$totalSupplierPay",
+                            else: 0,
+                        },
+                    },
+                    totalPricePending: {
+                        $cond: {
+                            if: { $eq: ["$payment_status", "pending"] },
+                            then: "$totalSupplierPay",
+                            else: 0,
+                        },
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id._id",
+                    email: { $first: "$_id.email" },
+                    username: { $first: "$_id.username" },
+                    totalDeliveredOrders: { $sum: "$totalDeliveredOrders" },
+                    totalPriceDelivered: {
+                        $sum: {
+                            $add: [
+                                "$totalPriceDeliveredOnline",
+                                "$totalPriceDeliveredOffline",
+                            ],
+                        },
+                    },
+                    totalPriceDeliveredOnline: { $sum: "$totalPriceDeliveredOnline" },
+                    totalPriceDeliveredOffline: { $sum: "$totalPriceDeliveredOffline" },
+                    totalPricePending: { $sum: "$totalPricePending" },
+                },
+            },
+        ];
+        const results = yield WarehouseModel_1.default.aggregate(pipeline);
+        return res.status(200).json(results);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getPaymentWarehouseStaff = getPaymentWarehouseStaff;
 const searchWarehouseOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const keyword = req.query.keyword;
     try {
