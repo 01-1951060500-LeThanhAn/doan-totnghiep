@@ -179,10 +179,178 @@ const deleteImportOrder = async (req: Request, res: Response) => {
   }
 };
 
+const getIncomePurchaseOrders = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await ImportOrderModel.aggregate([
+      {
+        $match: {
+          updatedAt: { $gte: previousMonth },
+          order_status: "entered",
+        },
+      },
+      {
+        $project: {
+          _id: {
+            $dateToString: { format: "%m/%Y", date: "$updatedAt" },
+          },
+          month: { $month: "$updatedAt" },
+          totalQuantity: {
+            $sum: "$products.inventory_number",
+          },
+          totalOrders: { $sum: 1 },
+          totalPrice: "$totalPrice",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          month: { $first: "$month" },
+          totalQuantity: { $sum: "$totalQuantity" },
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+    ]);
+
+    return res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error fetching income and purchase orders data" });
+  }
+};
+
+const getIncomePurchaseOrdersProducts = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+  try {
+    const pipeline = [
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+          order_status: "entered",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: "$product",
+      },
+      {
+        $project: {
+          productId: "$product._id",
+          productName: "$product.name_product",
+          productCode: "$product.code",
+          quantity: "$products.inventory_number",
+          price: "$product.export_price",
+          totalPrice: { $sum: { $multiply: ["$price", "$quantity"] } },
+        },
+      },
+      {
+        $group: {
+          _id: "$productId",
+          productName: { $first: "$productName" },
+          productCode: { $first: "$productCode" },
+          totalQuantity: { $sum: "$quantity" },
+          totalPrice: { $sum: "$totalPrice" },
+          price: { $first: "$price" },
+        },
+      },
+    ];
+
+    const results = await ImportOrderModel.aggregate(pipeline);
+
+    res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getIncomePurchaseOrdersSuppliers = async (
+  req: Request,
+  res: Response
+) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await ImportOrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "suppliers",
+          localField: "supplierId",
+          foreignField: "_id",
+          as: "suppliers",
+        },
+      },
+      {
+        $unwind: "$suppliers",
+      },
+      {
+        $project: {
+          _id: {
+            month: { $month: "$createdAt" },
+            supplier: "$suppliers.supplier_name",
+            code: "$suppliers.supplier_code",
+            _id: "$suppliers._id",
+            name: "$suppliers.supplier_name",
+          },
+          totalQuantity: { $sum: "$products.inventory_number" },
+          totalOrders: { $sum: 1 },
+          totalPrice: {
+            $sum: "$totalPrice",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id._id",
+          name: { $first: "$_id.name" },
+          code: { $first: "$_id.code" },
+          month: { $first: "$_id.month" },
+          totalQuantity: { $sum: "$totalQuantity" },
+          totalPrice: { $sum: "$totalPrice" },
+          totalOrders: { $sum: "$totalOrders" },
+        },
+      },
+    ]);
+
+    res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by supplier" });
+  }
+};
+
 export {
   createImportOrder,
   getAllOrderImport,
   updateImportOrder,
   getDetailImportOrder,
   deleteImportOrder,
+  getIncomePurchaseOrders,
+  getIncomePurchaseOrdersProducts,
+  getIncomePurchaseOrdersSuppliers,
 };

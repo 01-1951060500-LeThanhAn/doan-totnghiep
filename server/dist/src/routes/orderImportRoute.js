@@ -12,4 +12,7 @@ router.get(`/`, auth_1.verifyTokenAndAdmin, orderImportController_1.getAllOrderI
 router.patch(`/:id`, auth_1.verifyTokenAndAdmin, orderImportController_1.updateImportOrder);
 router.get(`/:id`, auth_1.verifyTokenAndAdmin, orderImportController_1.getDetailImportOrder);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, orderImportController_1.deleteImportOrder);
+router.get(`/income/total-purchase-orders`, auth_1.verifyTokenAndAdmin, orderImportController_1.getIncomePurchaseOrders);
+router.get(`/income/total-purchase-orders-products`, auth_1.verifyTokenAndAdmin, orderImportController_1.getIncomePurchaseOrdersProducts);
+router.get(`/income/total-purchase-orders-suppliers`, auth_1.verifyTokenAndAdmin, orderImportController_1.getIncomePurchaseOrdersSuppliers);
 exports.default = router;

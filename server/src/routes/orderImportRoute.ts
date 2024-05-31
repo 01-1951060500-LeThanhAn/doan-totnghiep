@@ -6,6 +6,9 @@ import {
   getDetailImportOrder,
   updateImportOrder,
   deleteImportOrder,
+  getIncomePurchaseOrders,
+  getIncomePurchaseOrdersProducts,
+  getIncomePurchaseOrdersSuppliers,
 } from "../controller/orderImportController";
 const router = express.Router();
 
@@ -18,5 +21,23 @@ router.patch(`/:id`, verifyTokenAndAdmin, updateImportOrder);
 router.get(`/:id`, verifyTokenAndAdmin, getDetailImportOrder);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteImportOrder);
+
+router.get(
+  `/income/total-purchase-orders`,
+  verifyTokenAndAdmin,
+  getIncomePurchaseOrders
+);
+
+router.get(
+  `/income/total-purchase-orders-products`,
+  verifyTokenAndAdmin,
+  getIncomePurchaseOrdersProducts
+);
+
+router.get(
+  `/income/total-purchase-orders-suppliers`,
+  verifyTokenAndAdmin,
+  getIncomePurchaseOrdersSuppliers
+);
 
 export default router;
