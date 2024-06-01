@@ -10,5 +10,6 @@ const router = express_1.default.Router();
 router.post(`/`, auth_1.verifyTokenAndAdmin, categoryController_1.createCategoryProduct);
 router.get(`/`, auth_1.verifyTokenAndAdmin, categoryController_1.getCategoryProduct);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, categoryController_1.deleteCategoryProduct);
+router.patch(`/:id`, auth_1.verifyTokenAndAdmin, categoryController_1.updateCategoryProduct);
 router.get(`/:id`, auth_1.verifyTokenAndAdmin, categoryController_1.getDetailCategoryProduct);
 exports.default = router;

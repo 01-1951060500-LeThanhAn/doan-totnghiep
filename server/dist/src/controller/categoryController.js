@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailCategoryProduct = exports.deleteCategoryProduct = exports.getCategoryProduct = exports.createCategoryProduct = void 0;
+exports.updateCategoryProduct = exports.getDetailCategoryProduct = exports.deleteCategoryProduct = exports.getCategoryProduct = exports.createCategoryProduct = void 0;
 const CategoryModel_1 = __importDefault(require("../model/CategoryModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -129,6 +129,29 @@ const getDetailCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.getDetailCategoryProduct = getDetailCategoryProduct;
+const updateCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const categoryId = req.params.id;
+    if (!categoryId) {
+        return res.status(400).json({
+            message: "Mã danh mục sản phẩm không hợp lệ hoặc không tồn tại",
+        });
+    }
+    try {
+        const categoryUpdated = yield CategoryModel_1.default.findByIdAndUpdate(categoryId, {
+            $set: req.body,
+        }, {
+            new: true,
+        });
+        res.status(200).json(categoryUpdated);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Lỗi khi xóa danh mục sản phẩm",
+        });
+    }
+});
+exports.updateCategoryProduct = updateCategoryProduct;
 const deleteCategoryProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryParams = req.params.id;
     try {

@@ -5,6 +5,7 @@ import {
   deleteCategoryProduct,
   getCategoryProduct,
   getDetailCategoryProduct,
+  updateCategoryProduct,
 } from "../controller/categoryController";
 const router = express.Router();
 
@@ -13,6 +14,8 @@ router.post(`/`, verifyTokenAndAdmin, createCategoryProduct);
 router.get(`/`, verifyTokenAndAdmin, getCategoryProduct);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteCategoryProduct);
+
+router.patch(`/:id`, verifyTokenAndAdmin, updateCategoryProduct);
 
 router.get(`/:id`, verifyTokenAndAdmin, getDetailCategoryProduct);
 
