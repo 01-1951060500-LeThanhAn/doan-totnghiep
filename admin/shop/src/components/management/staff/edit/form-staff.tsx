@@ -97,9 +97,9 @@ const FormStaff = ({ initialValues, id }: Props) => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleEditStaff)}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4 h-full w-full"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-x-6 gap-y-4 h-full w-full"
           >
-            <div className="col-span-1">
+            <div className="col-span-2">
               <div className="my-3">
                 <FormField
                   control={form.control}

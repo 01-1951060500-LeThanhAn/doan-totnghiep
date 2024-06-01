@@ -6,6 +6,7 @@ export const goodReceivedNoteSchema = z.object({
   }),
   supplierId: z.string().min(1, "ID Supplier is required"),
   generalId: z.string().min(1, "ID General is required"),
+  payment_method: z.string().min(1, "Payment Status is required"),
   manager: z.string().min(1, "ID Staff is required"),
   delivery_date: z.date({
     required_error: "A date of birth is required.",

@@ -54,26 +54,6 @@ const FinanceView = () => {
               </div>
             </Link>
           </div>
-          <div
-            className={`${
-              theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
-            } rounded-lg p-3`}
-          >
-            <Link to={`/dashboard/report/overstocking`}>
-              <div className="flex items-center gap-x-2">
-                <img
-                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715222562/Screenshot_2024-05-09_094142-removebg-preview_m9cxfd.png"
-                  alt=""
-                />
-                <div className="image">
-                  <p className="text-base font-semibold">Báo cáo lãi lỗ</p>
-                  <p className="text-sm">
-                    Theo dõi doanh thu chi phí và lợi nhuận của cửa hàng
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </div>
         </div>
       </HomeLayout>
     </>

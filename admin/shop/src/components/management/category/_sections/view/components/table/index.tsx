@@ -63,7 +63,10 @@ export const columns: ColumnDef<CategoryProduct>[] = [
     accessorKey: "img",
     header: "Hình ảnh sản phẩm",
     cell: ({ row }) => (
-      <img src={`${row.getValue("img")}`} className="w-24 h-16 object-cover" />
+      <img
+        src={`${row.getValue("img")}`}
+        className="w-24 h-16 object-contain"
+      />
     ),
   },
   {

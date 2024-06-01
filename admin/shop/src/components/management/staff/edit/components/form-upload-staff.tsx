@@ -34,6 +34,11 @@ const FormUploadStaff = ({ setFile, name }: Props) => {
     setFilePreview(preview);
   };
 
+  const handleDiscard = () => {
+    setFile(null);
+    setFilePreview(null);
+  };
+
   useEffect(() => {
     return () => {
       filePreview && URL.revokeObjectURL(filePreview);
@@ -56,10 +61,10 @@ const FormUploadStaff = ({ setFile, name }: Props) => {
                   <>
                     <label htmlFor="upload">
                       <div
-                        className={`h-80   rounded-lg w-full mt-4  ${
+                        className={`h-72 w-72 rounded-full mt-4  ${
                           theme === "light"
-                            ? "bg-[#d2d6e0]"
-                            : "bg-[#020817] hover:bg-[#020818c7]"
+                            ? "bg-[#eef0f6]"
+                            : "bg-[#1a1b1c] hover:bg-[#020818c7]"
                         }`}
                       >
                         <div className="flex  flex-col h-full justify-center items-center">
@@ -88,8 +93,8 @@ const FormUploadStaff = ({ setFile, name }: Props) => {
                 ) : (
                   <>
                     <div
-                      onClick={() => setFile(null)}
-                      className="absolute top-0 right-0 z-50"
+                      onClick={handleDiscard}
+                      className="absolute cursor-pointer top-0 right-0 z-50"
                     >
                       <X />
                     </div>

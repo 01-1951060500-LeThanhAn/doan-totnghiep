@@ -33,19 +33,11 @@ import { useTheme } from "next-themes";
 
 import HomeLayout from "@/layouts/home-layout";
 import { Link } from "react-router-dom";
-import {
-  CreateSupplierData,
-  SupplierData,
-  SupplierDataResponse,
-} from "@/types/supplier";
+import { CreateSupplierData, SupplierData } from "@/types/supplier";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
 import { formatPrice } from "@/config/format-price";
-
-type Data = {
-  suppliers: SupplierDataResponse[];
-};
 
 export const columns: ColumnDef<SupplierData>[] = [
   {
@@ -100,14 +92,11 @@ export const columns: ColumnDef<SupplierData>[] = [
     },
   },
   {
-    accessorKey: "totalSpending",
+    accessorKey: "totalPrice",
     header: "Tổng chi tiêu",
-    cell: ({ table }) => {
-      const { suppliers } = table.options.meta as Data;
+    cell: ({ row }) => {
       return (
-        <p className="capitalize">
-          {suppliers?.length > 0 ? formatPrice(suppliers[0].totalSpending) : 0}
-        </p>
+        <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
       );
     },
   },

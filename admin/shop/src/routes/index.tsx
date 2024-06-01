@@ -21,6 +21,7 @@ import DebtSuppliersPage from "@/components/report/finance/debt-suppliers/list/p
 import DetailReportGeneralPage from "@/components/report/general/detail/page";
 import DetailReportInventoriesPage from "@/components/report/general/view";
 import ReportRevenueGrnPage from "@/components/report/good-received-note/revenue/page";
+import ReportShipmentGrnPage from "@/components/report/good-received-note/shipments/page";
 import ReportPaymentPage from "@/components/report/orders/payments/page";
 import ReportRevenuePage from "@/components/report/orders/revenue/page";
 import ReportShipmentPage from "@/components/report/orders/shipments/page";
@@ -65,6 +66,7 @@ import ReportTransactionPage from "@/pages/report/general/transaction/page";
 import ReportGoodReceivedNotePage from "@/pages/report/good-received-note/page";
 import ReportOrderPage from "@/pages/report/orders/page";
 import ReportPage from "@/pages/report/page";
+import ReportPurchaseOrderPage from "@/pages/report/purchase-order/page";
 import StockAdjustmentPage from "@/pages/report/stock-adjustments/page";
 import AddReturnOrderPage from "@/pages/return-order/add/page";
 import ViewReturnOrderPage from "@/pages/return-order/page";
@@ -764,6 +766,24 @@ const routes = [
       </DashBoardLayout>
     ),
     name: "Báo cáo kho nhập hàng",
+  },
+  {
+    path: "/dashboard/report/grn/analytic_grn/shipments",
+    element: (
+      <DashBoardLayout>
+        <ReportShipmentGrnPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo thanh toán nhập hàng",
+  },
+  {
+    path: "/dashboard/report/purchase_orders/analytic_purchase_orders",
+    element: (
+      <DashBoardLayout>
+        <ReportPurchaseOrderPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo đặt hàng",
   },
 ];
 

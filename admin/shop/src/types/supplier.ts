@@ -36,6 +36,7 @@ export type SupplierData = {
   balance_decreases: number;
   remaining_decreases: number;
   ending_balance: number;
+  totalPrice: number;
 };
 
 export type SupplierDetailData = {

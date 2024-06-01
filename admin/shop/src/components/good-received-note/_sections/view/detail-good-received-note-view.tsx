@@ -7,7 +7,7 @@ import { useTheme } from "next-themes";
 import TableGoodReceivedNoteData from "./components/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateGRNAsync } from "@/redux/slices/grnSlice";
 import { formatPrice } from "@/config/format-price";
 
@@ -23,13 +23,13 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
   const dispatch = useAppDispatch();
 
-  const handleUpdateGoodReceivedNote = async () => {
+  const handleUpdateGoodReceivedNote = () => {
     try {
       setLoading(true);
-      await dispatch(updateGRNAsync(id));
+      dispatch(updateGRNAsync(id));
       setLoading(false);
-      toast.success("Thanh toán đơn hàng thành công");
       setOrderStatus("entered");
+      toast.success("Thanh toán đơn hàng thành công");
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -37,6 +37,9 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
     }
   };
 
+  useEffect(() => {
+    setOrderStatus(data?.order_status);
+  }, [data]);
   return (
     <>
       <HomeLayout>

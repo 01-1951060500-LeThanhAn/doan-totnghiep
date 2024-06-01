@@ -4,6 +4,7 @@ import {
   ReportWarehouseByStaff,
   ReportWarehouseBySupplier,
   ReportWarehouseByTime,
+  ReportWarehouseShipmentByMethod,
 } from "@/types/report";
 import { adminApi } from ".";
 
@@ -42,10 +43,18 @@ const getWarehouseRevenueBySuppliers = async () => {
   return response.data;
 };
 
+const getWarehouseShipmentByMethod = async () => {
+  const response = await adminApi.get<ReportWarehouseShipmentByMethod[]>(
+    `/warehouse/income/payments-warehouse-staff`
+  );
+  return response.data;
+};
+
 export {
   getWarehouseRevenueByTime,
   getWarehouseRevenueByStaff,
   getWarehouseRevenueByProduct,
   getWarehouseRevenueByGeneral,
   getWarehouseRevenueBySuppliers,
+  getWarehouseShipmentByMethod,
 };

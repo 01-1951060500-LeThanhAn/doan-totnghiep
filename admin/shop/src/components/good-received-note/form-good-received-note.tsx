@@ -39,6 +39,7 @@ import { createGoodReceivedNote } from "@/api/grnApi";
 import { useNavigate } from "react-router-dom";
 import { DateInputData } from "./add/components/date";
 import useGetUsers from "../suppliers/hooks/use-get-users";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 type Props = {
   initialValues: CreateGoodReceivedNoteData;
@@ -51,6 +52,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
       generalId: initialValues?.generalId ?? "",
       supplierId: initialValues?.supplierId ?? "",
       manager: initialValues?.manager ?? "",
+      payment_method: initialValues?.payment_method ?? "",
       delivery_date:
         initialValues?.delivery_date ?? new Date(initialValues?.delivery_date),
       products: initialValues.products.map((product) => ({
@@ -266,6 +268,37 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
                           </SelectContent>
                         </Select>
                       </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="my-2">
+              <FormField
+                control={form.control}
+                name="payment_method"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <p>Phương thức thanh toán</p>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="online" />
+                          </FormControl>
+                          <p className="font-normal">Chuyển khoản</p>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="offline" />
+                          </FormControl>
+                          <p className="font-normal">Tiền mặt</p>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

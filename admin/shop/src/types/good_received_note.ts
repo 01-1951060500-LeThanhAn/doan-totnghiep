@@ -4,6 +4,7 @@ export type CreateGoodReceivedNoteData = {
   supplierId: string;
   generalId: string;
   manager: string;
+  payment_method: string;
   delivery_date: string | Date;
   payment_status: string;
   products: {

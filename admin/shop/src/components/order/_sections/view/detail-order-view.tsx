@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import TableOrderData from "./components/table";
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
   data: DetailOrderData;
@@ -136,7 +137,33 @@ const DetailOrderView = ({ data, id }: Props) => {
 
               <div className="flex items-center justify-between my-3">
                 <p>Trạng thái hàng: </p>
-                <span>Đang vận chuyển</span>
+                <p>
+                  {orderStatus === "pending" ? (
+                    <>
+                      {theme === "light" ? (
+                        <Badge variant="default" className="capitalize">
+                          Đang giao
+                        </Badge>
+                      ) : (
+                        <Badge variant="default" className="capitalize">
+                          Đang giao
+                        </Badge>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {theme === "light" ? (
+                        <Badge variant="secondary" className="capitalize">
+                          Đã giao
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="capitalize">
+                          Đã giao
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </p>
               </div>
             </div>
           </div>

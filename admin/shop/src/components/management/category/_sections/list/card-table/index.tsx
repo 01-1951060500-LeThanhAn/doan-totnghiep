@@ -14,11 +14,13 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -83,22 +85,22 @@ export const columns: ColumnDef<CategoryTableProps>[] = [
     cell: ({ row }) => {
       return (
         <>
-          <div className="capitalize z-50">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="capitalize">
-                    {(row.getValue("description") as string)?.length > 30
-                      ? (row.getValue("description") as string).slice(0, 30)
-                      : "..."}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">Xem mô tả</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogDescription>
                   <p> {row.getValue("description")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+                </DialogDescription>
+              </DialogHeader>
+
+              <DialogFooter>
+                <Button type="submit">Đóng</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </>
       );
     },

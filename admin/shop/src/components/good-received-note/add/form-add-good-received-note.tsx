@@ -7,6 +7,7 @@ const FormAddGoodReceivedNotePage = () => {
         initialValues={{
           manager: "",
           _id: "",
+          payment_method: "",
           payment_status: "",
           code: "",
           delivery_date: "",

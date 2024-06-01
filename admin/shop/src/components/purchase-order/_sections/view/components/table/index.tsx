@@ -39,7 +39,7 @@ const TablePurchaseOrderData = ({ data, totalQuantity }: Props) => {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>
                     <img
-                      className="h-12 w-full object-cover"
+                      className="h-12 w-full object-contain"
                       src={item?.productId?.img}
                       alt={item?.productId?.name_product}
                     />

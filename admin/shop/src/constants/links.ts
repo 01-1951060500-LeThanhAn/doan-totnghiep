@@ -109,6 +109,10 @@ const links = [
         href: "/dashboard/report/grn/analytic_grn",
       },
       {
+        name: "Báo cáo đặt hàng",
+        href: "/dashboard/report/purchase_orders/analytic_purchase_orders",
+      },
+      {
         name: "Báo cáo bán hàng",
         href: "/dashboard/report/order/analytic_orders",
       },

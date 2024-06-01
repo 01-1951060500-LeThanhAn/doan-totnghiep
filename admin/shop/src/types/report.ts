@@ -172,3 +172,25 @@ export type ReportWarehouseByGeneral = {
 };
 
 export type ReportWarehouseBySupplier = ReportWarehouseByGeneral;
+
+export type ReportWarehouseShipmentByMethod = ReportPaymentByStaff;
+
+export type ReportPurchaseOrderByTime = ReportWarehouseByTime;
+
+export type ReportPurchaseOrderByProduct = {
+  _id: string;
+  productName: string;
+  productCode: string;
+  totalQuantity: number;
+  totalPrice: number;
+  price: number;
+};
+
+export type ReportPurchaseOrderBySupplier = {
+  _id: string;
+  code: string;
+  name: string;
+  totalQuantity: number;
+  totalPrice: number;
+  totalOrders: number;
+};
