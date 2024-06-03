@@ -85,7 +85,6 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-
     const { user } = req.user as any;
 
     if (!user || !user?.role) {
@@ -94,11 +93,13 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
 
     let orders: any[] = [];
     if (user?.role?.name === "admin") {
-      orders = await OrderModel.find().populate("userId products.productId");
+      orders = await OrderModel.find()
+        .populate("userId products.productId")
+        .sort({ createdAt: -1 });
     } else if (user?.role?.name === "manager") {
-      orders = await OrderModel.find({ userId: user._id }).populate(
-        "userId products.productId"
-      );
+      orders = await OrderModel.find({ userId: user._id })
+        .populate("userId products.productId")
+        .sort({ createdAt: -1 });
     } else {
       orders = [];
     }

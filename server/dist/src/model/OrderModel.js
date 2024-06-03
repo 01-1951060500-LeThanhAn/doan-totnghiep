@@ -80,7 +80,7 @@ const OrderSchema = new mongoose_1.default.Schema({
     },
     order_status: {
         type: String,
-        enum: ["pending", "delivered", "shipped"],
+        enum: ["pending", "delivered", "cancelled"],
         default: "pending",
     },
     payment_method: {
