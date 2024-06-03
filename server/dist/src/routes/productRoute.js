@@ -11,7 +11,7 @@ router.post(`/`, auth_1.verifyTokenAndAdmin, productController_1.createProduct);
 router.get(`/`, auth_1.verifyTokenAndAuthorization, productController_1.getListProducts);
 router.get(`/type`, auth_1.verifyTokenAndAuthorization, productController_1.getTypeProducts);
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, productController_1.getDetailProduct);
-router.patch(`/:id`, auth_1.verifyTokenAndAdmin, productController_1.updateProduct);
+router.patch(`/:id`, auth_1.verifyTokenAndAuthorization, productController_1.updateProduct);
 router.delete(`/:id`, auth_1.verifyTokenAndAdmin, productController_1.deleteProduct);
 router.get(`/api/search`, auth_1.verifyTokenAndAuthorization, productController_1.searchProduct);
 exports.default = router;

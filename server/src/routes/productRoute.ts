@@ -22,7 +22,7 @@ router.get(`/type`, verifyTokenAndAuthorization, getTypeProducts);
 
 router.get(`/:id`, verifyTokenAndAuthorization, getDetailProduct);
 
-router.patch(`/:id`, verifyTokenAndAdmin, updateProduct);
+router.patch(`/:id`, verifyTokenAndAuthorization, updateProduct);
 
 router.delete(`/:id`, verifyTokenAndAdmin, deleteProduct);
 
