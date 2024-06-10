@@ -67,16 +67,16 @@ const registerUser = async (req: Request, res: Response) => {
       });
     }
 
-    const managerRole = await RoleModel.findById(req.body.role);
-    if (!managerRole) {
-      return res.status(400).json({ error: "Invalid role ID" });
-    }
+    // const managerRole = await RoleModel.findById(req.body.role);
+    // if (!managerRole) {
+    //   return res.status(400).json({ error: "Invalid role ID" });
+    // }
     const user = new UserModel({
       username: req.body.username,
       email: req.body.email,
       password: hashedPw,
       confirmPassword: hashedConfirmPw,
-      role: managerRole._id,
+      role: req.body.role,
     });
 
     const accessToken = jwt.sign(

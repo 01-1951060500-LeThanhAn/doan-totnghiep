@@ -43,9 +43,9 @@ const UserSchema = new mongoose_1.default.Schema({
         default: "",
     },
     role: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "role",
-        required: true,
+        type: String,
+        enum: ["manager", "admin"],
+        default: "admin",
     },
 }, {
     timestamps: true,
