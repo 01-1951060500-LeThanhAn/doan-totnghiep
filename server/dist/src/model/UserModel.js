@@ -47,6 +47,10 @@ const UserSchema = new mongoose_1.default.Schema({
         enum: ["manager", "admin"],
         default: "admin",
     },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
 }, {
     timestamps: true,
 });

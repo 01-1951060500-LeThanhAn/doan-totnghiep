@@ -6,6 +6,7 @@ dotenv.config();
 
 type Data = {
   role: string;
+  isAdmin: boolean;
 };
 declare global {
   interface UserRequest extends Request {
@@ -67,7 +68,8 @@ const verifyTokenAndAdmin = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    if (req.user?.user?.role === "admin") {
+    console.log(req.user?.user.isAdmin);
+    if (req.user?.user?.role === "admin" || req.user?.user?.isAdmin === true) {
       next();
     } else {
       res.status(403).json("You are not as a admin!");
