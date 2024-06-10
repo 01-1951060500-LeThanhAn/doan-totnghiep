@@ -34,7 +34,7 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
       query = { manager: user._id };
     }
 
-    const generals = await GeneralDepotModel.find(query);
+    const generals = await GeneralDepotModel.find(query).populate("manager");
 
     res.status(200).json(generals);
   } catch (error) {
