@@ -4,9 +4,12 @@ import { NextFunction, Request, Response } from "express";
 
 dotenv.config();
 
+type Data = {
+  role: string;
+};
 declare global {
   interface UserRequest extends Request {
-    user?: JwtPayload | (string & { role?: string | undefined });
+    user?: JwtPayload | (string & { user?: Data });
   }
 }
 
@@ -47,8 +50,10 @@ const verifyTokenAndAuthorization = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    console.log(req.user?.role);
-    if (req.user?.role === "admin" || req.user?.role === "manager") {
+    if (
+      req.user?.user?.role === "admin" ||
+      req.user?.user?.role === "manager"
+    ) {
       next();
     } else {
       res.status(403).json("You are not alowed to do that!");
@@ -62,7 +67,7 @@ const verifyTokenAndAdmin = (
   next: NextFunction
 ) => {
   checkToken(req, res, () => {
-    if (req.user?.role === "admin") {
+    if (req.user?.user?.role === "admin") {
       next();
     } else {
       res.status(403).json("You are not as a admin!");
