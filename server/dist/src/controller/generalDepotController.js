@@ -44,7 +44,7 @@ const getGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
             query = { manager: user._id };
         }
-        const generals = yield GeneralDepotModel_1.default.find(query).populate("manager");
+        const generals = yield GeneralDepotModel_1.default.find(query);
         res.status(200).json(generals);
     }
     catch (error) {

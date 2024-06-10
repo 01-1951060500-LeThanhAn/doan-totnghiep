@@ -39,8 +39,9 @@ function checkToken(req, res, next) {
 exports.checkToken = checkToken;
 const verifyTokenAndAuthorization = (req, res, next) => {
     checkToken(req, res, () => {
-        var _a, _b;
-        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) === "admin" || ((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === "manager") {
+        var _a, _b, _c;
+        console.log((_a = req.user) === null || _a === void 0 ? void 0 : _a.role);
+        if (((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) === "admin" || ((_c = req.user) === null || _c === void 0 ? void 0 : _c.role) === "manager") {
             next();
         }
         else {
