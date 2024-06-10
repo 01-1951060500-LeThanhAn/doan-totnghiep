@@ -50,10 +50,7 @@ const getListProducts = async (req: UserRequest, res: Response) => {
         "type generalId manager stockAdjustmentHistory.stockAjustmentId"
       );
     } else if (user?.role?.name === "manager") {
-      generals = await ProductModel.find({
-        manager: user._id,
-        status: status ? status : { $exists: true },
-      }).populate(
+      generals = await ProductModel.find().populate(
         "generalId type manager stockAdjustmentHistory.stockAjustmentId"
       );
     } else {

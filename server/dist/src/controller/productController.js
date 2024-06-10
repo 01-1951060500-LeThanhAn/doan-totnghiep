@@ -54,10 +54,7 @@ const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
             }).populate("type generalId manager stockAdjustmentHistory.stockAjustmentId");
         }
         else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
-            generals = yield ProductModel_1.default.find({
-                manager: user._id,
-                status: status ? status : { $exists: true },
-            }).populate("generalId type manager stockAdjustmentHistory.stockAjustmentId");
+            generals = yield ProductModel_1.default.find().populate("generalId type manager stockAdjustmentHistory.stockAjustmentId");
         }
         else {
             generals = [];
