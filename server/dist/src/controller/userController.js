@@ -69,13 +69,7 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         // if (!managerRole) {
         //   return res.status(400).json({ error: "Invalid role ID" });
         // }
-        const user = new UserModel_1.default({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPw,
-            confirmPassword: hashedConfirmPw,
-            role: req.body.role,
-        });
+        const user = new UserModel_1.default(Object.assign(Object.assign({}, req.body), { username: req.body.username, email: req.body.email, password: hashedPw, confirmPassword: hashedConfirmPw, role: req.body.role }));
         const accessToken = jsonwebtoken_1.default.sign({
             userId: user._id,
             role: user.role,

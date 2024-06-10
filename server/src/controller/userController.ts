@@ -72,6 +72,7 @@ const registerUser = async (req: Request, res: Response) => {
     //   return res.status(400).json({ error: "Invalid role ID" });
     // }
     const user = new UserModel({
+      ...req.body,
       username: req.body.username,
       email: req.body.email,
       password: hashedPw,
