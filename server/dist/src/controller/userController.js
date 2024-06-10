@@ -76,7 +76,6 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             password: hashedPw,
             confirmPassword: hashedConfirmPw,
             role: managerRole._id,
-            generalId: req.body.generalId,
         });
         const accessToken = jsonwebtoken_1.default.sign({
             userId: user._id,

@@ -146,9 +146,29 @@ const updateGeneralDepot = async (req: Request, res: Response) => {
   }
 };
 
+const deleteGeneralDepot = async (req: Request, res: Response) => {
+  const generalId = req.params.id;
+  if (!generalId) {
+    return res.status(400).json({ message: "General not found" });
+  }
+
+  try {
+    const deletedGeneral = await GeneralDepotModel.findByIdAndDelete(generalId);
+
+    if (!deletedGeneral) {
+      return res.status(400).json({ message: "General not found" });
+    }
+
+    return res.status(200).json("General deleted");
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 export {
   createGeneralDepot,
   getGeneralDepot,
   getDetailGeneralDepot,
   updateGeneralDepot,
+  deleteGeneralDepot,
 };

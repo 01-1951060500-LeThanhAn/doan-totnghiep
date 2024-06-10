@@ -44,10 +44,6 @@ const UserSchema = new mongoose.Schema(
       ref: "role",
       required: true,
     },
-    generalId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "general",
-    },
   },
   {
     timestamps: true,

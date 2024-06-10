@@ -8,6 +8,7 @@ import {
   getDetailGeneralDepot,
   getGeneralDepot,
   updateGeneralDepot,
+  deleteGeneralDepot,
 } from "../controller/generalDepotController";
 const router = express.Router();
 
@@ -19,4 +20,5 @@ router.get(`/:id`, verifyTokenAndAuthorization, getDetailGeneralDepot);
 
 router.patch(`/:id`, verifyTokenAndAuthorization, updateGeneralDepot);
 
+router.delete(`/:id`, verifyTokenAndAdmin, deleteGeneralDepot);
 export default router;

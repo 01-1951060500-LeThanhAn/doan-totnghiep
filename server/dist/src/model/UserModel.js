@@ -47,10 +47,6 @@ const UserSchema = new mongoose_1.default.Schema({
         ref: "role",
         required: true,
     },
-    generalId: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "general",
-    },
 }, {
     timestamps: true,
 });

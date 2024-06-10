@@ -77,7 +77,6 @@ const registerUser = async (req: Request, res: Response) => {
       password: hashedPw,
       confirmPassword: hashedConfirmPw,
       role: managerRole._id,
-      generalId: req.body.generalId,
     });
 
     const accessToken = jwt.sign(

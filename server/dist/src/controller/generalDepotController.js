@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateGeneralDepot = exports.getDetailGeneralDepot = exports.getGeneralDepot = exports.createGeneralDepot = void 0;
+exports.deleteGeneralDepot = exports.updateGeneralDepot = exports.getDetailGeneralDepot = exports.getGeneralDepot = exports.createGeneralDepot = void 0;
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -147,3 +147,20 @@ const updateGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.updateGeneralDepot = updateGeneralDepot;
+const deleteGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const generalId = req.params.id;
+    if (!generalId) {
+        return res.status(400).json({ message: "General not found" });
+    }
+    try {
+        const deletedGeneral = yield GeneralDepotModel_1.default.findByIdAndDelete(generalId);
+        if (!deletedGeneral) {
+            return res.status(400).json({ message: "General not found" });
+        }
+        return res.status(200).json("General deleted");
+    }
+    catch (error) {
+        return res.status(500).json(error);
+    }
+});
+exports.deleteGeneralDepot = deleteGeneralDepot;

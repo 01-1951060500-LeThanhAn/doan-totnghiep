@@ -11,4 +11,5 @@ router.post(`/`, auth_1.verifyTokenAndAdmin, generalDepotController_1.createGene
 router.get(`/`, auth_1.verifyTokenAndAuthorization, generalDepotController_1.getGeneralDepot);
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, generalDepotController_1.getDetailGeneralDepot);
 router.patch(`/:id`, auth_1.verifyTokenAndAuthorization, generalDepotController_1.updateGeneralDepot);
+router.delete(`/:id`, auth_1.verifyTokenAndAdmin, generalDepotController_1.deleteGeneralDepot);
 exports.default = router;
