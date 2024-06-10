@@ -34,10 +34,7 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
       query = { manager: user._id };
     }
 
-    const generals = await GeneralDepotModel.find(query).populate({
-      path: "manager",
-      select: "-password -confirmPassword",
-    });
+    const generals = await GeneralDepotModel.find(query);
 
     res.status(200).json(generals);
   } catch (error) {
