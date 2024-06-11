@@ -42,14 +42,13 @@ const getListProducts = async (req: UserRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     let generals: any[] = [];
-    if (user?.role?.name === "admin") {
+    if (user?.role === "admin") {
       generals = await ProductModel.find({
-        manager: user._id,
         status: status ? status : { $exists: true },
       }).populate(
         "type generalId manager stockAdjustmentHistory.stockAjustmentId"
       );
-    } else if (user?.role?.name === "manager") {
+    } else if (user?.role === "manager") {
       generals = await ProductModel.find().populate(
         "generalId type manager stockAdjustmentHistory.stockAjustmentId"
       );

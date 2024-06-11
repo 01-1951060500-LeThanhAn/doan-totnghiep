@@ -36,6 +36,35 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.createProduct = createProduct;
 const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = req.query.status;
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const { user } = req.user;
+        if (!user || !(user === null || user === void 0 ? void 0 : user.role)) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        let generals = [];
+        if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
+            generals = yield ProductModel_1.default.find({
+                status: status ? status : { $exists: true },
+            }).populate("type generalId manager stockAdjustmentHistory.stockAjustmentId");
+        }
+        else if ((user === null || user === void 0 ? void 0 : user.role) === "manager") {
+            generals = yield ProductModel_1.default.find().populate("generalId type manager stockAdjustmentHistory.stockAjustmentId");
+        }
+        else {
+            generals = [];
+        }
+        res.status(200).json(generals);
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+});
+exports.getListProducts = getListProducts;
+const getTypeProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const status = req.query.status;
     try {
@@ -51,40 +80,9 @@ const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
             generals = yield ProductModel_1.default.find({
                 manager: user._id,
                 status: status ? status : { $exists: true },
-            }).populate("type generalId manager stockAdjustmentHistory.stockAjustmentId");
-        }
-        else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
-            generals = yield ProductModel_1.default.find().populate("generalId type manager stockAdjustmentHistory.stockAjustmentId");
-        }
-        else {
-            generals = [];
-        }
-        res.status(200).json(generals);
-    }
-    catch (error) {
-        res.status(500).json(error);
-    }
-});
-exports.getListProducts = getListProducts;
-const getTypeProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
-    const status = req.query.status;
-    try {
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        const { user } = req.user;
-        if (!user || !(user === null || user === void 0 ? void 0 : user.role)) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        let generals = [];
-        if (((_c = user === null || user === void 0 ? void 0 : user.role) === null || _c === void 0 ? void 0 : _c.name) === "admin") {
-            generals = yield ProductModel_1.default.find({
-                manager: user._id,
-                status: status ? status : { $exists: true },
             }).populate("type generalId manager");
         }
-        else if (((_d = user === null || user === void 0 ? void 0 : user.role) === null || _d === void 0 ? void 0 : _d.name) === "manager") {
+        else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
             generals = yield ProductModel_1.default.find({
                 manager: user._id,
                 status: status ? status : { $exists: true },
