@@ -68,7 +68,6 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.createOrder = createOrder;
 const getAllOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
@@ -78,12 +77,12 @@ const getAllOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(401).json({ message: "Unauthorized" });
         }
         let orders = [];
-        if (((_a = user === null || user === void 0 ? void 0 : user.role) === null || _a === void 0 ? void 0 : _a.name) === "admin") {
+        if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
             orders = yield OrderModel_1.default.find()
                 .populate("userId products.productId")
                 .sort({ createdAt: -1 });
         }
-        else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
+        else if ((user === null || user === void 0 ? void 0 : user.role) === "manager") {
             orders = yield OrderModel_1.default.find({ userId: user._id })
                 .populate("userId products.productId")
                 .sort({ createdAt: -1 });

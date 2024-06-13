@@ -92,11 +92,11 @@ const getAllOrder = async (req: UserRequest, res: Response) => {
     }
 
     let orders: any[] = [];
-    if (user?.role?.name === "admin") {
+    if (user?.role === "admin") {
       orders = await OrderModel.find()
         .populate("userId products.productId")
         .sort({ createdAt: -1 });
-    } else if (user?.role?.name === "manager") {
+    } else if (user?.role === "manager") {
       orders = await OrderModel.find({ userId: user._id })
         .populate("userId products.productId")
         .sort({ createdAt: -1 });
