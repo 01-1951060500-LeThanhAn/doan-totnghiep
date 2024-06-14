@@ -22,6 +22,12 @@ const generalDepotSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    manager: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "users",
+        required: true,
+        default: null,
+    },
 }, {
     timestamps: true,
 });
