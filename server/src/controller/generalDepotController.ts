@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 import mongoose from "mongoose";
+import CategoryModel from "../model/CategoryModel";
 
 const createGeneralDepot = async (req: Request, res: Response) => {
   try {
@@ -34,7 +35,7 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
       query = { manager: user._id };
     }
 
-    const generals = await GeneralDepotModel.find(query).populate("manager");
+    const generals = await GeneralDepotModel.find(query).populate("manager ");
 
     res.status(200).json(generals);
   } catch (error) {
@@ -111,9 +112,26 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
       },
     ]);
 
+    const enrichedResults = [];
+
+    for (const result of general) {
+      const typeProducts = result.type;
+      const category = await CategoryModel.findById(typeProducts);
+
+      if (category) {
+        const enrichedResult = {
+          ...result,
+          name: category.name,
+          code: category.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
     return res.status(200).json({
       results,
-      general,
+      general: enrichedResults,
     });
   } catch (error) {
     console.log(error);
