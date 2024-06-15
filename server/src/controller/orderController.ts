@@ -624,7 +624,6 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       {
         $match: {
           createdAt: { $gte: previousMonth },
-          payment_status: "paid",
         },
       },
 

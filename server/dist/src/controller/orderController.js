@@ -560,7 +560,6 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
             {
                 $match: {
                     createdAt: { $gte: previousMonth },
-                    payment_status: "paid",
                 },
             },
             {
