@@ -189,7 +189,14 @@ const updateShippets = (req, res) => __awaiter(void 0, void 0, void 0, function*
             type: "sub",
             _id: ships.toGeneralId,
         });
+        const mainWarehouse = yield GeneralDepotModel_1.default.findOne({
+            type: "main",
+            _id: ships.fromGeneralId,
+        });
         if (!targetWarehouse) {
+            return res.status(400).json({ message: "Warehouse not found" });
+        }
+        if (!mainWarehouse) {
             return res.status(400).json({ message: "Warehouse not found" });
         }
         for (let product of ships.products) {
@@ -205,8 +212,16 @@ const updateShippets = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 generalId: targetWarehouse._id,
                 manager: ships === null || ships === void 0 ? void 0 : ships.manager,
             });
+            const mainProduct = yield ProductModel_1.default.findOne({
+                _id: productId,
+                generalId: mainWarehouse._id,
+            });
+            if (mainProduct) {
+                mainProduct.inventory_number -= inventory_number;
+                yield mainProduct.save();
+            }
             if (subProduct) {
-                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number: -product.inventory_number } }, { upsert: true, new: true });
+                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
             }
             else {
                 const newProduct = new ProductModel_1.default({

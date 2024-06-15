@@ -205,7 +205,15 @@ const updateShippets = async (req: Request, res: Response) => {
       _id: ships.toGeneralId,
     });
 
+    const mainWarehouse = await GeneralDepotModel.findOne({
+      type: "main",
+      _id: ships.fromGeneralId,
+    });
+
     if (!targetWarehouse) {
+      return res.status(400).json({ message: "Warehouse not found" });
+    }
+    if (!mainWarehouse) {
       return res.status(400).json({ message: "Warehouse not found" });
     }
 
@@ -226,10 +234,20 @@ const updateShippets = async (req: Request, res: Response) => {
         manager: ships?.manager,
       });
 
+      const mainProduct = await ProductModel.findOne({
+        _id: productId,
+        generalId: mainWarehouse._id,
+      });
+
+      if (mainProduct) {
+        mainProduct.inventory_number -= inventory_number;
+        await mainProduct.save();
+      }
+
       if (subProduct) {
         await ProductModel.findOneAndUpdate(
           { _id: productId },
-          { $inc: { inventory_number: -product.inventory_number } },
+          { $inc: { inventory_number } },
           { upsert: true, new: true }
         );
       } else {
