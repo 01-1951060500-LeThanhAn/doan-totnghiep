@@ -206,7 +206,7 @@ const updateShippets = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 manager: ships === null || ships === void 0 ? void 0 : ships.manager,
             });
             if (subProduct) {
-                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number: -product.inventory_number } }, { upsert: true, new: true });
             }
             else {
                 const newProduct = new ProductModel_1.default({

@@ -229,7 +229,7 @@ const updateShippets = async (req: Request, res: Response) => {
       if (subProduct) {
         await ProductModel.findOneAndUpdate(
           { _id: productId },
-          { $inc: { inventory_number } },
+          { $inc: { inventory_number: -product.inventory_number } },
           { upsert: true, new: true }
         );
       } else {
