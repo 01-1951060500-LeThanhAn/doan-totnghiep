@@ -10,6 +10,7 @@ import { useTheme } from "next-themes";
 import TableDeliveryNoteData from "./components/table";
 import { updateDeliveryNoteAsync } from "@/redux/slices/deliverySlice";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 type Props = {
   id: string;
@@ -20,7 +21,13 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
   const { theme } = useTheme();
   const { currentUser } = useAppSelector((state) => state.auth);
   const { isEdit } = useAppSelector((state) => state.deliveryNotes);
+  const [orderStatus, setOrderStatus] = useState(data?.status);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    setOrderStatus(data?.status);
+  }, [data]);
+
   const handleUpdateStatus = async () => {
     try {
       await dispatch(
@@ -31,6 +38,7 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
           },
         })
       );
+      setOrderStatus("completed");
       toast.success(" Đơn hàng đã được chuyển và xuất kho");
     } catch (error) {
       console.log(error);
@@ -69,11 +77,11 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
                   <>
                     {theme === "light" ? (
                       <Badge variant="secondary" className="capitalize">
-                        Kho chính
+                        <p> Kho chính</p>
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="capitalize">
-                        Kho chính
+                        <p> Kho chính</p>
                       </Badge>
                     )}
                   </>
@@ -124,7 +132,7 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
                 </span>
               </div>
               <div className="flex items-center justify-between my-3">
-                <p>Ngày nhập: </p>
+                <p>Ngày chuyển: </p>
                 <span>
                   {new Date(data?.deliveryDate ?? "").toLocaleDateString()}
                 </span>
@@ -136,11 +144,11 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
                   <>
                     {theme === "light" ? (
                       <Badge variant="default" className="capitalize">
-                        Kho phụ
+                        <p> Kho phụ</p>
                       </Badge>
                     ) : (
                       <Badge variant="default" className="capitalize">
-                        Kho phụ
+                        <p> Kho phụ</p>
                       </Badge>
                     )}
                   </>
@@ -155,7 +163,7 @@ const DetailDeliveryNoteView = ({ data, id }: Props) => {
             theme === "dark" ? "bg-[#29343F]" : "shadow-md"
           }`}
         >
-          {data?.status === "pending" ? (
+          {orderStatus === "pending" ? (
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-x-2">
                 <Truck color="orange" />

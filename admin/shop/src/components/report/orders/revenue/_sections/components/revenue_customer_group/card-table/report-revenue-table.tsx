@@ -69,7 +69,7 @@ export const columns: ColumnDef<ReportRevenueByCustomerGroupData>[] = [
   },
   {
     accessorKey: "totalPrice",
-    header: "Doanh thu",
+    header: "Tổng chi tiêu",
     cell: ({ row }) => (
       <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
     ),

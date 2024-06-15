@@ -31,9 +31,7 @@ const ViewReportRevenue = () => {
               <TabsTrigger value="revenue_customer">
                 <p>Báo cáo doanh thu theo khách hàng</p>
               </TabsTrigger>
-              <TabsTrigger value="revenue_orders">
-                <p>Báo cáo doanh thu theo đơn hàng</p>
-              </TabsTrigger>
+
               <TabsTrigger value="revenue_customer_group">
                 <p>Báo cáo doanh thu theo nhóm khách hàng</p>
               </TabsTrigger>

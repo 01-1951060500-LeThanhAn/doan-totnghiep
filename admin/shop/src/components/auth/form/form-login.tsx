@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
-import useRole from "@/hooks/useRole";
 import { Label } from "../../ui/label";
 import { loginUser } from "@/api/userApi";
 import { saveToken } from "@/lib/saveToken";
@@ -25,6 +24,7 @@ import {
   loginStart,
   loginSuccess,
 } from "@/redux/slices/authSlice";
+import { roles } from "@/constants/role";
 
 const LoginForm = () => {
   const form = useForm<UserFormSchema>({
@@ -37,7 +37,6 @@ const LoginForm = () => {
   });
   const dispatch = useAppDispatch();
   const { isFetching } = useAppSelector((state) => state.auth);
-  const { roles } = useRole();
 
   const navigate = useNavigate();
   const onSubmit = async () => {
@@ -47,6 +46,7 @@ const LoginForm = () => {
       const response = await loginUser(formData);
       if (response.data.success) {
         saveToken(response.data.token);
+
         dispatch(loginSuccess(response.data.user));
       }
       toast.success("Đăng nhập thành công");
@@ -55,7 +55,7 @@ const LoginForm = () => {
       toast.error("Sai mật khẩu .Vui lòng đăng nhập lại");
     }
 
-    dispatch(loginFailed());
+    dispatch(loginFailed("Login Failed"));
   };
   return (
     <Form {...form}>
@@ -104,17 +104,17 @@ const LoginForm = () => {
                   >
                     {roles.map((role: RoleData) => (
                       <div
-                        key={role._id}
+                        key={role.name}
                         className={`flex items-center space-x-2 `}
                       >
                         <RadioGroupItem
                           {...field}
-                          id={`option-${role._id}`}
-                          value={role._id}
+                          id={`option-${role.name}`}
+                          value={role.name}
                         />
 
-                        <Label className={``} htmlFor={`option-${role._id}`}>
-                          {!role?.description ? role?.name : role.description}
+                        <Label className={``} htmlFor={`option-${role.name}`}>
+                          {role.value}
                         </Label>
                       </div>
                     ))}

@@ -9,6 +9,7 @@ export type CreateOrders = {
   delivery_address: string;
   invoice_address: string;
   payment_method: string;
+  total_ship: string;
   products: {
     productId: string;
     quantity: number;
@@ -26,6 +27,7 @@ export type UpdateOrders = {
   payment_status: string;
   received_date: string | Date;
   delivery_address: string;
+  total_ship: string;
   invoice_address: string;
   payment_method: string;
   products: {
@@ -140,6 +142,7 @@ export type ProductId = {
 };
 
 export type ShipmentsData = {
+  _id: string;
   code: string;
   received_date: string | Date;
   customer: string;

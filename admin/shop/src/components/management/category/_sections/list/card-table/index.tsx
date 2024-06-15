@@ -128,11 +128,11 @@ export const columns: ColumnDef<CategoryTableProps>[] = [
           ) : (
             <>
               {theme === "light" ? (
-                <Badge variant="default" className="capitalize">
+                <Badge variant="destructive" className="capitalize">
                   Ngừng kinh doanh
                 </Badge>
               ) : (
-                <Badge variant="default" className="capitalize">
+                <Badge variant="destructive" className="capitalize">
                   Ngừng kinh doanh
                 </Badge>
               )}
@@ -196,7 +196,7 @@ export default function CategoryTableData({ data }: Props) {
         >
           <div className="flex items-center py-4 px-4">
             <Input
-              placeholder="Tìm kiếm tên mã đơn..."
+              placeholder="Tìm kiếm mã loại sản phẩm..."
               value={
                 (table.getColumn("code")?.getFilterValue() as string) ?? ""
               }

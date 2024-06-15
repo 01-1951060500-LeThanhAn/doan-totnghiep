@@ -151,4 +151,5 @@ export type ProductTableProps = {
   inventory_number: number;
   status: string;
   img: string;
+  general: string;
 };

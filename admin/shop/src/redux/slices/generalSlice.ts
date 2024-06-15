@@ -1,4 +1,8 @@
-import { createGenerals, updateGenerals } from "@/api/generalApi";
+import {
+  createGenerals,
+  deleteGenerals,
+  updateGenerals,
+} from "@/api/generalApi";
 import { CreateGeneralData, UpdateGeneralData } from "@/types/general";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -20,6 +24,14 @@ export const createGeneralAsync = createAsyncThunk(
   "generals/createGeneralAsync",
   async (general: CreateGeneralData) => {
     const response = await createGenerals(general);
+    return response.data;
+  }
+);
+
+export const deleteGeneralAsync = createAsyncThunk(
+  "generals/deleteGeneralAsync",
+  async (generalId: string) => {
+    const response = await deleteGenerals(generalId);
     return response.data;
   }
 );
@@ -83,6 +95,24 @@ export const generalSlice = createSlice({
       )
       .addCase(updateGeneralAsync.rejected, (state) => {
         state.isEdit = true;
+        state.error = true;
+      })
+      .addCase(deleteGeneralAsync.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+      })
+      .addCase(
+        deleteGeneralAsync.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          const index = state.generals.findIndex(
+            (item) => item._id === action.payload
+          );
+          state.generals.splice(index, 1);
+          state.loading = false;
+          state.error = false;
+        }
+      )
+      .addCase(deleteGeneralAsync.rejected, (state) => {
         state.error = true;
       });
   },

@@ -9,9 +9,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import HomeLayout from "@/layouts/home-layout";
-import { CreateCategoryData } from "@/types/category";
+import { CreateCategoryData, UpdateCategoryData } from "@/types/category";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
@@ -20,15 +20,19 @@ import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { createCategoryAsync } from "@/redux/slices/categorySlice";
+import {
+  createCategoryAsync,
+  updateCategoryAsync,
+} from "@/redux/slices/categorySlice";
 type Props = {
   initialValues: CreateCategoryData;
+  categoryId?: string;
 };
 
-const FormCategory = ({ initialValues }: Props) => {
+const FormCategory = ({ initialValues, categoryId }: Props) => {
   const defaultValues = useMemo(
     () => ({
-      name: initialValues.name ?? "",
+      name: initialValues?.name ?? "",
       code: initialValues?.code ?? "",
       status: initialValues?.status ?? "",
       description: initialValues?.description ?? "",
@@ -42,6 +46,13 @@ const FormCategory = ({ initialValues }: Props) => {
     resolver: zodResolver(categorySchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    form.setValue("code", defaultValues?.code);
+    form.setValue("name", defaultValues?.name);
+    form.setValue("status", defaultValues?.status);
+    form.setValue("description", defaultValues?.description);
+  }, [defaultValues, form]);
 
   const handleCreateCategory = async () => {
     try {
@@ -59,12 +70,38 @@ const FormCategory = ({ initialValues }: Props) => {
     }
   };
 
+  const handleUpdateCategory = async () => {
+    try {
+      const formData = form.getValues() as UpdateCategoryData;
+      await dispatch(
+        updateCategoryAsync({
+          categoryId,
+          data: formData,
+        })
+      );
+
+      toast.success("Cập nhật loại sản phẩm thành công");
+      navigate(`/dashboard/management/category`);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error("Lỗi không cập nhật được loại sản phẩm");
+      } else {
+        console.error("Unexpected error:", error);
+        toast.error("Lỗi không cập nhật được loại sản phẩm.");
+      }
+    }
+  };
+
   return (
     <>
       <HomeLayout>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleCreateCategory)}
+            onSubmit={
+              location.pathname === "/dashboard/management/category/create"
+                ? form.handleSubmit(handleCreateCategory)
+                : form.handleSubmit(handleUpdateCategory)
+            }
             className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full w-full"
           >
             <div>

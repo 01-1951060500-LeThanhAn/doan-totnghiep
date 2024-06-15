@@ -40,6 +40,14 @@ const getStatusOrders = async () => {
   return response;
 };
 
+const getCancelledOrders = async () => {
+  const response = await adminApi.get<OrdersData[]>(
+    "/orders/search/status-orders?keyword=cancelled"
+  );
+
+  return response;
+};
+
 const getDetailOrder = async (orderId: string) => {
   const response = await adminApi.get<DetailOrderData>(`/orders/${orderId}`);
 
@@ -59,4 +67,5 @@ export {
   getDetailOrder,
   updateOrder,
   deleteOrder,
+  getCancelledOrders,
 };

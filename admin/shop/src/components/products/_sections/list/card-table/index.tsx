@@ -95,13 +95,18 @@ export const columns: ColumnDef<ProductTableProps>[] = [
     ),
   },
   {
+    accessorKey: "general",
+    header: "Kho quản lý ",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("general")}</p>,
+  },
+  {
     accessorKey: "status",
     header: "Trạng thái sản phẩm",
     cell: ({ row, table }) => {
       const { theme } = table.options.meta as Data;
       return (
         <p className="capitalize">
-          {row.getValue("status") === "stocking" ? (
+          {(row.getValue("inventory_number") as number) > 0 ? (
             <>
               {theme === "light" ? (
                 <Badge variant="secondary" className="capitalize">
@@ -114,7 +119,7 @@ export const columns: ColumnDef<ProductTableProps>[] = [
               )}
             </>
           ) : (
-            <Badge variant="default" className="capitalize">
+            <Badge variant="destructive" className="capitalize">
               Hết hàng
             </Badge>
           )}
@@ -169,7 +174,7 @@ export default function ProductTableData({ products }: Props) {
     <HomeLayout>
       <CustomScrollbarTable>
         <div
-          className={`w-full rounded-xl my-4 ${
+          className={`w-full rounded-xl my-2 ${
             theme === "dark" ? "shadow-md bg-[#212B36]" : "shadow-md"
           }`}
         >

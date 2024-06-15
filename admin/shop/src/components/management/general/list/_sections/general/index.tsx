@@ -6,7 +6,6 @@ import { GeneralTableProps } from "@/types/general";
 
 const GeneralManagementPage = () => {
   const { generals } = useGetGenerals();
-
   const data = generals.map((item) => ({
     _id: item?._id,
     name: item?.name,
@@ -25,7 +24,7 @@ const GeneralManagementPage = () => {
         breadcumbItem="Quản lý kho"
         breadcumbPage="Danh sách tồn kho sản phẩm"
         linkBtn="/dashboard/management/general/create"
-        title="Tạo chi nhánh hoặc kho"
+        title="Tạo kho"
       />
       <GeneralManagementTableData
         data={data as unknown as GeneralTableProps[]}

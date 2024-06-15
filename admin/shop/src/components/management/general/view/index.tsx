@@ -3,6 +3,10 @@ import Header from "../header";
 import useGetDetailGeneral from "../hooks/use-get-detail-general";
 import DetailGeneralTableData from "./components/table";
 import { ProductTableGeneral, Results } from "@/types/general";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/hooks/hooks";
+import { toast } from "sonner";
+import { deleteGeneralAsync } from "@/redux/slices/generalSlice";
 
 type Props = {
   id: string;
@@ -10,10 +14,28 @@ type Props = {
 
 const GeneralDetailView = ({ id }: Props) => {
   const { general } = useGetDetailGeneral({ id });
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const handleDeleteGeneral = async () => {
+    try {
+      await dispatch(deleteGeneralAsync(id));
+      toast.success("Xóa kho hàng thành công");
+
+      navigate(`/dashboard/management/general`);
+    } catch (error) {
+      console.log(error);
+      toast.error("Xóa kho hàng thất bại");
+    }
+  };
 
   return (
     <>
-      <Header title="Thông tin kho" text1="Tồn kho" text2="Quản lý tồn kho" />
+      <Header
+        onClick={handleDeleteGeneral}
+        title="Thông tin kho"
+        text1="Xóa kho"
+        text2="Quản lý tồn kho"
+      />
       <Custombreadcumb
         href2={`/dashboard/management/general/`}
         breadcumbItem="Danh sách kho hàng"

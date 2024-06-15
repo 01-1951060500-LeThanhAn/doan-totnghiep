@@ -18,10 +18,11 @@ const userSlice = createSlice({
       state.currentUser = action.payload;
       state.isFetching = false;
       localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      setAuthToken(action.payload.token);
     },
-    loginFailed: (state) => {
+    loginFailed: (state, action) => {
       state.isFetching = false;
-      state.error = true;
+      state.error = action.payload || "Login failed";
     },
     logOut: (state) => {
       localStorage.removeItem("token");
@@ -30,23 +31,6 @@ const userSlice = createSlice({
       setAuthToken(null);
     },
   },
-
-  // extraReducers: (builder) => {
-  //   builder
-  //     .addCase(createUserLoginAsync.pending, (state) => {
-  //       state.isFetching = true;
-  //       state.error = false;
-  //     })
-  //     .addCase(createUserLoginAsync.fulfilled, (state, action) => {
-  //       state.isFetching = false;
-  //       state.currentUser = action.payload;
-  //       localStorage.setItem("userInfo", JSON.stringify(action.payload));
-  //     })
-  //     .addCase(createUserLoginAsync.rejected, (state) => {
-  //       state.isFetching = false;
-  //       state.error = true;
-  //     });
-  // },
 });
 
 export const { loginStart, loginFailed, loginSuccess, logOut } =

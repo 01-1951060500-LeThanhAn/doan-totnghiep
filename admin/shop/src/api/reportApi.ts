@@ -8,6 +8,7 @@ import {
   ReportPaymentByTime,
   ReportRevenueByCustomerData,
   ReportRevenueByCustomerGroupData,
+  ReportRevenueByGeneral,
   ReportRevenueByProductData,
   ReportRevenueByStaffData,
   ReportShipmentByPartner,
@@ -79,6 +80,13 @@ const getOrderRevenueByCustomerGroup = async () => {
   return response.data;
 };
 
+const getOrderRevenueByGeneral = async () => {
+  const response = await adminApi.get<ReportRevenueByGeneral[]>(
+    `/orders/income/revenue-orders-general`
+  );
+  return response.data;
+};
+
 const getOrderShipmentByTime = async () => {
   const response = await adminApi.get<ReportShipmentsByTime[]>(
     `/orders/income/shipments-orders-time`
@@ -129,6 +137,7 @@ export {
   getOrderRevenueByMonth,
   getOrderRevenueByStaff,
   getOrderRevenueByProduct,
+  getOrderRevenueByGeneral,
   getOrderRevenueByCustomerGroup,
   getOrderRevenueByCustomer,
   getOrderShipmentByTime,

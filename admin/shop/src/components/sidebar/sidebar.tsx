@@ -23,7 +23,7 @@ const Sidebar = () => {
           )}
         </div>
         <div
-          className="border-t flex-1 w-full md:relative md:h-full bottom-0 md:border-none flex
+          className="border-t flex-1 mb-2 w-full md:relative md:h-full bottom-0 md:border-none flex
          flex-row md:justify-between space-x-2 md:flex-col
           md:space-x-0 -ml-3 bg-white dark:bg-[#020817] justify-evenly fixed
            z-50 md:ml-0 "

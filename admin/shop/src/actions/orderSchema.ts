@@ -5,6 +5,7 @@ export const orderSchema = z.object({
     required_error: "Order code is required",
   }),
   customerId: z.string().min(1, "ID Customer is required"),
+  total_ship: z.string().min(1, "Type ship total is number required"),
   partnerId: z.string().min(1, "ID Partner is required"),
   payment_method: z.string().min(1, "Payment Status is required"),
   generalId: z.string().min(1, "ID General is required"),

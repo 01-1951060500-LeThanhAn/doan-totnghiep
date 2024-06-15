@@ -110,6 +110,8 @@ export type ReportShipmentByPartner = {
 
 export type ReportShipmentByGeneral = ReportShipmentByPartner;
 
+export type ReportRevenueByGeneral = ReportShipmentByPartner;
+
 export type ReportPaymentByTime = {
   _id: string;
   month: number;

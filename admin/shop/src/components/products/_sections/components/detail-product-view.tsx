@@ -26,10 +26,10 @@ const DetailProductView = ({ product }: Props) => {
     <>
       <HomeLayout>
         <div className="grid grid-cols-1 my-4 xl:grid-cols-3 gap-2 lg:gap-4 h-full w-auto">
-          <div className=" rounded-lg">
+          <div className=" rounded-lg mt-4">
             <LazyLoadImage
               effect="blur"
-              className="w-96 h-80 object-cover"
+              className="w-96 h-80 object-contain"
               src={product?.img || ""}
               alt={product?.name_product}
             />

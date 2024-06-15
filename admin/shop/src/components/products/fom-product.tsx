@@ -37,7 +37,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   const defaultValues = useMemo(
     () => ({
       desc: initialValues?.desc ?? "",
-      img: initialValues?.img ?? "",
+      img: initialValues?.img ?? undefined,
       name_product: initialValues?.name_product ?? "",
       code: initialValues?.code ?? "",
       unit: initialValues?.unit ?? "",
@@ -90,23 +90,14 @@ const FormProduct = ({ initialValues, productId }: Props) => {
         img: res.data?.url,
       } as CreateProductDataType;
 
-      dispatch(createProductAsync(newProducts));
+      await dispatch(createProductAsync(newProducts));
       setLoading(false);
       toast.success("Thêm sản phẩm thành công");
 
       navigate(`/dashboard/product`);
     } catch (error) {
       if (error instanceof AxiosError) {
-        if (error.response) {
-          console.error(error.response.data);
-        } else {
-          toast.error(
-            "Failed to upload product. Check your internet connection."
-          );
-        }
-      } else {
-        console.error("Unexpected error:", error);
-        toast.error("An unknown error occurred during upload.");
+        toast.error("Thêm mo");
       }
     }
   };

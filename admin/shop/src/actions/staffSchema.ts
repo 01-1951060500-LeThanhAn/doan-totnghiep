@@ -8,7 +8,7 @@ export const staffSchema = z
     password: z.string().min(1, "Password staff is required"),
     confirmPassword: z.string().min(1, "Confirm Password staff is required"),
     role: z.string().min(1, "Role staff is required"),
-    generalId: z.string().min(1, "Role staff is required"),
+    phone: z.string().min(1, "Phone number staff is required"),
   })
   .refine(
     (values) => {

@@ -39,6 +39,7 @@ import ViewGoodReceivedPage from "@/pages/good-received-note/page";
 import HomePage from "@/pages/home/page";
 import LoginPage from "@/pages/login/page";
 import AddCategoryPage from "@/pages/management/category/add/page";
+import EditCategoryPage from "@/pages/management/category/edit/page";
 import ViewCategoryPage from "@/pages/management/category/page";
 import AddGeneralPage from "@/pages/management/general/add/page";
 import EditGeneralPage from "@/pages/management/general/edit/page";
@@ -484,6 +485,15 @@ const routes = [
     element: (
       <DashBoardLayout>
         <AddCategoryPage />
+      </DashBoardLayout>
+    ),
+    name: "Tạo loại sản phẩm",
+  },
+  {
+    path: "/dashboard/management/category/:categoryId/edit",
+    element: (
+      <DashBoardLayout>
+        <EditCategoryPage />
       </DashBoardLayout>
     ),
     name: "Tạo loại sản phẩm",

@@ -248,7 +248,10 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
                 </Button>
               )}
 
-              <Button className="ml-3">
+              <Button
+                onClick={() => navigate(`/dashboard/purchase-order`)}
+                className="ml-3"
+              >
                 <p>Quay lại trang chính</p>
               </Button>
             </div>

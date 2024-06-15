@@ -8,5 +8,7 @@ export type DetailUserResponse = {
     createdAt: string;
     updatedAt: string;
     picture: string | undefined;
+    phone: string;
+    address: string;
   };
 };

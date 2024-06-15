@@ -81,7 +81,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
   const [loading, setLoading] = useState(false);
   const { products } = useGetProducts();
   const { users } = useGetUsers();
-  const handleSubmit = async () => {
+  const handleCreateGoodReceivedNoteSubmit = async () => {
     try {
       setLoading(true);
       const formData = form.getValues() as CreateGoodReceivedNoteData;
@@ -92,7 +92,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
 
       await createGoodReceivedNote(formData);
 
-      toast.success("Thêm đơn nhập hàng thành công");
+      toast.success("Tạo đơn nhập hàng thành công");
       setLoading(false);
       navigate(`/dashboard/good-received-note`);
     } catch (error) {
@@ -113,7 +113,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
     <HomeLayout className="xl:mx-6 md:mx-6 mx-6 mt-4 max-h-[75vh] overflow-y-scroll">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={form.handleSubmit(handleCreateGoodReceivedNoteSubmit)}
           className="grid grid-cols-1 lg:grid-cols-1 lg:gap-3 gap-y-3"
         >
           <div

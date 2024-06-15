@@ -32,5 +32,5 @@ export const loginApi = async (user: User, dispatch: Dispatch) => {
     }
   }
 
-  dispatch(loginFailed());
+  dispatch(loginFailed("Login Failed"));
 };

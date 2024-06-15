@@ -15,6 +15,11 @@ const updateGenerals = async (generalId: string, data: UpdateGeneralData) => {
   return response;
 };
 
+const deleteGenerals = async (generalId: string) => {
+  const response = await adminApi.delete<string>(`/general/${generalId}`);
+  return response;
+};
+
 const getGenerals = async (): Promise<GeneralData[]> => {
   const response = await adminApi.get("/general");
   return response.data;
@@ -30,4 +35,10 @@ const getDetailGeneral = async (
   return response.data;
 };
 
-export { getGenerals, getDetailGeneral, createGenerals, updateGenerals };
+export {
+  getGenerals,
+  getDetailGeneral,
+  createGenerals,
+  updateGenerals,
+  deleteGenerals,
+};

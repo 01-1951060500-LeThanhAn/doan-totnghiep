@@ -16,6 +16,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { CreateProductDataType } from "@/types/product";
 import useGetCategory from "../../hooks/use-get-category";
+import { Separator } from "@/components/ui/separator";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import CategoryModal from "@/components/modals/category/modal-category";
 
 type Props = {
   defaultValues: CreateProductDataType;
@@ -46,13 +50,27 @@ const SectionSelect = ({ defaultValues }: Props) => {
                     <SelectContent>
                       <SelectGroup>
                         {categorys.map((item) => (
-                          <SelectItem
-                            key={item?.type?._id}
-                            value={item?.type?._id}
-                          >
-                            {item?.type?.name}
-                          </SelectItem>
+                          <>
+                            <SelectItem
+                              key={item?.type?._id}
+                              value={item?.type?._id}
+                            >
+                              {item?.type?.name}
+                            </SelectItem>
+                          </>
                         ))}
+                        <Separator />
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <div className="flex gap-2 cursor-pointer items-center">
+                              <Plus />{" "}
+                              <p className="text-sm">Thêm loại sản phẩm</p>
+                            </div>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <CategoryModal data={categorys!} />
+                          </DialogContent>
+                        </Dialog>
                       </SelectGroup>
                     </SelectContent>
                   </Select>

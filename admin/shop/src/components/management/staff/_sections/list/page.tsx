@@ -12,7 +12,7 @@ const StaffMain = () => {
     email: item?.email,
     phone: item?.phone,
     address: item?.address,
-    role: item?.role?.name,
+    role: item?.role,
   }));
 
   return (

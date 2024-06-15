@@ -34,6 +34,11 @@ const FormUpload = ({ setFile, name }: Props) => {
     setFilePreview(preview);
   };
 
+  const handleDiscard = () => {
+    setFile(null);
+    setFilePreview(null);
+  };
+
   useEffect(() => {
     return () => {
       filePreview && URL.revokeObjectURL(filePreview);
@@ -49,21 +54,21 @@ const FormUpload = ({ setFile, name }: Props) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                <p className="text-xl font-semibold">Product Image</p>
+                <p className="text-2xl font-semibold">Hình ảnh sản phẩm</p>
               </FormLabel>
               <FormControl>
                 {!filePreview ? (
                   <>
                     <label htmlFor="upload">
                       <div
-                        className={`h-80   rounded-lg w-full mt-4  ${
+                        className={`h-80  rounded-lg w-full mt-4  ${
                           theme === "light"
-                            ? "bg-[#d2d6e0]"
+                            ? "border-[1px] border-[#342727] border-dashed"
                             : "bg-[#020817] hover:bg-[#020818c7]"
                         }`}
                       >
                         <div className="flex  flex-col h-full justify-center items-center">
-                          <div className="bg-slate-600  p-3 rounded-full">
+                          <div className="bg-[#d0caca]  p-3 rounded-full">
                             <Upload />
                           </div>
                           <p className="mt-2">Add Photos</p>
@@ -88,8 +93,8 @@ const FormUpload = ({ setFile, name }: Props) => {
                 ) : (
                   <>
                     <div
-                      onClick={() => setFile(null)}
-                      className="absolute top-0 right-0 z-50"
+                      onClick={handleDiscard}
+                      className="absolute cursor-pointer top-0 right-0 z-50"
                     >
                       <X />
                     </div>

@@ -66,7 +66,7 @@ export const columns: ColumnDef<OrdersData>[] = [
       return (
         <Link to={`/dashboard/orders/${row.getValue("_id")}/detail`}>
           <p className="capitalize">
-            {new Date(row.getValue("createdAt")).toLocaleDateString()}
+            {new Date(row.getValue("createdAt")).toLocaleString()}
           </p>
         </Link>
       );
@@ -90,8 +90,13 @@ export const columns: ColumnDef<OrdersData>[] = [
     ),
   },
   {
+    accessorKey: "general",
+    header: "Kho giao dịch",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("general")}</p>,
+  },
+  {
     accessorKey: "order_status",
-    header: "Trạng thái giao hàng",
+    header: "Trạng thái đơn hàng",
     cell: ({ row, table }) => {
       const { theme } = table.options.meta as Data;
       return (
@@ -100,24 +105,40 @@ export const columns: ColumnDef<OrdersData>[] = [
             <>
               {theme === "light" ? (
                 <Badge variant="default" className="capitalize">
-                  Đang giao
+                  Đang giao dịch
                 </Badge>
               ) : (
                 <Badge variant="default" className="capitalize">
-                  Đang giao
+                  Đang giao dịch
                 </Badge>
               )}
             </>
           ) : (
             <>
-              {theme === "light" ? (
-                <Badge variant="secondary" className="capitalize">
-                  Đã giao
-                </Badge>
+              {row.getValue("order_status") === "cancelled" ? (
+                <>
+                  {theme === "light" ? (
+                    <Badge variant="destructive" className="capitalize">
+                      Đã hủy
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="capitalize">
+                      Đã hủy
+                    </Badge>
+                  )}
+                </>
               ) : (
-                <Badge variant="outline" className="capitalize">
-                  Đã giao
-                </Badge>
+                <>
+                  {theme === "light" ? (
+                    <Badge variant="secondary" className="capitalize">
+                      Hoàn thành
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="capitalize">
+                      Hoàn thành
+                    </Badge>
+                  )}
+                </>
               )}
             </>
           )}
@@ -219,7 +240,7 @@ export default function OrderTableData({ data }: Props) {
     <HomeLayout>
       <CustomScrollbarTable>
         <div
-          className={`w-full rounded-xl my-4 ${
+          className={`w-full rounded-xl mt-3 mb-4 ${
             theme === "dark" ? "shadow-md bg-[#212B36]" : "shadow-md"
           }`}
         >

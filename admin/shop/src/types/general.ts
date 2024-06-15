@@ -53,7 +53,9 @@ export type ProductTableGeneral = {
   _id: string;
   name_product: string;
   code: string;
+  type: string;
   generalId: string;
+  general: string;
   import_price: string;
   export_price: string;
   inventory_number: number;

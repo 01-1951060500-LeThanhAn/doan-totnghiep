@@ -10,6 +10,7 @@ const CustomerPage = () => {
     totalOrders: item.totalOrders,
     totalSpending: item.totalSpending,
   }));
+
   return (
     <>
       <Heading />

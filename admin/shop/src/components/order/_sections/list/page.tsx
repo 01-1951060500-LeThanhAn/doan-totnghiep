@@ -6,9 +6,11 @@ import { OrdersData } from "@/types/orders";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useGetStatusOrders from "../../hooks/use-get-status-order";
+import useGetCancelledOrders from "../../hooks/use-get-cancelled-orders";
 const OrderPage = () => {
   const { orders } = useGetOrders();
   const { statusOrders } = useGetStatusOrders();
+  const { cancelledOrders } = useGetCancelledOrders();
   const data = orders.map((order) => ({
     _id: order?._id,
     code: order?.code,
@@ -19,6 +21,7 @@ const OrderPage = () => {
     customerId: order?.customerId?.username,
     totalPrice: order?.totalPrice,
     totalCustomerPay: order?.totalCustomerPay,
+    general: order?.generalId?.name,
   }));
 
   const status = statusOrders.map((order) => ({
@@ -31,6 +34,20 @@ const OrderPage = () => {
     customerId: order?.customerId?.username,
     totalPrice: order?.totalPrice,
     totalCustomerPay: order?.totalCustomerPay,
+    general: order?.generalId?.name,
+  }));
+
+  const cancelled = cancelledOrders.map((order) => ({
+    _id: order?._id,
+    code: order?.code,
+    payment_status: order?.payment_status,
+    order_status: order?.order_status,
+    createdAt: order?.createdAt,
+    received_date: order?.received_date,
+    customerId: order?.customerId?.username,
+    totalPrice: order?.totalPrice,
+    totalCustomerPay: order?.totalCustomerPay,
+    general: order?.generalId?.name,
   }));
 
   return (
@@ -52,12 +69,18 @@ const OrderPage = () => {
           <TabsTrigger value="pending">
             <p>Đang xử lý</p>
           </TabsTrigger>
+          <TabsTrigger value="cancelled">
+            <p>Đã hủy</p>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="all">
           <OrderTableData data={data as unknown as OrdersData[]} />
         </TabsContent>
         <TabsContent value="pending">
           <OrderTableData data={status as unknown as OrdersData[]} />
+        </TabsContent>
+        <TabsContent value="cancelled">
+          <OrderTableData data={cancelled as unknown as OrdersData[]} />
         </TabsContent>
       </Tabs>
     </>

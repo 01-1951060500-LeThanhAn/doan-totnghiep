@@ -15,6 +15,7 @@ const FormAddOrder = () => {
           partnerId: "",
           payment_method: "",
           received_date: "",
+          total_ship: "",
           products: [
             {
               productId: "",

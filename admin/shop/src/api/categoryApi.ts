@@ -2,6 +2,7 @@ import {
   CategoryData,
   CreateCategoryData,
   DetailCategoryData,
+  UpdateCategoryData,
 } from "@/types/category";
 import { adminApi } from ".";
 
@@ -24,4 +25,23 @@ const getDetailCategorys = async (categoryId: string) => {
   return response.data;
 };
 
-export { getCategorys, getDetailCategorys, createCategorys };
+const updateCategorys = async (
+  categoryId: string,
+  data: UpdateCategoryData
+) => {
+  const response = await adminApi.patch(`/category/${categoryId}`, data);
+  return response;
+};
+
+const deleteCategory = async (categoryId: string) => {
+  const response = await adminApi.delete<string>(`/category/${categoryId}`);
+
+  return response.data;
+};
+export {
+  getCategorys,
+  getDetailCategorys,
+  createCategorys,
+  updateCategorys,
+  deleteCategory,
+};

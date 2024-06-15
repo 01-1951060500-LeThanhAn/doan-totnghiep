@@ -12,7 +12,6 @@ const FormAddStaff = () => {
         password: "",
         confirmPassword: "",
         role: "",
-        generalId: "",
       }}
     />
   );

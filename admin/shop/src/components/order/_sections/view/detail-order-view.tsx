@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import HomeLayout from "@/layouts/home-layout";
 import { updateOrderAsync } from "@/redux/slices/orderSlice";
 import { DetailOrderData } from "@/types/orders";
-import { CircleCheck, Loader2, Truck } from "lucide-react";
+import { CircleCheck, CircleX, Loader2, Truck } from "lucide-react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import TableOrderData from "./components/table";
@@ -20,6 +20,7 @@ type Props = {
 const DetailOrderView = ({ data, id }: Props) => {
   const { theme } = useTheme();
   const { isEdit, loading } = useAppSelector((state) => state?.orders);
+  const [isCancelled, setIsCancelled] = useState(false);
   const dispatch = useAppDispatch();
   const [paymentStatus, setPaymentStatus] = useState(data?.payment_status);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
@@ -39,6 +40,27 @@ const DetailOrderView = ({ data, id }: Props) => {
     } catch (error) {
       console.log(error);
       toast.error("Đơn hàng thanh toán thất bại");
+    }
+  };
+
+  const handleCancelledOrderStatus = () => {
+    try {
+      setIsCancelled(true);
+      dispatch(
+        updateOrderAsync({
+          orderId: id,
+          data: {
+            order_status: "cancelled",
+          },
+        })
+      );
+      setOrderStatus("cancelled");
+      setIsCancelled(false);
+      toast.success(" Đơn hàng đã hủy thành công");
+      // navigate("/dashboard/orders");
+    } catch (error) {
+      console.log(error);
+      toast.error("Đơn hàng đã hủy thất bại");
     }
   };
 
@@ -62,6 +84,7 @@ const DetailOrderView = ({ data, id }: Props) => {
 
   useEffect(() => {
     setOrderStatus(data?.order_status);
+
     setPaymentStatus(data?.payment_status);
   }, [data]);
 
@@ -152,14 +175,30 @@ const DetailOrderView = ({ data, id }: Props) => {
                     </>
                   ) : (
                     <>
-                      {theme === "light" ? (
-                        <Badge variant="secondary" className="capitalize">
-                          Đã giao
-                        </Badge>
+                      {orderStatus === "cancelled" ? (
+                        <>
+                          {theme === "light" ? (
+                            <Badge variant="destructive" className="capitalize">
+                              Đã hủy
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive" className="capitalize">
+                              Đã hủy
+                            </Badge>
+                          )}
+                        </>
                       ) : (
-                        <Badge variant="outline" className="capitalize">
-                          Đã giao
-                        </Badge>
+                        <>
+                          {theme === "light" ? (
+                            <Badge variant="secondary" className="capitalize">
+                              Đã giao
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="capitalize">
+                              Đã giao
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </>
                   )}
@@ -169,74 +208,78 @@ const DetailOrderView = ({ data, id }: Props) => {
           </div>
         </div>
 
-        <div
-          className={`w-full my-4 p-4 rounded-lg h-auto ${
-            theme === "dark" ? "bg-[#29343F]" : "shadow-md"
-          }`}
-        >
-          {paymentStatus === "unpaid" ? (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-x-2">
-                <Truck color="orange" />
-                <p className="text-lg font-semibold">
-                  Đơn hàng chưa được thanh toán
-                </p>
-              </div>
+        {orderStatus !== "cancelled" && (
+          <div
+            className={`w-full my-4 p-4 rounded-lg h-auto ${
+              theme === "dark" ? "bg-[#29343F]" : "shadow-md"
+            }`}
+          >
+            {paymentStatus === "unpaid" ? (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-x-2">
+                  <Truck color="orange" />
+                  <p className="text-lg font-semibold">
+                    Đơn hàng chưa được thanh toán
+                  </p>
+                </div>
 
-              <div>
-                {isEdit ? (
-                  <Button disabled>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Please wait
-                  </Button>
-                ) : (
-                  <Button onClick={handleUpdatePaymentStatus}>
-                    <p>Thanh toán</p>
-                  </Button>
-                )}
+                <div>
+                  {isEdit ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button onClick={handleUpdatePaymentStatus}>
+                      <p>Thanh toán</p>
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-x-2">
-                <CircleCheck color="green" />
-                <p className="text-lg font-semibold">
-                  Đơn hàng đã được thanh toán
-                </p>
+            ) : (
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-x-2">
+                  <CircleCheck color="green" />
+                  <p className="text-lg font-semibold">
+                    Đơn hàng đã được thanh toán
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <Separator className="my-3" />
-          <div className="flex items-center gap-x-3">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <p>{data?.code}</p>
-            <p className="text-slate-400">
-              {new Date(data?.createdAt ?? "").toLocaleString()}
-            </p>
-          </div>
-          <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
-          <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
-            <div className="flex items-center gap-x-2">
+            <Separator className="my-3" />
+            <div className="flex items-center gap-x-3">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <p>Số tiền khách hàng cần trả: </p>
-              <p className="font-semibold">
-                {formatPrice(data?.totalCustomerPay)}
-              </p>
-            </div>
-            <div className="flex items-center gap-x-3">
-              <p>Đã trả : </p>
+              <p>{data?.code}</p>
               <p className="text-slate-400">
-                {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                {new Date(data?.createdAt ?? "").toLocaleString()}
               </p>
             </div>
-            <div className="flex items-center gap-x-3">
-              <p>Còn phải trả :</p>
-              <p className="text-slate-400">{formatPrice(data?.totalPrice)}</p>
+            <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+            <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
+              <div className="flex items-center gap-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <p>Số tiền khách hàng cần trả: </p>
+                <p className="font-semibold">
+                  {formatPrice(data?.totalCustomerPay)}
+                </p>
+              </div>
+              <div className="flex items-center gap-x-3">
+                <p>Đã trả : </p>
+                <p className="text-slate-400">
+                  {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                </p>
+              </div>
+              <div className="flex items-center gap-x-3">
+                <p>Còn phải trả :</p>
+                <p className="text-slate-400">
+                  {formatPrice(data?.totalPrice)}
+                </p>
+              </div>
             </div>
+            <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
           </div>
-          <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
-        </div>
+        )}
 
         <div
           className={`w-full my-4 p-4 rounded-lg h-auto ${
@@ -250,7 +293,20 @@ const DetailOrderView = ({ data, id }: Props) => {
                 <p className="text-lg font-semibold">Đóng gói và giao hàng</p>
               </div>
 
-              <div>
+              <div className="flex items-center gap-x-3">
+                {isCancelled ? (
+                  <Button disabled>
+                    <Loader2 className=" h-4 w-4 animate-spin" />
+                    Please wait
+                  </Button>
+                ) : (
+                  <Button
+                    variant="destructive"
+                    onClick={handleCancelledOrderStatus}
+                  >
+                    <p>Hủy đơn hàng</p>
+                  </Button>
+                )}
                 {loading ? (
                   <Button disabled>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -264,12 +320,25 @@ const DetailOrderView = ({ data, id }: Props) => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-x-2">
-                <CircleCheck color="green" />
-                <p className="text-lg font-semibold">Đơn hàng đã giao</p>
-              </div>
-            </div>
+            <>
+              {orderStatus === "cancelled" ? (
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-x-2">
+                    <CircleX color="red" />
+                    <p className="text-lg font-semibold">
+                      Đơn hàng đã được hủy{" "}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-x-2">
+                    <CircleCheck color="green" />
+                    <p className="text-lg font-semibold">Đơn hàng đã giao</p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <Separator className="my-3" />
@@ -284,7 +353,13 @@ const DetailOrderView = ({ data, id }: Props) => {
               {data?.order_status === "pending" ? (
                 <p className="text-blue-600 text-sm">Đóng gói và giao hàng</p>
               ) : (
-                <p className="text-green-600 text-sm">Đã giao hàng</p>
+                <>
+                  {data?.order_status === "cancelled" ? (
+                    <p className="text-red-600 text-sm">Đã hủy hàng</p>
+                  ) : (
+                    <p className="text-green-600 text-sm">Đã giao hàng</p>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -292,7 +367,7 @@ const DetailOrderView = ({ data, id }: Props) => {
           <div className="ml-6 my-3">
             <p>
               Mã đóng gói:{" "}
-              <span className="text-blue-600 underline ml-3">{data?.code}</span>
+              <span className="text-blue-600  ml-3">{data?.code}</span>
             </p>
             <p className="my-3">
               Hình thức giao hàng: <span className=" ml-3">Chuyển hàng </span>

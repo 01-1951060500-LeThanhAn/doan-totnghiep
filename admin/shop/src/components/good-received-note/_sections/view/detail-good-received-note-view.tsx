@@ -21,14 +21,16 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
   const { currentUser } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
+  const [paymentStatus, setPaymentStatus] = useState(data?.payment_status);
+
   const dispatch = useAppDispatch();
 
-  const handleUpdateGoodReceivedNote = () => {
+  const handleUpdateGoodReceivedNote = async () => {
     try {
       setLoading(true);
-      dispatch(updateGRNAsync(id));
+      await dispatch(updateGRNAsync(id));
       setLoading(false);
-      setOrderStatus("entered");
+      setPaymentStatus("paid");
       toast.success("Thanh toán đơn hàng thành công");
     } catch (error) {
       console.log(error);
@@ -39,6 +41,7 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
 
   useEffect(() => {
     setOrderStatus(data?.order_status);
+    setPaymentStatus(data?.payment_status);
   }, [data]);
   return (
     <>
@@ -182,7 +185,7 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
             theme === "dark" ? "bg-[#29343F]" : "shadow-md"
           }`}
         >
-          {data?.payment_status === "pending" ? (
+          {paymentStatus === "pending" ? (
             <>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-x-2">

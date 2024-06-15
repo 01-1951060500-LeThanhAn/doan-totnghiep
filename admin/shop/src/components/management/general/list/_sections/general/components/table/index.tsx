@@ -49,9 +49,7 @@ export const columns: ColumnDef<GeneralTableProps>[] = [
     header: "Tên kho ",
     cell: ({ row }) => (
       <Link to={`/dashboard/management/general/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("name")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("name")}</p>
       </Link>
     ),
   },
@@ -76,7 +74,7 @@ export const columns: ColumnDef<GeneralTableProps>[] = [
   },
   {
     accessorKey: "manager",
-    header: "Nhân viên quản lý",
+    header: "Người quản lý",
     cell: ({ row }) => <p className="capitalize">{row.getValue("manager")}</p>,
   },
 

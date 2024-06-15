@@ -8,6 +8,7 @@ const ShipmentsPage = () => {
   const { orders } = useGetOrders();
   const data = orders.map((item) => ({
     code: item.code,
+    _id: item._id,
     received_date: item.received_date,
     customer: item?.customerId?.username,
     phone: item.customerId?.phone,

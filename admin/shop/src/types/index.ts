@@ -1,7 +1,7 @@
 export type User = {
-  email: string | null;
-  pasword: string | null;
-  role: string | null;
+  email: string | undefined;
+  pasword: string | undefined;
+  role: string | undefined;
 };
 
 export type UserTableData = {
@@ -11,9 +11,7 @@ export type UserTableData = {
   _id: string;
   phone: string;
   address: string;
-  role: {
-    name: string;
-  };
+  role: string;
 };
 
 export type UserDataTableProps = {
@@ -36,6 +34,6 @@ export type UpdateUserDataType = {
 
 export type RoleData = {
   name: string;
-  _id: string;
-  description: string;
+
+  value: string;
 };

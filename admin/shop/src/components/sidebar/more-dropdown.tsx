@@ -10,16 +10,7 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Activity,
-  Bookmark,
-  ChevronLeft,
-  LogOut,
-  Menu,
-  Moon,
-  Settings,
-  Sun,
-} from "lucide-react";
+import { ChevronLeft, LogOut, Menu, Moon, Settings, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { useAppDispatch } from "@/hooks/hooks";
@@ -85,26 +76,19 @@ const MoredropDown = () => {
             <>
               <DropdownMenuItem className="menuItem">
                 <Settings />
-                <p className="ml-2">Settings</p>
+                <p className="ml-2">Cài đặt</p>
               </DropdownMenuItem>
-              <DropdownMenuItem className="menuItem">
-                <Activity />
-                <p className="ml-2">Your Activity</p>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="menuItem">
-                <Bookmark />
-                <p className="ml-2">Saved</p>
-              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => setShowToggle(true)}
                 className="menuItem"
               >
                 <Moon />
-                <p className="ml-2">Switch apperance</p>
+                <p className="ml-2">Dark/Mode</p>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handeLogOut} className="menuItem">
                 <LogOut />
-                <p className="ml-2">LogOut</p>
+                <p className="ml-2">Đăng xuất</p>
               </DropdownMenuItem>
             </>
           ) : (

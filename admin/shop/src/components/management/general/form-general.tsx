@@ -30,8 +30,8 @@ import {
   createGeneralAsync,
   updateGeneralAsync,
 } from "@/redux/slices/generalSlice";
-import useGetUsers from "@/components/suppliers/hooks/use-get-users";
 import { useNavigate } from "react-router-dom";
+import useGetUsers from "@/components/suppliers/hooks/use-get-users";
 
 type Props = {
   generalId?: string;
@@ -45,7 +45,6 @@ const FormGeneral = ({ initialValues, generalId }: Props) => {
       name: initialValues?.name ?? "",
       address: initialValues?.address ?? "",
       type: initialValues?.type ?? "",
-      manager: initialValues?.manager ?? null ?? "",
     }),
     [initialValues]
   );
@@ -64,7 +63,6 @@ const FormGeneral = ({ initialValues, generalId }: Props) => {
   const [loading, setLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { users } = useGetUsers();
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const handleCreateGeneral = async () => {
@@ -215,43 +213,40 @@ const FormGeneral = ({ initialValues, generalId }: Props) => {
                   )}
                 />
               </div>
-              {location.pathname ===
-                `/dashboard/management/general/${generalId}/edit` && (
-                <div className="mt-5">
-                  <FormField
-                    control={form.control}
-                    name="manager"
-                    render={({ field }) => (
-                      <FormItem>
-                        <p>Chọn nhân viên quản lý</p>
-                        <FormControl>
-                          <div>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Chọn nhân viên" />
-                              </SelectTrigger>
+              <div className="mt-5">
+                <FormField
+                  control={form.control}
+                  name="manager"
+                  render={({ field }) => (
+                    <FormItem>
+                      <p>Chọn người quản lý</p>
+                      <FormControl>
+                        <div>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn người quản lý" />
+                            </SelectTrigger>
 
-                              <SelectContent>
-                                <SelectGroup>
-                                  {users.map((item) => (
-                                    <SelectItem key={item._id} value={item._id}>
-                                      {item.username}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
+                            <SelectContent>
+                              <SelectGroup>
+                                {users.map((item) => (
+                                  <SelectItem key={item._id} value={item._id}>
+                                    {item.username}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <div></div>
             <div className="lg:col-end-4 mt-6 lg:ml-auto">

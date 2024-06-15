@@ -1,6 +1,7 @@
 import { Custombreadcumb } from "@/features/custom-breadcumb";
 import Header from "./header";
 import FormAddCategoryPage from "./add/form-add-category";
+import FormEditCategoryPage from "./edit/form-edit-category";
 
 const CategoryMain = () => {
   return (
@@ -24,7 +25,11 @@ const CategoryMain = () => {
             : "Chỉnh sửa loại sản phẩm"
         }
       />
-      <FormAddCategoryPage />
+      {location.pathname === "/dashboard/management/category/create" ? (
+        <FormAddCategoryPage />
+      ) : (
+        <FormEditCategoryPage />
+      )}
     </>
   );
 };

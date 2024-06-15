@@ -49,7 +49,7 @@ export const columns: ColumnDef<ShipmentsData>[] = [
     accessorKey: "code",
     header: "Mã vận đơn",
     cell: ({ row }) => (
-      <Link to={`/dashboard/shipments/${row.getValue("_id")}/detail`}>
+      <Link to={`/dashboard/orders/${row.getValue("_id")}/detail`}>
         <p className="capitalize text-blue-400 ">{row.getValue("code")}</p>
       </Link>
     ),
@@ -91,14 +91,30 @@ export const columns: ColumnDef<ShipmentsData>[] = [
             </>
           ) : (
             <>
-              {theme === "light" ? (
-                <Badge variant="secondary" className="capitalize">
-                  Đã giao hàng
-                </Badge>
+              {row.getValue("order_status") === "cancelled" ? (
+                <>
+                  {theme === "light" ? (
+                    <Badge variant="destructive" className="capitalize">
+                      Đã hủy
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="capitalize">
+                      Đã hủy
+                    </Badge>
+                  )}
+                </>
               ) : (
-                <Badge variant="outline" className="capitalize">
-                  Đã giao hàng
-                </Badge>
+                <>
+                  {theme === "light" ? (
+                    <Badge variant="secondary" className="capitalize">
+                      Hoàn thành
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="capitalize">
+                      Hoàn thành
+                    </Badge>
+                  )}
+                </>
               )}
             </>
           )}
@@ -126,13 +142,13 @@ export const columns: ColumnDef<ShipmentsData>[] = [
     accessorKey: "totalShip",
     header: "Phí trả ĐTVC",
     cell: ({ row }) => (
-      <p className="capitalize">{row.getValue("totalShip")}</p>
+      <p className="capitalize">{formatPrice(row.getValue("totalShip"))}</p>
     ),
   },
 
   {
     accessorKey: "totalPrice",
-    header: "Cần thu COD",
+    header: "Cần thu",
     cell: ({ row }) => (
       <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
     ),

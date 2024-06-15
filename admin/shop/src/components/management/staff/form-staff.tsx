@@ -20,14 +20,13 @@ import { CreateStaffData, UpdateStaffData } from "@/types/staff";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import useRole from "@/hooks/useRole";
-import useGetGenerals from "@/hooks/use-get-generals";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { createStaffAsync, updateStaffAsync } from "@/redux/slices/staffSlice";
+import { roles } from "@/constants/role";
 
 type Props = {
   id?: string;
@@ -42,6 +41,8 @@ const FormStaff = ({ initialValues, id }: Props) => {
       address: initialValues?.address ?? "",
       password: initialValues?.password ?? "",
       confirmPassword: initialValues?.confirmPassword ?? "",
+      role: initialValues?.role ?? "",
+      phone: initialValues?.phone ?? "",
     }),
     [initialValues]
   );
@@ -51,8 +52,6 @@ const FormStaff = ({ initialValues, id }: Props) => {
     defaultValues,
   });
 
-  const { roles } = useRole();
-  const { generals } = useGetGenerals();
   const { loading, isEdit } = useAppSelector((state) => state.staffs);
   const dispatch = useAppDispatch();
 
@@ -197,6 +196,21 @@ const FormStaff = ({ initialValues, id }: Props) => {
               <div className="my-3">
                 <FormField
                   control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <p>Số điện thoại</p>
+                      <FormControl>
+                        <Input placeholder="Số điện thoại..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="my-3">
+                <FormField
+                  control={form.control}
                   name="role"
                   render={({ field }) => (
                     <FormItem>
@@ -214,42 +228,11 @@ const FormStaff = ({ initialValues, id }: Props) => {
                             <SelectContent>
                               <SelectGroup>
                                 {roles.map((item) => (
-                                  <SelectItem key={item._id} value={item?._id}>
-                                    {item.description}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="mt-3">
-                <FormField
-                  control={form.control}
-                  name="generalId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <p>Chọn kho nhân viên quản lý</p>
-                      <FormControl>
-                        <div>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn kho nhân viên quản lý" />
-                            </SelectTrigger>
-
-                            <SelectContent>
-                              <SelectGroup>
-                                {generals.map((item) => (
-                                  <SelectItem key={item._id} value={item._id}>
-                                    {item.name}
+                                  <SelectItem
+                                    key={item.name}
+                                    value={item?.name}
+                                  >
+                                    {item.value}
                                   </SelectItem>
                                 ))}
                               </SelectGroup>
@@ -263,6 +246,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
                 />
               </div>
             </div>
+
             <div></div>
             <div className="mb-12">
               {location.pathname === "/dashboard/management/staff/create" ? (

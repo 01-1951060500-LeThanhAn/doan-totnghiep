@@ -6,7 +6,6 @@ export type CreateStaffData = {
   password: string;
   confirmPassword: string;
   role: string;
-  generalId: string;
   phone: string;
 };
 
@@ -30,7 +29,6 @@ export type UpdateStaffData = {
   password: string;
   confirmPassword: string;
   role: string;
-  generalId: string;
   phone: string;
   picture: string;
 };

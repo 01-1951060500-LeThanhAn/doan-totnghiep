@@ -46,6 +46,7 @@ const FormOrder = ({ initialValues }: Props) => {
     () => ({
       code: initialValues?.code ?? "",
       generalId: initialValues?.generalId ?? "",
+      total_ship: initialValues?.total_ship ?? "",
       userId: initialValues?.userId ?? "",
       partnerId: initialValues?.partnerId ?? "",
       delivery_address: initialValues?.delivery_address ?? "",
@@ -370,6 +371,25 @@ const FormOrder = ({ initialValues }: Props) => {
                               <p className="font-normal">Tiền mặt</p>
                             </FormItem>
                           </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="my-2">
+                  <FormField
+                    control={form.control}
+                    name="total_ship"
+                    render={({ field }) => (
+                      <FormItem>
+                        <p>Phí trả đối tác vận chuyển</p>
+                        <FormControl>
+                          <Input
+                            placeholder="Nhập phí vận chuyển..."
+                            defaultValue={initialValues?.total_ship ?? 0}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

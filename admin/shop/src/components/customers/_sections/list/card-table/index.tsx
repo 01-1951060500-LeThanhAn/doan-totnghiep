@@ -35,7 +35,6 @@ import CustomerPagination from "./components/customer-pagination";
 import HomeLayout from "@/layouts/home-layout";
 import { Link } from "react-router-dom";
 import { CustomerData } from "@/types/customer";
-import { CreateOrders } from "@/types/orders";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import { formatPrice } from "@/config/format-price";
@@ -78,13 +77,10 @@ export const columns: ColumnDef<CustomerData>[] = [
     cell: ({ row }) => <p className="capitalize">{row.getValue("phone")}</p>,
   },
   {
-    accessorKey: "orders",
+    accessorKey: "totalOrders",
     header: "Tổng SL đơn hàng",
     cell: ({ row }) => {
-      const orders = row.getValue("orders") as CreateOrders[];
-      const totalOrders = orders?.length;
-
-      return <p className="capitalize">{totalOrders}</p>;
+      return <p className="capitalize">{row.getValue("totalOrders")}</p>;
     },
   },
   {

@@ -84,6 +84,8 @@ const AddOrderTable = ({ data }: Props) => {
                           <Input
                             type="number"
                             placeholder="Số lượng..."
+                            min={0}
+                            max={item?.inventory_number}
                             {...field}
                           />
                         </FormControl>
