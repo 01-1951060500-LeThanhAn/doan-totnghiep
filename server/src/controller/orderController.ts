@@ -624,6 +624,7 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       {
         $match: {
           createdAt: { $gte: previousMonth },
+          payment_status: "paid",
         },
       },
 
@@ -706,7 +707,7 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       }
     }
 
-    res.status(200).json(enrichedResults);
+    return res.status(200).json(enrichedResults);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching income data by customer" });
