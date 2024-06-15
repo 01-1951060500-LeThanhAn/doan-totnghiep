@@ -26,19 +26,17 @@ const getListCustomer = async (req: Request, res: Response) => {
         },
       },
       {
+        $unwind: "$orders",
+      },
+      {
+        $match: { "orders.payment_status": "paid" },
+      },
+      {
         $group: {
           _id: "$_id",
           customerData: { $first: "$$ROOT" },
-          totalSpending: {
-            $sum: {
-              $cond: {
-                if: { $isArray: "$orders" },
-                then: { $sum: "$orders.totalCustomerPay" },
-                else: 0,
-              },
-            },
-          },
-          totalOrders: { $sum: { $size: "$orders" } },
+          totalSpending: { $sum: "$orders.totalCustomerPay" },
+          totalOrders: { $sum: 1 },
         },
       },
       {
