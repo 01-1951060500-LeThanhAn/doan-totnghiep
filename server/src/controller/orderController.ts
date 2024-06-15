@@ -765,6 +765,91 @@ const getRevenueOrdersCustomerGroup = async (req: Request, res: Response) => {
   }
 };
 
+const getRevenueOrdersGeneral = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const results = await GeneralDepotModel.aggregate([
+      {
+        $lookup: {
+          from: "orders",
+          localField: "_id",
+          foreignField: "generalId",
+          as: "orders",
+        },
+      },
+      {
+        $unwind: "$orders",
+      },
+
+      {
+        $lookup: {
+          from: "products",
+          localField: "orders.products.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+
+      {
+        $project: {
+          _id: {
+            general: "$orders.generalId",
+            payment_method: "$orders.payment_method",
+          },
+          date: {
+            $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
+          },
+          month: { $month: "$createdAt" },
+          quantity: {
+            $first: "$orders.products.quantity",
+          },
+
+          totalOrders: { $sum: 1 },
+          totalPrice: "$orders.totalCustomerPay",
+        },
+      },
+
+      {
+        $group: {
+          _id: "$_id.general",
+
+          total_quantity: { $sum: "$quantity" },
+          totalOrders: { $sum: "$totalOrders" },
+          totalPrice: { $sum: "$totalPrice" },
+        },
+      },
+    ]);
+
+    const enrichedResults = [];
+
+    for (const result of results) {
+      const generalId = result._id;
+
+      const general = await GeneralDepotModel.findById(generalId);
+
+      if (general) {
+        const enrichedResult = {
+          ...result,
+          name: general.name,
+          code: general.code,
+        };
+
+        enrichedResults.push(enrichedResult);
+      }
+    }
+
+    return res.status(200).json(enrichedResults);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching income data by general" });
+  }
+};
+
 const getShipmentOrdersTime = async (req: Request, res: Response) => {
   const date = new Date();
   const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
@@ -1487,6 +1572,7 @@ export {
   getRevenueOrdersStaff,
   getRevenueOrdersProducts,
   getRevenueOrdersCustomerGroup,
+  getRevenueOrdersGeneral,
   getShipmentOrdersTime,
   getShipmentOrdersStaff,
   getShipmentOrderPartner,

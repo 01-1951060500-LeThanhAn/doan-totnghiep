@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getPaymentOrderStaff = exports.getPaymentOrderTime = exports.getShipmentOrderGeneral = exports.getShipmentOrderPartner = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
+exports.getIncomeOrdersCustomerGroup = exports.getIncomeOrdersArea = exports.getIncomeOrdersProduct = exports.getRevenueOrdersCustomer = exports.getIncomeOrdersGeneral = exports.searchDateOrders = exports.searchOrder = exports.getPaymentOrderStaff = exports.getPaymentOrderTime = exports.getShipmentOrderGeneral = exports.getShipmentOrderPartner = exports.getShipmentOrdersStaff = exports.getShipmentOrdersTime = exports.getRevenueOrdersGeneral = exports.getRevenueOrdersCustomerGroup = exports.getRevenueOrdersProducts = exports.getRevenueOrdersStaff = exports.getRevenueOrdersMonth = exports.getIncomeOrders = exports.getDetailOrder = exports.deleteOrder = exports.updateOrder = exports.getAllOrder = exports.createOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -686,6 +686,76 @@ const getRevenueOrdersCustomerGroup = (req, res) => __awaiter(void 0, void 0, vo
     }
 });
 exports.getRevenueOrdersCustomerGroup = getRevenueOrdersCustomerGroup;
+const getRevenueOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const results = yield GeneralDepotModel_1.default.aggregate([
+            {
+                $lookup: {
+                    from: "orders",
+                    localField: "_id",
+                    foreignField: "generalId",
+                    as: "orders",
+                },
+            },
+            {
+                $unwind: "$orders",
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "orders.products.productId",
+                    foreignField: "_id",
+                    as: "products",
+                },
+            },
+            {
+                $unwind: "$products",
+            },
+            {
+                $project: {
+                    _id: {
+                        general: "$orders.generalId",
+                        payment_method: "$orders.payment_method",
+                    },
+                    date: {
+                        $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
+                    },
+                    month: { $month: "$createdAt" },
+                    quantity: {
+                        $first: "$orders.products.quantity",
+                    },
+                    totalOrders: { $sum: 1 },
+                    totalPrice: "$orders.totalCustomerPay",
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id.general",
+                    total_quantity: { $sum: "$quantity" },
+                    totalOrders: { $sum: "$totalOrders" },
+                    totalPrice: { $sum: "$totalPrice" },
+                },
+            },
+        ]);
+        const enrichedResults = [];
+        for (const result of results) {
+            const generalId = result._id;
+            const general = yield GeneralDepotModel_1.default.findById(generalId);
+            if (general) {
+                const enrichedResult = Object.assign(Object.assign({}, result), { name: general.name, code: general.code });
+                enrichedResults.push(enrichedResult);
+            }
+        }
+        return res.status(200).json(enrichedResults);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching income data by general" });
+    }
+});
+exports.getRevenueOrdersGeneral = getRevenueOrdersGeneral;
 const getShipmentOrdersTime = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const date = new Date();
     const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
