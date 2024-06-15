@@ -574,6 +574,9 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
                 $unwind: "$orders",
             },
             {
+                $match: { "orders.payment_status": "paid" },
+            },
+            {
                 $lookup: {
                     from: "products",
                     localField: "orders.products.productId",
@@ -588,7 +591,6 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
                 $project: {
                     _id: {
                         customer: "$orders.customerId",
-                        payment_method: "$orders.payment_method",
                     },
                     date: {
                         $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
@@ -604,9 +606,6 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
             {
                 $group: {
                     _id: "$_id.customer",
-                    payment_method: {
-                        $first: "$_id.payment_method",
-                    },
                     date: { $first: "$date" },
                     month: { $first: "$month" },
                     total_quantity: { $sum: "$quantity" },

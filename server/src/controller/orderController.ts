@@ -640,6 +640,10 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       },
 
       {
+        $match: { "orders.payment_status": "paid" },
+      },
+
+      {
         $lookup: {
           from: "products",
           localField: "orders.products.productId",
@@ -655,7 +659,6 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
         $project: {
           _id: {
             customer: "$orders.customerId",
-            payment_method: "$orders.payment_method",
           },
           date: {
             $dateToString: { format: "%d/%m/%Y", date: "$createdAt" },
@@ -673,9 +676,7 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
       {
         $group: {
           _id: "$_id.customer",
-          payment_method: {
-            $first: "$_id.payment_method",
-          },
+
           date: { $first: "$date" },
           month: { $first: "$month" },
           total_quantity: { $sum: "$quantity" },
