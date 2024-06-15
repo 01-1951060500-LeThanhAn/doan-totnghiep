@@ -23,19 +23,21 @@ const getGeneralDepot = async (req: UserRequest, res: Response) => {
 
     const { user } = req.user as any;
 
+    console.log(user.role);
+
     if (!user || !user?.role) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     let query: any = {};
 
-    if (user?.role?.name === "admin") {
+    if (user?.role === "admin") {
       query = {};
-    } else if (user?.role?.name === "manager") {
+    } else if (user?.role === "manager") {
       query = { manager: user._id };
     }
 
-    const generals = await GeneralDepotModel.find(query).populate("manager ");
+    const generals = await GeneralDepotModel.find(query).populate("manager");
 
     res.status(200).json(generals);
   } catch (error) {
@@ -67,6 +69,7 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
           as: "products",
         },
       },
+
       {
         $project: {
           _id: 1,
@@ -107,31 +110,13 @@ const getDetailGeneralDepot = async (req: Request, res: Response) => {
         $project: {
           _id: 1,
           products: 1,
-          type: 1,
         },
       },
     ]);
 
-    const enrichedResults = [];
-
-    for (const result of general) {
-      const typeProducts = result.type;
-      const category = await CategoryModel.findById(typeProducts);
-
-      if (category) {
-        const enrichedResult = {
-          ...result,
-          name: category.name,
-          code: category.code,
-        };
-
-        enrichedResults.push(enrichedResult);
-      }
-    }
-
     return res.status(200).json({
       results,
-      general: enrichedResults,
+      general,
     });
   } catch (error) {
     console.log(error);

@@ -131,7 +131,7 @@ ProductSchema.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
             path: "type",
-            select: "name",
+            select: "name code",
         });
         next();
     });

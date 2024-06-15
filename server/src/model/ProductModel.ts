@@ -123,7 +123,7 @@ const ProductSchema = new mongoose.Schema(
 ProductSchema.pre("find", async function (next) {
   this.populate({
     path: "type",
-    select: "name",
+    select: "name code",
   });
   next();
 });

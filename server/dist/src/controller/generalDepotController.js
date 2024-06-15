@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteGeneralDepot = exports.updateGeneralDepot = exports.getDetailGeneralDepot = exports.getGeneralDepot = exports.createGeneralDepot = void 0;
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const CategoryModel_1 = __importDefault(require("../model/CategoryModel"));
 const createGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const generalDepot = new GeneralDepotModel_1.default(Object.assign({}, req.body));
@@ -29,23 +28,23 @@ const createGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.createGeneralDepot = createGeneralDepot;
 const getGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     try {
         if (!req.user) {
             return res.status(401).json({ message: "Unauthorized" });
         }
         const { user } = req.user;
+        console.log(user.role);
         if (!user || !(user === null || user === void 0 ? void 0 : user.role)) {
             return res.status(401).json({ message: "Unauthorized" });
         }
         let query = {};
-        if (((_a = user === null || user === void 0 ? void 0 : user.role) === null || _a === void 0 ? void 0 : _a.name) === "admin") {
+        if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
             query = {};
         }
-        else if (((_b = user === null || user === void 0 ? void 0 : user.role) === null || _b === void 0 ? void 0 : _b.name) === "manager") {
+        else if ((user === null || user === void 0 ? void 0 : user.role) === "manager") {
             query = { manager: user._id };
         }
-        const generals = yield GeneralDepotModel_1.default.find(query).populate("manager ");
+        const generals = yield GeneralDepotModel_1.default.find(query).populate("manager");
         res.status(200).json(generals);
     }
     catch (error) {
@@ -114,22 +113,12 @@ const getDetailGeneralDepot = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 $project: {
                     _id: 1,
                     products: 1,
-                    type: 1,
                 },
             },
         ]);
-        const enrichedResults = [];
-        for (const result of general) {
-            const typeProducts = result.type;
-            const category = yield CategoryModel_1.default.findById(typeProducts);
-            if (category) {
-                const enrichedResult = Object.assign(Object.assign({}, result), { name: category.name, code: category.code });
-                enrichedResults.push(enrichedResult);
-            }
-        }
         return res.status(200).json({
             results,
-            general: enrichedResults,
+            general,
         });
     }
     catch (error) {
