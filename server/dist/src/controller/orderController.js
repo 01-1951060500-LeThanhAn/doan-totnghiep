@@ -733,7 +733,7 @@ const getRevenueOrdersGeneral = (req, res) => __awaiter(void 0, void 0, void 0, 
             {
                 $group: {
                     _id: "$_id.general",
-                    total_quantity: { $sum: "$quantity" },
+                    totalQuantity: { $sum: "$quantity" },
                     totalOrders: { $sum: "$totalOrders" },
                     totalPrice: { $sum: "$totalPrice" },
                 },

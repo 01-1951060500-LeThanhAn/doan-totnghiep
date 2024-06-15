@@ -818,7 +818,7 @@ const getRevenueOrdersGeneral = async (req: Request, res: Response) => {
         $group: {
           _id: "$_id.general",
 
-          total_quantity: { $sum: "$quantity" },
+          totalQuantity: { $sum: "$quantity" },
           totalOrders: { $sum: "$totalOrders" },
           totalPrice: { $sum: "$totalPrice" },
         },
