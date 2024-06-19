@@ -179,10 +179,30 @@ const deleteStockAdjustment = async (req: Request, res: Response) => {
   }
 };
 
+const searchStockAdjustmentOrder = async (req: Request, res: Response) => {
+  const status = req.query.status as string;
+
+  try {
+    const stock = new RegExp(status, "i");
+
+    const results = await StockAdjustmentModel.find({
+      inventory_status: stock,
+    });
+
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server not found!",
+    });
+  }
+};
+
 export {
   createStockAdjustment,
   deleteStockAdjustment,
   updateStockAdjustment,
   getStockAdjustment,
   getDetailStockAdjustment,
+  searchStockAdjustmentOrder,
 };

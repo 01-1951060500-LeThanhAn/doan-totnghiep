@@ -12,4 +12,5 @@ router.get(`/`, auth_1.verifyTokenAndAuthorization, stockAdjustmentController_1.
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, stockAdjustmentController_1.getDetailStockAdjustment);
 router.patch(`/:id`, auth_1.verifyTokenAndAuthorization, stockAdjustmentController_1.updateStockAdjustment);
 router.delete(`/:id`, auth_1.verifyTokenAndAuthorization, stockAdjustmentController_1.deleteStockAdjustment);
+router.get("/search/status-stock-adjustment", auth_1.verifyTokenAndAuthorization, stockAdjustmentController_1.searchStockAdjustmentOrder);
 exports.default = router;

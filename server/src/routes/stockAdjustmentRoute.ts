@@ -6,6 +6,7 @@ import {
   getStockAdjustment,
   updateStockAdjustment,
   getDetailStockAdjustment,
+  searchStockAdjustmentOrder,
 } from "../controller/stockAdjustmentController";
 const router = express.Router();
 
@@ -18,5 +19,11 @@ router.get(`/:id`, verifyTokenAndAuthorization, getDetailStockAdjustment);
 router.patch(`/:id`, verifyTokenAndAuthorization, updateStockAdjustment);
 
 router.delete(`/:id`, verifyTokenAndAuthorization, deleteStockAdjustment);
+
+router.get(
+  "/search/status-stock-adjustment",
+  verifyTokenAndAuthorization,
+  searchStockAdjustmentOrder
+);
 
 export default router;

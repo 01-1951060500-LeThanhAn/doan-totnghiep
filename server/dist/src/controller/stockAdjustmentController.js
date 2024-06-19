@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDetailStockAdjustment = exports.getStockAdjustment = exports.updateStockAdjustment = exports.deleteStockAdjustment = exports.createStockAdjustment = void 0;
+exports.searchStockAdjustmentOrder = exports.getDetailStockAdjustment = exports.getStockAdjustment = exports.updateStockAdjustment = exports.deleteStockAdjustment = exports.createStockAdjustment = void 0;
 const StockAdjustmentModel_1 = __importDefault(require("../model/StockAdjustmentModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const createStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -153,3 +153,20 @@ const deleteStockAdjustment = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.deleteStockAdjustment = deleteStockAdjustment;
+const searchStockAdjustmentOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = req.query.status;
+    try {
+        const stock = new RegExp(status, "i");
+        const results = yield StockAdjustmentModel_1.default.find({
+            inventory_status: stock,
+        });
+        return res.status(200).json(results);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server not found!",
+        });
+    }
+});
+exports.searchStockAdjustmentOrder = searchStockAdjustmentOrder;
