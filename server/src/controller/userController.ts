@@ -121,22 +121,21 @@ const getAllUsers = async (req: Request, res: Response) => {
 };
 
 const getInfoUser = async (req: UserRequest, res: Response) => {
+  const userId = req.params.id;
+  if (!userId) {
+    return res.status(400).json({
+      error: "User not found",
+    });
+  }
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    const { user } = req.user as any;
-
-    const data = await UserModel.findOne({ _id: user._id }).select(
+    const data = await UserModel.findById(userId).select(
       "-password -confirmPassword"
     );
 
-    if (user) {
-      return res.status(200).json({
-        success: true,
-        results: data,
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      results: data,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({

@@ -106,18 +106,18 @@ const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getAllUsers = getAllUsers;
 const getInfoUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    if (!userId) {
+        return res.status(400).json({
+            error: "User not found",
+        });
+    }
     try {
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        const { user } = req.user;
-        const data = yield UserModel_1.default.findOne({ _id: user._id }).select("-password -confirmPassword");
-        if (user) {
-            return res.status(200).json({
-                success: true,
-                results: data,
-            });
-        }
+        const data = yield UserModel_1.default.findById(userId).select("-password -confirmPassword");
+        return res.status(200).json({
+            success: true,
+            results: data,
+        });
     }
     catch (error) {
         console.log(error);
