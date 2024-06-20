@@ -92,7 +92,13 @@ const getInfoPartner = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 $group: {
                     _id: "$_id",
                     totalSpending: {
-                        $sum: "$orders.totalCustomerPay",
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$orders.payment_status", "paid"] },
+                                "$orders.totalCustomerPay",
+                                0,
+                            ],
+                        },
                     },
                     totalOrders: {
                         $sum: 1,

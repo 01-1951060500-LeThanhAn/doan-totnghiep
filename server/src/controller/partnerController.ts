@@ -83,7 +83,13 @@ const getInfoPartner = async (req: Request, res: Response) => {
           _id: "$_id",
 
           totalSpending: {
-            $sum: "$orders.totalCustomerPay",
+            $sum: {
+              $cond: [
+                { $eq: ["$orders.payment_status", "paid"] },
+                "$orders.totalCustomerPay",
+                0,
+              ],
+            },
           },
           totalOrders: {
             $sum: 1,
