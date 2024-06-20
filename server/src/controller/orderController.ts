@@ -645,26 +645,11 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
           localField: "_id",
           foreignField: "customerId",
           as: "orders",
+          pipeline: [{ $match: { payment_status: "paid" } }],
         },
       },
       {
         $unwind: "$orders",
-      },
-
-      {
-        $match: { "orders.payment_status": "paid" },
-      },
-
-      {
-        $lookup: {
-          from: "products",
-          localField: "orders.products.productId",
-          foreignField: "_id",
-          as: "products",
-        },
-      },
-      {
-        $unwind: "$products",
       },
 
       {
@@ -677,18 +662,34 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
           },
           month: { $month: "$createdAt" },
           quantity: {
-            $first: "$orders.products.quantity",
+            $sum: {
+              $cond: [
+                { $eq: ["$orders.payment_status", "paid"] },
+                "$orders.products.quantity",
+                0,
+              ],
+            },
           },
-
-          totalOrders: { $sum: 1 },
-          totalPrice: "$orders.totalCustomerPay",
+          totalOrders: {
+            $sum: {
+              $cond: [{ $eq: ["$orders.payment_status", "paid"] }, 1, 0],
+            },
+          },
+          totalPrice: {
+            $sum: {
+              $cond: [
+                { $eq: ["$orders.payment_status", "paid"] },
+                "$orders.totalCustomerPay",
+                0,
+              ],
+            },
+          },
         },
       },
 
       {
         $group: {
           _id: "$_id.customer",
-
           date: { $first: "$date" },
           month: { $first: "$month" },
           total_quantity: { $sum: "$quantity" },
@@ -705,7 +706,6 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
 
     for (const result of results) {
       const customerId = result._id;
-
       const customer = await CustomerModel.findById(customerId);
 
       if (customer) {
@@ -714,7 +714,6 @@ const getRevenueOrdersCustomer = async (req: Request, res: Response) => {
           name: customer.username,
           code: customer.code,
         };
-
         enrichedResults.push(enrichedResult);
       }
     }

@@ -577,24 +577,11 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
                     localField: "_id",
                     foreignField: "customerId",
                     as: "orders",
+                    pipeline: [{ $match: { payment_status: "paid" } }],
                 },
             },
             {
                 $unwind: "$orders",
-            },
-            {
-                $match: { "orders.payment_status": "paid" },
-            },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "orders.products.productId",
-                    foreignField: "_id",
-                    as: "products",
-                },
-            },
-            {
-                $unwind: "$products",
             },
             {
                 $project: {
@@ -606,10 +593,28 @@ const getRevenueOrdersCustomer = (req, res) => __awaiter(void 0, void 0, void 0,
                     },
                     month: { $month: "$createdAt" },
                     quantity: {
-                        $first: "$orders.products.quantity",
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$orders.payment_status", "paid"] },
+                                "$orders.products.quantity",
+                                0,
+                            ],
+                        },
                     },
-                    totalOrders: { $sum: 1 },
-                    totalPrice: "$orders.totalCustomerPay",
+                    totalOrders: {
+                        $sum: {
+                            $cond: [{ $eq: ["$orders.payment_status", "paid"] }, 1, 0],
+                        },
+                    },
+                    totalPrice: {
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$orders.payment_status", "paid"] },
+                                "$orders.totalCustomerPay",
+                                0,
+                            ],
+                        },
+                    },
                 },
             },
             {
