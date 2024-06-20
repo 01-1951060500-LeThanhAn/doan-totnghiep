@@ -40,6 +40,7 @@ const getListCustomer = async (req: Request, res: Response) => {
               },
             },
           },
+
           totalOrders: { $sum: { $size: "$orders" } },
         },
       },
