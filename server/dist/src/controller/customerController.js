@@ -35,6 +35,7 @@ const getListCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function
                     localField: "_id",
                     foreignField: "customerId",
                     as: "orders",
+                    pipeline: [{ $match: { payment_status: "paid" } }],
                 },
             },
             {

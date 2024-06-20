@@ -23,6 +23,7 @@ const getListCustomer = async (req: Request, res: Response) => {
           localField: "_id",
           foreignField: "customerId",
           as: "orders",
+          pipeline: [{ $match: { payment_status: "paid" } }],
         },
       },
 
