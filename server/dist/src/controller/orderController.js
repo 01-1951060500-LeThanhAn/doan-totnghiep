@@ -115,6 +115,8 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         const paymentStatusChangedToPaid = (originalOrder === null || originalOrder === void 0 ? void 0 : originalOrder.payment_status) !== "paid" &&
             (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.payment_status) === "paid";
+        const OrderStatusChangedToCancelled = (originalOrder === null || originalOrder === void 0 ? void 0 : originalOrder.order_status) !== "cancelled" &&
+            (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.order_status) === "cancelled";
         if (paymentStatusChangedToPaid) {
             const customerId = updatedOrder.customerId;
             const totalPrice = updatedOrder.totalPrice;
@@ -166,6 +168,13 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             yield OrderModel_1.default.findByIdAndUpdate(updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id, {
                 $inc: { totalPrice: -(updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.totalPrice) },
             });
+        }
+        if (OrderStatusChangedToCancelled) {
+            for (const product of updatedOrder.products) {
+                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                    $inc: { pendingOrderQuantity: -product.quantity },
+                });
+            }
         }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "order",

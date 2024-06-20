@@ -135,6 +135,10 @@ const updateOrder = async (req: Request, res: Response) => {
       originalOrder?.payment_status !== "paid" &&
       updatedOrder?.payment_status === "paid";
 
+    const OrderStatusChangedToCancelled =
+      originalOrder?.order_status !== "cancelled" &&
+      updatedOrder?.order_status === "cancelled";
+
     if (paymentStatusChangedToPaid) {
       const customerId = updatedOrder.customerId;
       const totalPrice = updatedOrder.totalPrice;
@@ -199,6 +203,14 @@ const updateOrder = async (req: Request, res: Response) => {
       await OrderModel.findByIdAndUpdate(updatedOrder?._id, {
         $inc: { totalPrice: -updatedOrder?.totalPrice },
       });
+    }
+
+    if (OrderStatusChangedToCancelled) {
+      for (const product of updatedOrder.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.quantity },
+        });
+      }
     }
 
     const transactionHistory = new TransactionModel({
