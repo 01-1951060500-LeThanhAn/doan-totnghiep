@@ -130,7 +130,8 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 if (product) {
                     const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
                     if (matchingProductIndex !== -1) {
-                        order.products[matchingProductIndex].quantity -= results.quantity;
+                        order.products[matchingProductIndex].totalReturnOrders -=
+                            results.quantity;
                         yield order.save();
                     }
                 }
