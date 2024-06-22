@@ -49,6 +49,11 @@ const OrderSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
+    returnOrderQuantity: {
+      required: true,
+      type: Number,
+      default: 0,
+    },
     code: {
       type: String,
     },

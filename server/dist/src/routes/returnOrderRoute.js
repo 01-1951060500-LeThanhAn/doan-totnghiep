@@ -12,4 +12,5 @@ router.get(`/`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getR
 router.get(`/:id`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.getDetailReturnOrder);
 router.patch("/:id", auth_1.verifyTokenAndAuthorization, returnOrderController_1.updateReturnOrders);
 router.delete(`/:id`, auth_1.verifyTokenAndAuthorization, returnOrderController_1.deleteReturnOrder);
+router.get("/income/return-order-product", auth_1.verifyTokenAndAuthorization, returnOrderController_1.getIncomeReturnOrderByProduct);
 exports.default = router;

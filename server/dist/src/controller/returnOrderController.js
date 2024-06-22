@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateReturnOrders = exports.deleteReturnOrder = exports.getDetailReturnOrder = exports.getReturnOrder = exports.createReturnOrder = void 0;
+exports.getIncomeReturnOrderByProduct = exports.updateReturnOrders = exports.deleteReturnOrder = exports.getDetailReturnOrder = exports.getReturnOrder = exports.createReturnOrder = void 0;
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
@@ -144,3 +144,53 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.updateReturnOrders = updateReturnOrders;
+const getIncomeReturnOrderByProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const date = new Date();
+    const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+    try {
+        const incomeData = yield ReturnOrderModel_1.default.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: previousMonth },
+                },
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "products.productId",
+                    foreignField: "_id",
+                    as: "products",
+                },
+            },
+            {
+                $unwind: "$products",
+            },
+            {
+                $project: {
+                    _id: "$products._id",
+                    productName: "$products.name_product",
+                    productCode: "$products.code",
+                    img: "$products.img",
+                    price: "$products.export_price",
+                    totalOrders: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    name_product: { $first: "$productName" },
+                    code: { $first: "$productCode" },
+                    price: { $first: "$price" },
+                    img: { $first: "$img" },
+                    totalOrders: { $sum: "$totalOrders" },
+                },
+            },
+        ]);
+        return res.status(200).json(incomeData);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+exports.getIncomeReturnOrderByProduct = getIncomeReturnOrderByProduct;

@@ -170,10 +170,62 @@ const updateReturnOrders = async (req: Request, res: Response) => {
   }
 };
 
+const getIncomeReturnOrderByProduct = async (req: Request, res: Response) => {
+  const date = new Date();
+  const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
+
+  try {
+    const incomeData = await ReturnOrderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: previousMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $project: {
+          _id: "$products._id",
+          productName: "$products.name_product",
+          productCode: "$products.code",
+          img: "$products.img",
+          price: "$products.export_price",
+          totalOrders: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          name_product: { $first: "$productName" },
+          code: { $first: "$productCode" },
+          price: { $first: "$price" },
+          img: { $first: "$img" },
+          totalOrders: { $sum: "$totalOrders" },
+        },
+      },
+    ]);
+
+    return res.status(200).json(incomeData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export {
   createReturnOrder,
   getReturnOrder,
   getDetailReturnOrder,
   deleteReturnOrder,
   updateReturnOrders,
+  getIncomeReturnOrderByProduct,
 };
