@@ -38,6 +38,9 @@ const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             yield ProductModel_1.default.findByIdAndUpdate(productId, {
                 $inc: { inventory_number: product.quantity },
             });
+            yield OrderModel_1.default.findByIdAndUpdate(orderId, {
+                $inc: { totalReturnOrders: product.quantity },
+            });
             yield order.save();
         }
         const returnOrders = new ReturnOrderModel_1.default(Object.assign(Object.assign({}, req.body), { orderId, customerId: order.customerId, generalId: order.generalId, return_reason: req.body.return_reason, products }));
@@ -111,6 +114,28 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
         if (!updatedReturnOrderData) {
             return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
+        }
+        const order = yield OrderModel_1.default.findById(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.orderId);
+        if (!order) {
+            return res.status(400).json({ message: "Order not found" });
+        }
+        for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
+            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
+                const product = yield ProductModel_1.default.findById(productItem.productId);
+                if (!product) {
+                    return res
+                        .status(400)
+                        .json({ message: `Product not found: ${productItem.productId}` });
+                }
+                if (product) {
+                    const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
+                    if (matchingProductIndex !== -1) {
+                        order.products[matchingProductIndex].quantity -= results.quantity;
+                        yield order.save();
+                    }
+                }
+            }));
+            yield Promise.all(updatedReturnOrders);
         }
         const paymentStatusChangedToPaid = (originalReturnOrderData === null || originalReturnOrderData === void 0 ? void 0 : originalReturnOrderData.refund_status) !== "refunded" &&
             (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) === "refunded";

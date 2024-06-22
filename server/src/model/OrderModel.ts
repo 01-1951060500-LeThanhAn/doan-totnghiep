@@ -32,6 +32,11 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        totalReturnOrders: {
+          type: Number,
+          required: true,
+          default: 0,
+        },
       },
     ],
     totalPrice: {

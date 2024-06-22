@@ -61,6 +61,10 @@ const createOrder = async (req: Request, res: Response) => {
       userId,
       totalQuantity,
       payment_status: "unpaid",
+      products: products.map((product: any) => ({
+        ...product,
+        totalReturnOrders: product.quantity,
+      })),
     });
 
     const currentBalance =
