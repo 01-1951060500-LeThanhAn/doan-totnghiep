@@ -16,6 +16,22 @@ const createReturnOrder = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Order not found" });
     }
 
+    for (let product of products) {
+      const productId = product.productId;
+      const data = await ProductModel.findById(product.productId);
+      if (!data) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.productId}` });
+      }
+
+      await ProductModel.findByIdAndUpdate(productId, {
+        $inc: { inventory_number: product.quantity },
+      });
+
+      await order.save();
+    }
+
     const returnOrders = new ReturnOrderModel({
       ...req.body,
       orderId,
@@ -24,24 +40,6 @@ const createReturnOrder = async (req: Request, res: Response) => {
       return_reason: req.body.return_reason,
       products,
     });
-
-    for (const product of products) {
-      const productId = product.productId;
-      const quantityToReturn = product.quantity;
-
-      const data = await ProductModel.findById(product.productId);
-      if (!data) {
-        return res
-          .status(400)
-          .json({ message: `Product not found: ${product.productId}` });
-      }
-      await ProductModel.findByIdAndUpdate(productId, {
-        $inc: { inventory_number: quantityToReturn },
-      });
-
-      await order.save();
-    }
-
     await returnOrders.save();
 
     res.status(200).json(returnOrders);
@@ -142,6 +140,7 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       const currentBalanceDecreases = customer?.balance_decreases || 0;
       const remainingDecreases =
         Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+
       const updatedBalanceDecreases =
         Number(currentBalanceDecreases) + totalPrice;
       const updatedRemainingDecreases = Math.max(

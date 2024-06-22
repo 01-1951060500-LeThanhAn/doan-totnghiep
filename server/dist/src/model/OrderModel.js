@@ -43,10 +43,6 @@ const OrderSchema = new mongoose_1.default.Schema({
                 type: Number,
                 required: true,
             },
-            returnOrderQuantity: {
-                type: Number,
-                default: 0,
-            },
         },
     ],
     totalPrice: {
@@ -60,6 +56,11 @@ const OrderSchema = new mongoose_1.default.Schema({
         required: true,
     },
     totalQuantity: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
+    totalReturnOrders: {
         type: Number,
         default: 0,
         required: true,
