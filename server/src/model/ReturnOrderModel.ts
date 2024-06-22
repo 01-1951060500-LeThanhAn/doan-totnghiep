@@ -38,10 +38,6 @@ const ReturnOrderSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-        totalReturnQuantity: {
-          type: Number,
-          default: 0,
-        },
       },
     ],
     totalPrice: {
