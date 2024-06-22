@@ -10,11 +10,6 @@ const createReturnOrder = async (req: Request, res: Response) => {
     if (!orderId || !products) {
       return res.status(400).json({ message: "Missing required details" });
     }
-    const order = await OrderModel.findById(orderId);
-
-    if (!order) {
-      return res.status(400).json({ message: "Order not found" });
-    }
 
     for (let product of products) {
       const productId = product.productId;
@@ -32,15 +27,11 @@ const createReturnOrder = async (req: Request, res: Response) => {
       await OrderModel.findByIdAndUpdate(orderId, {
         $inc: { totalReturnOrders: product.quantity },
       });
-
-      await order.save();
     }
 
     const returnOrders = new ReturnOrderModel({
       ...req.body,
       orderId,
-      customerId: order.customerId,
-      generalId: order.generalId,
       return_reason: req.body.return_reason,
       products,
     });

@@ -23,10 +23,6 @@ const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (!orderId || !products) {
             return res.status(400).json({ message: "Missing required details" });
         }
-        const order = yield OrderModel_1.default.findById(orderId);
-        if (!order) {
-            return res.status(400).json({ message: "Order not found" });
-        }
         for (let product of products) {
             const productId = product.productId;
             const data = yield ProductModel_1.default.findById(product.productId);
@@ -41,9 +37,8 @@ const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             yield OrderModel_1.default.findByIdAndUpdate(orderId, {
                 $inc: { totalReturnOrders: product.quantity },
             });
-            yield order.save();
         }
-        const returnOrders = new ReturnOrderModel_1.default(Object.assign(Object.assign({}, req.body), { orderId, customerId: order.customerId, generalId: order.generalId, return_reason: req.body.return_reason, products }));
+        const returnOrders = new ReturnOrderModel_1.default(Object.assign(Object.assign({}, req.body), { orderId, return_reason: req.body.return_reason, products }));
         yield returnOrders.save();
         res.status(200).json(returnOrders);
     }
