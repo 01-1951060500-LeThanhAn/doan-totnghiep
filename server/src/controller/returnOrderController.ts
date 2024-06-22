@@ -190,11 +190,11 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       });
     }
 
-    if (paymentStatusChangedToPaid) {
-      await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
-        $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
-      });
-    }
+    // if (paymentStatusChangedToPaid) {
+    //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
+    //     $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
+    //   });
+    // }
 
     res.status(200).json(updatedReturnOrderData);
   } catch (error) {

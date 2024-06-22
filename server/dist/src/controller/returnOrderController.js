@@ -156,11 +156,11 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
                 ending_balance: updatedRemainingDecreases,
             });
         }
-        if (paymentStatusChangedToPaid) {
-            yield OrderModel_1.default.findByIdAndUpdate(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData._id, {
-                $inc: { totalPrice: -(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) },
-            });
-        }
+        // if (paymentStatusChangedToPaid) {
+        //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
+        //     $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
+        //   });
+        // }
         res.status(200).json(updatedReturnOrderData);
     }
     catch (error) {
