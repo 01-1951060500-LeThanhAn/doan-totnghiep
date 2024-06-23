@@ -107,7 +107,10 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     try {
         const originalOrder = yield OrderModel_1.default.findById(cartId);
-        const updatedOrder = yield OrderModel_1.default.findByIdAndUpdate(cartId, req.body, {
+        const updatedOrder = yield OrderModel_1.default.findByIdAndUpdate(cartId, {
+            payment_status: "paid",
+            order_status: req.body.order_status,
+        }, {
             new: true,
         });
         if (!updatedOrder) {
