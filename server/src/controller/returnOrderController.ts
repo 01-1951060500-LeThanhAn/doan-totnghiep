@@ -28,32 +28,6 @@ const createReturnOrder = async (req: Request, res: Response) => {
       });
     }
 
-    const order = await OrderModel.findById(orderId);
-
-    if (!order) {
-      return res.status(400).json({ message: "Order not found" });
-    }
-
-    for (let results of products) {
-      const updatedReturnOrders = order?.products.map(async (productItem) => {
-        const product = await ProductModel.findById(productItem.productId);
-
-        if (product) {
-          const matchingProductIndex = order.products.findIndex(
-            (p) => p.productId === productItem.productId
-          );
-
-          if (matchingProductIndex !== -1) {
-            order.products[matchingProductIndex].totalReturnOrders -=
-              results.quantity;
-          }
-
-          await order.save();
-        }
-      });
-      await Promise.all(updatedReturnOrders);
-    }
-
     const returnOrders = new ReturnOrderModel({
       ...req.body,
       orderId,
@@ -150,20 +124,16 @@ const updateReturnOrders = async (req: Request, res: Response) => {
 
     for (let results of updatedReturnOrderData?.products) {
       const updatedReturnOrders = order?.products.map(async (productItem) => {
-        const product = await ProductModel.findById(productItem.productId);
+        const matchingProductIndex = order.products.findIndex(
+          (p) => p.productId === productItem.productId
+        );
 
-        if (product) {
-          const matchingProductIndex = order.products.findIndex(
-            (p) => p.productId === productItem.productId
-          );
-
-          if (matchingProductIndex !== -1) {
-            order.products[matchingProductIndex].totalReturnOrders -=
-              results.quantity;
-          }
-
-          await order.save();
+        if (matchingProductIndex !== -1) {
+          order.products[matchingProductIndex].totalReturnOrders -=
+            results.quantity;
         }
+
+        await order.save();
       });
       await Promise.all(updatedReturnOrders);
     }

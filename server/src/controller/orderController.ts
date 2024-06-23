@@ -128,9 +128,14 @@ const updateOrder = async (req: Request, res: Response) => {
   try {
     const originalOrder = await OrderModel.findById(cartId);
 
-    const updatedOrder = await OrderModel.findByIdAndUpdate(cartId, req.body, {
-      new: true,
-    });
+    const updatedOrder = await OrderModel.findByIdAndUpdate(
+      cartId,
+      req.body,
+
+      {
+        new: true,
+      }
+    );
 
     if (!updatedOrder) {
       return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });

@@ -37,24 +37,6 @@ const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 $inc: { totalReturnOrders: product.quantity },
             });
         }
-        const order = yield OrderModel_1.default.findById(orderId);
-        if (!order) {
-            return res.status(400).json({ message: "Order not found" });
-        }
-        for (let results of products) {
-            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
-                const product = yield ProductModel_1.default.findById(productItem.productId);
-                if (product) {
-                    const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
-                    if (matchingProductIndex !== -1) {
-                        order.products[matchingProductIndex].totalReturnOrders -=
-                            results.quantity;
-                    }
-                    yield order.save();
-                }
-            }));
-            yield Promise.all(updatedReturnOrders);
-        }
         const returnOrders = new ReturnOrderModel_1.default(Object.assign(Object.assign({}, req.body), { orderId, return_reason: req.body.return_reason, products }));
         yield returnOrders.save();
         res.status(200).json(returnOrders);
@@ -132,15 +114,12 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
             const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
-                const product = yield ProductModel_1.default.findById(productItem.productId);
-                if (product) {
-                    const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
-                    if (matchingProductIndex !== -1) {
-                        order.products[matchingProductIndex].totalReturnOrders -=
-                            results.quantity;
-                    }
-                    yield order.save();
+                const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
+                if (matchingProductIndex !== -1) {
+                    order.products[matchingProductIndex].totalReturnOrders -=
+                        results.quantity;
                 }
+                yield order.save();
             }));
             yield Promise.all(updatedReturnOrders);
         }
