@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import OrderModel from "../model/OrderModel";
 import ReturnOrderModel from "../model/ReturnOrderModel";
 import ProductModel from "../model/ProductModel";
-import CustomerModel from "../model/CustomerModel";
 
 const createReturnOrder = async (req: Request, res: Response) => {
   try {
@@ -130,11 +129,6 @@ const updateReturnOrders = async (req: Request, res: Response) => {
     for (let results of updatedReturnOrderData?.products) {
       const updatedReturnOrders = order?.products.map(async (productItem) => {
         const product = await ProductModel.findById(productItem.productId);
-        if (!product) {
-          return res
-            .status(400)
-            .json({ message: `Product not found: ${productItem.productId}` });
-        }
 
         if (product) {
           const matchingProductIndex = order.products.findIndex(

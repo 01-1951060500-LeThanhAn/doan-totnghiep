@@ -116,11 +116,6 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
             const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
                 const product = yield ProductModel_1.default.findById(productItem.productId);
-                if (!product) {
-                    return res
-                        .status(400)
-                        .json({ message: `Product not found: ${productItem.productId}` });
-                }
                 if (product) {
                     const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
                     if (matchingProductIndex !== -1) {

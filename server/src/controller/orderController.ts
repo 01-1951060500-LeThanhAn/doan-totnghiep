@@ -60,6 +60,7 @@ const createOrder = async (req: Request, res: Response) => {
       customerId: customer._id,
       userId,
       totalQuantity,
+      totalPrice: totalPrice,
       payment_status: "unpaid",
       products: products.map((product: any) => ({
         ...product,
