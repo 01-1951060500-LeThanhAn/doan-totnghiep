@@ -130,10 +130,7 @@ const updateOrder = async (req: Request, res: Response) => {
 
     const updatedOrder = await OrderModel.findByIdAndUpdate(
       cartId,
-      {
-        payment_status: "paid",
-        order_status: req.body.order_status,
-      },
+      req.body,
 
       {
         new: true,
