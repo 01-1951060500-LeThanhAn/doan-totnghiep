@@ -16,7 +16,6 @@ exports.getIncomeReturnOrderByProduct = exports.updateReturnOrders = exports.del
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
-const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId, products } = req.body;
@@ -133,24 +132,28 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             }));
             yield Promise.all(updatedReturnOrders);
         }
-        const paymentStatusChangedToPaid = (originalReturnOrderData === null || originalReturnOrderData === void 0 ? void 0 : originalReturnOrderData.refund_status) !== "refunded" &&
-            (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) === "refunded";
-        if (paymentStatusChangedToPaid) {
-            const customerId = updatedReturnOrderData.customerId;
-            const totalPrice = updatedReturnOrderData.totalPrice;
-            const customer = yield CustomerModel_1.default.findById(customerId);
-            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
-            const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-            const updatedBalanceDecreases = Number(currentBalanceDecreases) + totalPrice;
-            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-            yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-                balance_increases: currentBalanceIncreases - totalPrice,
-                balance_decreases: currentBalanceIncreases - totalPrice,
-                remaining_decreases: updatedRemainingDecreases,
-                ending_balance: updatedRemainingDecreases,
-            });
-        }
+        // const paymentStatusChangedToPaid =
+        //   originalReturnOrderData?.refund_status !== "refunded" &&
+        //   updatedReturnOrderData?.refund_status === "refunded";
+        // if (paymentStatusChangedToPaid) {
+        //   const customerId = updatedReturnOrderData.customerId;
+        //   const totalPrice = updatedReturnOrderData.totalPrice;
+        //   const customer = await CustomerModel.findById(customerId);
+        //   const currentBalanceIncreases = customer?.balance_increases || 0;
+        //   const currentBalanceDecreases = customer?.balance_decreases || 0;
+        //   const remainingDecreases =
+        //     Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+        //   const updatedRemainingDecreases = Math.max(
+        //     remainingDecreases - totalPrice,
+        //     0
+        //   );
+        //   await CustomerModel.findByIdAndUpdate(customerId, {
+        //     balance_increases: currentBalanceIncreases - totalPrice,
+        //     balance_decreases: currentBalanceIncreases - totalPrice,
+        //     remaining_decreases: updatedRemainingDecreases,
+        //     ending_balance: updatedRemainingDecreases,
+        //   });
+        // }
         // if (paymentStatusChangedToPaid) {
         //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
         //     $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },

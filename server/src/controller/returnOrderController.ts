@@ -151,35 +151,33 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       await Promise.all(updatedReturnOrders);
     }
 
-    const paymentStatusChangedToPaid =
-      originalReturnOrderData?.refund_status !== "refunded" &&
-      updatedReturnOrderData?.refund_status === "refunded";
+    // const paymentStatusChangedToPaid =
+    //   originalReturnOrderData?.refund_status !== "refunded" &&
+    //   updatedReturnOrderData?.refund_status === "refunded";
 
-    if (paymentStatusChangedToPaid) {
-      const customerId = updatedReturnOrderData.customerId;
-      const totalPrice = updatedReturnOrderData.totalPrice;
+    // if (paymentStatusChangedToPaid) {
+    //   const customerId = updatedReturnOrderData.customerId;
+    //   const totalPrice = updatedReturnOrderData.totalPrice;
 
-      const customer = await CustomerModel.findById(customerId);
+    //   const customer = await CustomerModel.findById(customerId);
 
-      const currentBalanceIncreases = customer?.balance_increases || 0;
-      const currentBalanceDecreases = customer?.balance_decreases || 0;
-      const remainingDecreases =
-        Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+    //   const currentBalanceIncreases = customer?.balance_increases || 0;
+    //   const currentBalanceDecreases = customer?.balance_decreases || 0;
+    //   const remainingDecreases =
+    //     Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
 
-      const updatedBalanceDecreases =
-        Number(currentBalanceDecreases) + totalPrice;
-      const updatedRemainingDecreases = Math.max(
-        remainingDecreases - totalPrice,
-        0
-      );
+    //   const updatedRemainingDecreases = Math.max(
+    //     remainingDecreases - totalPrice,
+    //     0
+    //   );
 
-      await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_increases: currentBalanceIncreases - totalPrice,
-        balance_decreases: currentBalanceIncreases - totalPrice,
-        remaining_decreases: updatedRemainingDecreases,
-        ending_balance: updatedRemainingDecreases,
-      });
-    }
+    //   await CustomerModel.findByIdAndUpdate(customerId, {
+    //     balance_increases: currentBalanceIncreases - totalPrice,
+    //     balance_decreases: currentBalanceIncreases - totalPrice,
+    //     remaining_decreases: updatedRemainingDecreases,
+    //     ending_balance: updatedRemainingDecreases,
+    //   });
+    // }
 
     // if (paymentStatusChangedToPaid) {
     //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
