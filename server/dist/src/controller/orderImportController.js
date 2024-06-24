@@ -80,7 +80,10 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             if (!productId || !inventory_number) {
                 return res.status(400).json({ message: "Missing product details" });
             }
-            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+            yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, {
+                $inc: { inventory_number },
+                pendingWarehouseQuantity: { inventory_number },
+            }, { upsert: true, new: true });
         }));
         yield Promise.all(productUpdates);
         const totalQuantity = order.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);

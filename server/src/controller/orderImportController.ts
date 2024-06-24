@@ -94,7 +94,10 @@ const updateImportOrder = async (req: Request, res: Response) => {
 
       await ProductModel.findOneAndUpdate(
         { _id: productId },
-        { $inc: { inventory_number } },
+        {
+          $inc: { inventory_number },
+          pendingWarehouseQuantity: { inventory_number },
+        },
         { upsert: true, new: true }
       );
     });
