@@ -56,7 +56,9 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.createImportOrder = createImportOrder;
 const getAllOrderImport = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const orders = yield ImportOrderModel_1.default.find().populate("products.productId supplierId generalId");
+        const orders = yield ImportOrderModel_1.default.find()
+            .populate("products.productId supplierId generalId")
+            .sort({ createdAt: -1 });
         res.status(200).json(orders);
     }
     catch (error) {

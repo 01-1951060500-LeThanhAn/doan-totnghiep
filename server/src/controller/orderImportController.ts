@@ -59,9 +59,9 @@ const createImportOrder = async (req: Request, res: Response) => {
 
 const getAllOrderImport = async (req: Request, res: Response) => {
   try {
-    const orders = await ImportOrderModel.find().populate(
-      "products.productId supplierId generalId"
-    );
+    const orders = await ImportOrderModel.find()
+      .populate("products.productId supplierId generalId")
+      .sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
     res.status(500).json(error);

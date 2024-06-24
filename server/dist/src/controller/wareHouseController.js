@@ -102,7 +102,9 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.createWareHouse = createWareHouse;
 const getWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const warehouse = yield WarehouseModel_1.default.find().populate("supplierId products.productId generalId");
+        const warehouse = yield WarehouseModel_1.default.find()
+            .populate("supplierId products.productId generalId")
+            .sort({ createdAt: -1 });
         return res.status(200).json(warehouse);
     }
     catch (error) {
