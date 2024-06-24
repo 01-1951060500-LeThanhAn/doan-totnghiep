@@ -81,8 +81,10 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 return res.status(400).json({ message: "Missing product details" });
             }
             yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, {
-                $inc: { inventory_number },
-                pendingWarehouseQuantity: { inventory_number },
+                $inc: {
+                    pendingWarehouseQuantity: product.inventory_number,
+                    inventory_number: inventory_number,
+                },
             }, { upsert: true, new: true });
         }));
         yield Promise.all(productUpdates);
