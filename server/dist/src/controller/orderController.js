@@ -1381,8 +1381,8 @@ exports.searchOrder = searchOrder;
 const searchDateOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { startDate, endDate } = req.query;
     try {
-        let parsedStartDate = null;
-        let parsedEndDate = null;
+        let parsedStartDate;
+        let parsedEndDate;
         if (startDate && endDate) {
             parsedStartDate = new Date(startDate.toString());
             parsedEndDate = new Date(endDate.toString());
@@ -1393,11 +1393,9 @@ const searchDateOrders = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 throw new Error("Start date must be before end date.");
             }
         }
-        const query = {};
-        if (parsedStartDate && parsedEndDate) {
-            query.received_date = { $gte: parsedStartDate, $lte: parsedEndDate };
-        }
-        const populatedOrders = yield OrderModel_1.default.find(query)
+        const populatedOrders = yield OrderModel_1.default.find({
+            createdAt: { $gte: startDate, $lte: endDate },
+        })
             .populate({
             path: "partnerId",
             select: "username phone address",

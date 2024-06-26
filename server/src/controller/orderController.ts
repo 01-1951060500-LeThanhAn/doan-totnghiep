@@ -1536,8 +1536,8 @@ const searchDateOrders = async (req: Request, res: Response) => {
   const { startDate, endDate } = req.query;
 
   try {
-    let parsedStartDate: Date | null = null;
-    let parsedEndDate: Date | null = null;
+    let parsedStartDate;
+    let parsedEndDate;
 
     if (startDate && endDate) {
       parsedStartDate = new Date(startDate.toString());
@@ -1554,13 +1554,9 @@ const searchDateOrders = async (req: Request, res: Response) => {
       }
     }
 
-    const query: any = {};
-
-    if (parsedStartDate && parsedEndDate) {
-      query.received_date = { $gte: parsedStartDate, $lte: parsedEndDate };
-    }
-
-    const populatedOrders = await OrderModel.find(query)
+    const populatedOrders = await OrderModel.find({
+      createdAt: { $gte: startDate, $lte: endDate },
+    })
       .populate({
         path: "partnerId",
         select: "username phone address",
