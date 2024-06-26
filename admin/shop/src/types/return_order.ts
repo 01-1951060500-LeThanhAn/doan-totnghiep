@@ -5,6 +5,7 @@ export type CreateReturnOrderData = {
   generalId: string;
   orderId: string;
   return_reason: string;
+  refund_status: string;
   products: {
     productId: string;
     quantity: number;
@@ -59,6 +60,7 @@ export type OrderDataPropsTable = {
     img: string;
   };
   quantity: string;
+  totalReturnOrders: number;
 };
 
 export type UpdateReturnOrderData = CreateReturnOrderData;

@@ -23,6 +23,10 @@ const Header = () => {
           </p>
         </div>
         <div className="flex items-center">
+          <div className="mr-2">
+            <p className="text-base font-semibold">{currentUser?.username}</p>
+            <p className="text-sm text-slate-400">Quản lý kho </p>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
@@ -51,7 +55,6 @@ const Header = () => {
                 <Link
                   to={`/dashboard/management/staff/${currentUser?._id}/edit`}
                 >
-                  {" "}
                   <p>Chỉnh sửa profile</p>
                 </Link>
               </DropdownMenuItem>

@@ -21,6 +21,7 @@ const FormAddReturnOrder = () => {
       return_reason: "",
       generalId: selectedOrder?.generalId?._id ?? "",
       customerId: selectedOrder?.customerId?._id ?? "",
+      refund_status: "",
       products: selectedOrder?.products.map((product) => ({
         productId: product.productId ?? "",
         quantity: product.quantity ?? 0,

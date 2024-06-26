@@ -37,7 +37,7 @@ export function DateInputData({ field }: Props) {
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={field?.value}
+          selected={field.value}
           onSelect={field.onChange}
           initialFocus
         />

@@ -203,7 +203,7 @@ const FormReturnOrder = ({ initialValues, selectedOrder }: Props) => {
 
             <div></div>
 
-            <div className="lg:ml-auto">
+            <div className="lg:ml-auto mb-8">
               {loading ? (
                 <Button disabled>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

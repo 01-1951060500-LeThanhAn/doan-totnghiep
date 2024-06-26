@@ -475,7 +475,10 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
                   )}
                 </>
               )}
-              <Button onClick={() => navigate("/dashboard")} className="ml-3">
+              <Button
+                onClick={() => navigate("/dashboard/customer")}
+                className="ml-3"
+              >
                 <p>Quay lại trang chính</p>
               </Button>
             </div>

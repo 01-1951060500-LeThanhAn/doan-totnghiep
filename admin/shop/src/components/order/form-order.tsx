@@ -39,6 +39,7 @@ import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 type Props = {
+  orderId?: string;
   initialValues: CreateOrders;
 };
 const FormOrder = ({ initialValues }: Props) => {
@@ -55,7 +56,7 @@ const FormOrder = ({ initialValues }: Props) => {
       payment_method: initialValues?.payment_method ?? "",
       received_date:
         initialValues?.received_date ?? new Date(initialValues?.received_date),
-      products: initialValues.products.map((product) => ({
+      products: initialValues?.products.map((product) => ({
         quantity: product?.quantity ? product?.quantity : "",
         productId: product?.productId ?? "",
       })),
@@ -67,7 +68,7 @@ const FormOrder = ({ initialValues }: Props) => {
     defaultValues: {
       ...defaultValues,
       received_date: defaultValues?.received_date
-        ? new Date(defaultValues.received_date)
+        ? new Date(defaultValues?.received_date)
         : new Date(),
     },
   });
@@ -413,7 +414,10 @@ const FormOrder = ({ initialValues }: Props) => {
                 </Button>
               )}
 
-              <Button className="ml-3">
+              <Button
+                onClick={() => navigate(`/dashboard/orders`)}
+                className="ml-3"
+              >
                 <p>Quay lại trang chính</p>
               </Button>
             </div>

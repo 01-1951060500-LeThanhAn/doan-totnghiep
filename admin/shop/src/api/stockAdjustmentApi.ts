@@ -47,9 +47,18 @@ const updateStockAdjustment = async (
   return response;
 };
 
+const getStatusStockAdjustments = async (status: string) => {
+  const response = await adminApi.get<StockAdjustmentData[]>(
+    `/stock-adjustment/search/status-stock-adjustment?status=${status}`
+  );
+
+  return response;
+};
+
 export {
   createStockAdjustment,
   updateStockAdjustment,
   getStockAdjustments,
   getDetailStockAdjustment,
+  getStatusStockAdjustments,
 };

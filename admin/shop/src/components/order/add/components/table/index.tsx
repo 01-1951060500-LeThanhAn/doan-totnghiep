@@ -105,12 +105,12 @@ const AddOrderTable = ({ data }: Props) => {
                           <div>
                             <div className="flex items-center space-x-2">
                               <Checkbox
-                                checked={field.value?.includes(item?._id)}
-                                defaultValue={field.value}
+                                checked={field?.value?.includes(item?._id)}
+                                defaultValue={field?.value}
                                 onCheckedChange={(checked) => {
                                   return checked
-                                    ? field.onChange(item?._id)
-                                    : field.onChange();
+                                    ? field?.onChange(item?._id)
+                                    : field?.onChange();
                                 }}
                               />
                             </div>

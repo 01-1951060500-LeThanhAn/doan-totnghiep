@@ -22,6 +22,7 @@ import {
 import HomeLayout from "@/layouts/home-layout";
 import { Link, useNavigate } from "react-router-dom";
 import TableTerminology from "./table/table-terminology";
+import ReturnOrderModal from "@/components/modals/return-orders";
 
 type BreadcumbData = {
   breadcumbItem: string;
@@ -32,6 +33,7 @@ type BreadcumbData = {
   text?: string;
   file?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  ordersTitle?: string;
 };
 
 export function Custombreadcumb({
@@ -43,6 +45,7 @@ export function Custombreadcumb({
   text,
   file,
   onClick,
+  ordersTitle,
 }: BreadcumbData) {
   const navigate = useNavigate();
   const handleClick = (
@@ -109,6 +112,29 @@ export function Custombreadcumb({
               <AlertDialogFooter>
                 <AlertDialogCancel>Đóng</AlertDialogCancel>
                 <AlertDialogAction>OK</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+
+        {ordersTitle && (
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Button>
+                <p>{ordersTitle}</p>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-5xl">
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  <p>Chọn đơn hàng để trả </p>
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  <ReturnOrderModal />
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Đóng</AlertDialogCancel>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

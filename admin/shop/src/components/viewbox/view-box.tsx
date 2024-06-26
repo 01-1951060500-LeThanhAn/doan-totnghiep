@@ -1,5 +1,4 @@
 import {
-  Activity,
   CircleDollarSign,
   Eye,
   ShoppingBasket,
@@ -9,6 +8,8 @@ import { useTheme } from "next-themes";
 import useGetUsers from "../suppliers/hooks/use-get-users";
 import useGetOrders from "../order/hooks/use-get-orders";
 import useGetProducts from "../products/hooks/use-get-products";
+import { formatPrice } from "@/config/format-price";
+import useGetTotalRevenue from "@/hooks/use-get-total-revenue";
 
 const ViewBox = () => {
   const { theme } = useTheme();
@@ -16,6 +17,9 @@ const ViewBox = () => {
   const { orders } = useGetOrders();
   const { products } = useGetProducts();
 
+  const { revenueMonth } = useGetTotalRevenue();
+
+  const total = revenueMonth?.reduce((acc, item) => acc + item.total_income, 0);
   return (
     <>
       <div className="mt-4 mb-3">
@@ -40,12 +44,6 @@ const ViewBox = () => {
                 <span className="text-2xl font-bold">{users?.length}</span>
               </div>
             </div>
-            <div className="p-3 flex items-center">
-              <Activity className="text-green-500" />
-              <span className="ml-2 text-green-500 text-sm font-bold">
-                +30%
-              </span>
-            </div>
           </div>
 
           <div
@@ -64,15 +62,9 @@ const ViewBox = () => {
                 <CircleDollarSign className="text-yellow-500" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Doanh thu</p>
-                <span className="text-2xl font-bold">$20</span>
+                <p className="text-sm text-slate-400">Tổng doanh thu</p>
+                <span className="text-2xl font-bold">{formatPrice(total)}</span>
               </div>
-            </div>
-            <div className="p-3 flex items-center">
-              <Activity className="text-green-500" />
-              <span className="ml-2 text-green-500 text-sm font-bold">
-                +12.5%
-              </span>
             </div>
           </div>
           <div
@@ -95,12 +87,12 @@ const ViewBox = () => {
                 <span className="text-2xl font-bold">{products?.length}</span>
               </div>
             </div>
-            <div className="p-3 flex items-center">
+            {/* <div className="p-3 flex items-center">
               <Activity className="text-green-500" />
               <span className="ml-2 text-green-500 text-sm font-bold">
                 +12.5%
               </span>
-            </div>
+            </div> */}
           </div>
           <div
             className={`shadow-md flex items-center justify-between  rounded-xl ${
@@ -121,12 +113,6 @@ const ViewBox = () => {
                 <p className="text-sm text-slate-400">Đơn hàng</p>
                 <span className="text-2xl font-bold">{orders?.length}</span>
               </div>
-            </div>
-            <div className="p-3 flex items-center">
-              <Activity className="text-green-500" />
-              <span className="ml-2 text-green-500 text-sm font-bold">
-                +12.5%
-              </span>
             </div>
           </div>
         </div>

@@ -67,7 +67,7 @@ const OrderPage = () => {
             <p>Tất cả đơn hàng</p>
           </TabsTrigger>
           <TabsTrigger value="pending">
-            <p>Đang xử lý</p>
+            <p>Đang giao dịch</p>
           </TabsTrigger>
           <TabsTrigger value="cancelled">
             <p>Đã hủy</p>

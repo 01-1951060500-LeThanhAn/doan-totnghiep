@@ -42,7 +42,10 @@ const ReturnOrderDetailView = ({ id }: Props) => {
         breadcumbPage="Thông tin chi tiết đơn trả hàng"
       />
 
-      <DetailReturnOrderView data={returnOrder as DetailReturnOrderData} />
+      <DetailReturnOrderView
+        id={id as string}
+        data={returnOrder as DetailReturnOrderData}
+      />
     </>
   );
 };

@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown, Pencil } from "lucide-react";
+import { ChevronDown, EyeIcon, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -30,7 +30,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTheme } from "next-themes";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import HomeLayout from "@/layouts/home-layout";
 import { Link } from "react-router-dom";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
@@ -38,9 +46,16 @@ import { Badge } from "@/components/ui/badge";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
 import { UserDataTableProps } from "@/types";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { useAppDispatch } from "@/hooks/hooks";
+
+import { AppDispatch } from "@/redux/store";
+import StaffDetailView from "../../view";
 
 type Data = {
   theme: string | undefined;
+  dispatch: AppDispatch;
+  onDeleteStaff: (id: string) => void;
 };
 
 export const columns: ColumnDef<UserDataTableProps>[] = [
@@ -48,9 +63,7 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
     accessorKey: "username",
     header: "Tên nhân viên",
     cell: ({ row }) => (
-      <Link to={`/dashboard/management/staff/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 ">{row.getValue("username")}</p>
-      </Link>
+      <p className="capitalize text-blue-400 ">{row.getValue("username")}</p>
     ),
   },
   {
@@ -62,10 +75,21 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
     accessorKey: "email",
     header: "Email nhân viên",
     cell: ({ row }) => {
+      return <p className="capitalize">{row.getValue("email")}</p>;
+    },
+  },
+  {
+    accessorKey: "picture",
+    header: "Hình ảnh nhân viên",
+    cell: ({ row }) => {
       return (
-        <Link to={`/dashboard/management/staff/${row.getValue("_id")}/detail`}>
-          <p className="capitalize">{row.getValue("email")}</p>
-        </Link>
+        <Avatar>
+          <AvatarImage
+            src={row.getValue("picture")}
+            alt={row.getValue("username")}
+            className="object-cover"
+          />
+        </Avatar>
       );
     },
   },
@@ -118,27 +142,67 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
   },
   {
     accessorKey: "action",
-    header: "",
-    cell: ({ row }) => (
-      <div>
-        <Link to={`/dashboard/management/staff/${row.getValue("_id")}/edit`}>
-          <Pencil />
-        </Link>
-      </div>
-    ),
+    header: "Hành động",
+    cell: ({ row, table }) => {
+      const { onDeleteStaff } = table.options.meta as Data;
+      const staffId = row.getValue("_id") as string;
+      return (
+        <div className="flex items-center gap-2">
+          <div className="bg-blue-500 cursor-pointer text-white p-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <EyeIcon />
+              </AlertDialogTrigger>
+              <AlertDialogContent className="max-w-3xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    <p>Thông tin chi tiết tài khoản nhân viên</p>
+                  </AlertDialogTitle>
+                </AlertDialogHeader>
+                <StaffDetailView id={row.getValue("_id")} />
+                <AlertDialogFooter>
+                  <AlertDialogAction>Đóng</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+          <div className="bg-yellow-500 text-white p-2">
+            <Link
+              className=""
+              to={`/dashboard/management/staff/${row.getValue("_id")}/edit`}
+            >
+              <Pencil />
+            </Link>
+          </div>
+          <div
+            onClick={() => onDeleteStaff(staffId)}
+            className="bg-red-500 cursor-pointer text-white p-2"
+          >
+            <Trash2 />
+          </div>
+        </div>
+      );
+    },
   },
 ];
 
 type Props = {
   data: UserDataTableProps[];
+  onDeleteStaff: (id: string) => void;
+  loading: boolean;
 };
 
-export default function StaffTableData({ data }: Props) {
+export default function StaffTableData({
+  data,
+  onDeleteStaff,
+  loading,
+}: Props) {
   const [startIndex, setStartIndex] = React.useState(0);
   const [endIndex, setEndIndex] = React.useState(4);
-  const [loading, setLoading] = React.useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const { theme } = useTheme();
+  const dispatch = useAppDispatch();
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -167,7 +231,9 @@ export default function StaffTableData({ data }: Props) {
       products: data,
       theme: theme,
       loading,
-      setLoading,
+
+      dispatch,
+      onDeleteStaff,
     },
   });
 

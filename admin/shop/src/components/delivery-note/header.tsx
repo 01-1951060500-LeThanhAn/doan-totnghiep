@@ -1,6 +1,7 @@
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import ListRouteModal from "../modals/routes";
+
 type Props = {
   title: string;
   text1: string;
@@ -13,12 +14,7 @@ const Header = ({ title, text1, text2, onClick }: Props) => {
     <>
       <div className="border-b p-6 mb-4 flex justify-between items-center">
         <div className="flex items-center">
-          <div className="p-2 cursor-pointer border">
-            {" "}
-            <Link to={`/dashboard`}>
-              <ArrowLeft />
-            </Link>
-          </div>
+          <ListRouteModal />
           <div className="mx-2">
             <span className="text-slate-400 text-sm">Quay lại trang chính</span>
             <p className="font-semibold">{title}</p>

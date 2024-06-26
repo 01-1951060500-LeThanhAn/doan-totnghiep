@@ -70,7 +70,7 @@ export const columns: ColumnDef<ProductTableGeneral>[] = [
     accessorKey: "unit",
     header: "Đơn vị sản phẩm",
     cell: ({ row }) => {
-      return row.getValue("unit") === "box" ? <p>Thùng</p> : <p>Cái</p>;
+      return <p>{row.getValue("unit")} </p>;
     },
   },
 

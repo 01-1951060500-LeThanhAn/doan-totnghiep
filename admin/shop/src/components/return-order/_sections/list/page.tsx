@@ -25,6 +25,7 @@ const ReturnOrderPage = () => {
         href2="/dashboard/return-order"
         breadcumbItem="Phiếu trả hàng"
         breadcumbPage="Danh sách phiếu trả hàng"
+        ordersTitle="Tạo phiếu trả hàng"
       />
       <ReturnOrderTableData data={data as ReturnOrderTableProps[]} />
     </>

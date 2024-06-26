@@ -2,6 +2,7 @@ import {
   CreateReturnOrderData,
   DetailReturnOrderData,
   ReturnOrderData,
+  UpdateReturnOrderData,
 } from "@/types/return_order";
 import { adminApi } from ".";
 
@@ -26,6 +27,19 @@ const getDetailReturnOrder = async (orderId: string) => {
   return response;
 };
 
+const updateReturnOrder = async (
+  orderId: string,
+  data:
+    | {
+        refund_status?: string;
+      }
+    | UpdateReturnOrderData
+) => {
+  const response = await adminApi.patch(`/return-order/${orderId}`, data);
+
+  return response;
+};
+
 const deleteReturnOrder = async (orderId: string) => {
   const response = await adminApi.delete<string>(`/return-order/${orderId}`);
 
@@ -37,4 +51,5 @@ export {
   getReturnOrders,
   getDetailReturnOrder,
   deleteReturnOrder,
+  updateReturnOrder,
 };

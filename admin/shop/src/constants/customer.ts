@@ -24,10 +24,10 @@ export const customerGroup = [
   },
   {
     type: "normal",
-    name: "Thường",
+    name: "Bán buôn ",
   },
   {
     type: "other",
-    name: "Khác",
+    name: "Bán lẻ",
   },
 ];

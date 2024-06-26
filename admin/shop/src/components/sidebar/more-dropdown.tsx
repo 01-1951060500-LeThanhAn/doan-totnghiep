@@ -10,7 +10,7 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, LogOut, Menu, Moon, Settings, Sun } from "lucide-react";
+import { ChevronLeft, LogOut, Moon, Settings, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { useAppDispatch } from "@/hooks/hooks";
@@ -41,7 +41,7 @@ const MoredropDown = () => {
   }, [ref]);
 
   const handeLogOut = () => {
-    if (window.confirm("Bnạ có chắc chắn đăng xuất không")) {
+    if (window.confirm("Bạn có chắc chắn đăng xuất không")) {
       dispatch(logOut());
       navigate("/dashboard/login");
     }
@@ -57,9 +57,9 @@ const MoredropDown = () => {
             variant={"ghost"}
             className="md:w-full !justify-start !ml-2  space-x-2 !px-3"
           >
-            <Menu />
-            <div className="hidden lg:block">
-              <p>More</p>
+            <Settings className="inline-block rounded-full animate-spin animate-ease-in-out" />
+            <div className="hidden lg:block ">
+              <p>Cài đặt</p>
             </div>
           </Button>
         </DropdownMenuTrigger>

@@ -12,11 +12,15 @@ const createPartner = async (partner: CreatePartnerData) => {
   return response;
 };
 
-const updatePartner = async (shipId: string, partner: UpdatePartnerData) => {
-  const response = await adminApi.patch<UpdatePartnerData>(
-    `/partner/${shipId}`,
-    partner
-  );
+const updatePartner = async (
+  shipId: string,
+  partner:
+    | {
+        status?: string;
+      }
+    | UpdatePartnerData
+) => {
+  const response = await adminApi.patch(`/partner/${shipId}`, partner);
 
   return response;
 };

@@ -29,7 +29,7 @@ const DetailPartnerTableData = ({ data }: Props) => {
   return (
     <>
       <div
-        className={`w-full mb-12 col-span-2 p-4 rounded-lg h-auto my-4 lg:my-4 ${
+        className={`w-full mb-16 col-span-2 p-4 rounded-lg h-auto my-4 lg:my-4 ${
           theme === "dark" ? "bg-[#29343F]" : "shadow-md"
         }`}
       >

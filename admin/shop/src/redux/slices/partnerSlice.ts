@@ -28,7 +28,11 @@ export const updatePartnerAsync = createAsyncThunk(
   "partner/updatePartnerAsync",
   async (updateData: {
     shipId: string | undefined;
-    data: UpdatePartnerData;
+    data:
+      | {
+          status?: string;
+        }
+      | UpdatePartnerData;
   }) => {
     try {
       const response = await updatePartner(

@@ -287,7 +287,10 @@ const FormStockAdjustment = ({ initialValues }: Props) => {
                 </Button>
               )}
 
-              <Button className="ml-3">
+              <Button
+                onClick={() => navigate(`/dashboard/management/staff`)}
+                className="ml-3"
+              >
                 <p>Quay lại trang chính</p>
               </Button>
             </div>

@@ -4,19 +4,19 @@ export const TOKEN = JSON.parse(localStorage.getItem("token") as string);
 
 export const baseApi = axios.create({
   baseURL: BASE_URL,
-});
-
-export const advancedApi = axios.create({
-  baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    token: `Bearer ${TOKEN}`,
   },
 });
 
 export const adminApi = axios.create({
   baseURL: BASE_URL,
   headers: {
+    "Content-Type": "application/json",
     Authorization: `Bearer ${TOKEN}`,
   },
 });
+
+if (TOKEN) {
+  baseApi.defaults.headers.common.Authorization = `Bearer ${TOKEN}`;
+}

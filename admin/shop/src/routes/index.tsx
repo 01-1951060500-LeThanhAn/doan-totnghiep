@@ -23,6 +23,7 @@ import DetailReportInventoriesPage from "@/components/report/general/view";
 import ReportRevenueGrnPage from "@/components/report/good-received-note/revenue/page";
 import ReportShipmentGrnPage from "@/components/report/good-received-note/shipments/page";
 import ReportPaymentPage from "@/components/report/orders/payments/page";
+import ReportReturnOrderPage from "@/components/report/orders/return-order/page";
 import ReportRevenuePage from "@/components/report/orders/revenue/page";
 import ReportShipmentPage from "@/components/report/orders/shipments/page";
 import DetailReturnOrderPage from "@/components/return-order/detail/page";
@@ -50,6 +51,7 @@ import AddStaffPage from "@/pages/management/staff/add/page";
 import EditStaffPage from "@/pages/management/staff/edit/page";
 import StaffPage from "@/pages/management/staff/page";
 import AddOrderPage from "@/pages/order/add/page";
+import EditOrderPage from "@/pages/order/edit/page";
 import ViewOrderPage from "@/pages/order/page";
 import AddProductPage from "@/pages/products/product-add/page";
 import EditProductPage from "@/pages/products/product-edit/page";
@@ -300,6 +302,15 @@ const routes = [
     name: "Tạo đơn hàng",
   },
   {
+    path: "/dashboard/orders/:orderId/edit",
+    element: (
+      <DashBoardLayout>
+        <EditOrderPage />
+      </DashBoardLayout>
+    ),
+    name: "Chỉnh sửa đơn hàng",
+  },
+  {
     path: "/dashboard/orders/:orderId/detail",
     element: (
       <DashBoardLayout>
@@ -408,6 +419,7 @@ const routes = [
     ),
     name: "Danh sách nhân viên",
   },
+
   {
     path: "/dashboard/management/staff/create",
     element: (
@@ -749,6 +761,15 @@ const routes = [
       </DashBoardLayout>
     ),
     name: "Báo cáo thông tin giao hàng",
+  },
+  {
+    path: "/dashboard/report/order/analytic_orders/return-order",
+    element: (
+      <DashBoardLayout>
+        <ReportReturnOrderPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo trả hàng",
   },
   {
     path: "/dashboard/report/order/analytic_orders/payments",

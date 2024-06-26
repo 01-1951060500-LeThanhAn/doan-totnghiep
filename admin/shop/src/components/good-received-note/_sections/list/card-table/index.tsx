@@ -49,9 +49,7 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
     header: "Mã đơn nhập",
     cell: ({ row }) => (
       <Link to={`/dashboard/good-received-note/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("code")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("code")}</p>
       </Link>
     ),
   },
@@ -67,7 +65,7 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
       return (
         <Link to={`/dashboard/supplier/${row.getValue("_id")}/detail`}>
           <p className="capitalize">
-            {new Date(row.getValue("createdAt")).toLocaleDateString()}
+            {new Date(row.getValue("createdAt")).toLocaleString()}
           </p>
         </Link>
       );
@@ -85,7 +83,7 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
 
   {
     accessorKey: "generalId",
-    header: "Chi nhánh kho",
+    header: "Kho nhập hàng",
     cell: ({ row }) => (
       <p className="capitalize">{row.getValue("generalId")}</p>
     ),

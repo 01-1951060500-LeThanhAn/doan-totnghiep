@@ -283,8 +283,11 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                   )}
                 </>
               )}
-              <Button onClick={() => navigate("/dashboard")} className="ml-3">
-                <p>Back to Home</p>
+              <Button
+                onClick={() => navigate("/dashboard/product")}
+                className="ml-3"
+              >
+                <p>Quay lại trang chính</p>
               </Button>
             </div>
           </form>

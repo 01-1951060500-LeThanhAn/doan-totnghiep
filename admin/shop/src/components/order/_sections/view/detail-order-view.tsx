@@ -25,9 +25,9 @@ const DetailOrderView = ({ data, id }: Props) => {
   const [paymentStatus, setPaymentStatus] = useState(data?.payment_status);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
 
-  const handleUpdatePaymentStatus = () => {
+  const handleUpdatePaymentStatus = async () => {
     try {
-      dispatch(
+      await dispatch(
         updateOrderAsync({
           orderId: id,
           data: {
@@ -64,9 +64,9 @@ const DetailOrderView = ({ data, id }: Props) => {
     }
   };
 
-  const handleUpdateOrderStatus = () => {
+  const handleUpdateOrderStatus = async () => {
     try {
-      dispatch(
+      await dispatch(
         updateOrderAsync({
           orderId: id,
           data: {
@@ -84,7 +84,6 @@ const DetailOrderView = ({ data, id }: Props) => {
 
   useEffect(() => {
     setOrderStatus(data?.order_status);
-
     setPaymentStatus(data?.payment_status);
   }, [data]);
 
@@ -118,15 +117,21 @@ const DetailOrderView = ({ data, id }: Props) => {
                   <span className="text-red-500">0</span>
                 </div>
                 <div className="flex items-center min-w-64 my-2 gap-x-4">
-                  <p className="">Tổng chi tiêu : </p>
+                  <p className="">Tổng tiền hàng: </p>
                   <span className="text-blue-600">
                     {formatPrice(data?.totalCustomerPay)}
                   </span>
                 </div>
                 <div className="flex items-center min-w-64 my-2 gap-x-4">
-                  <p className="">Trả hàng: </p>
+                  <p className="">Thanh toán: </p>
                   <span className="text-red-500">
                     {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                  </span>
+                </div>
+                <div className="flex items-center min-w-64 my-2 gap-x-4">
+                  <p className="">Số hàng hoàn trả: </p>
+                  <span className="text-red-500">
+                    {data?.totalReturnOrders}
                   </span>
                 </div>
               </div>
@@ -370,7 +375,8 @@ const DetailOrderView = ({ data, id }: Props) => {
               <span className="text-blue-600  ml-3">{data?.code}</span>
             </p>
             <p className="my-3">
-              Hình thức giao hàng: <span className=" ml-3">Chuyển hàng </span>
+              Hình thức giao hàng:{" "}
+              <span className=" ml-3 text-md">Chuyển hàng </span>
             </p>
           </div>
         </div>

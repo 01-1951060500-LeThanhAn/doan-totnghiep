@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { formatPrice } from "@/config/format-price";
+import { Link } from "react-router-dom";
 type Props = {
   totalCustomerPay: number;
   data: DetailOrderData;
@@ -26,7 +27,8 @@ const TableOrderData = ({ data, totalCustomerPay }: Props) => {
               <TableHead>Hình ảnh</TableHead>
               <TableHead>Tên sản phẩm</TableHead>
               <TableHead>Đơn vị</TableHead>
-              <TableHead>Số lượng Nhập</TableHead>
+              <TableHead>Số lượng hàng</TableHead>
+              <TableHead>Số hàng hoàn trả</TableHead>
               <TableHead>Đơn giá</TableHead>
               <TableHead>Thành tiền</TableHead>
             </TableRow>
@@ -44,14 +46,25 @@ const TableOrderData = ({ data, totalCustomerPay }: Props) => {
                     />
                   </TableCell>
                   <TableCell>
-                    <p>{item?.productId?.name_product}</p>
+                    <Link
+                      to={`/dashboard/product/${item?.productId?._id}/detail`}
+                    >
+                      {" "}
+                      <p className="text-blue-400">
+                        {item?.productId?.name_product}
+                      </p>
+                    </Link>
                   </TableCell>
                   <TableCell>
-                    <p>{item?.productId?.unit === "box" ? "Thùng" : "Cái"}</p>
+                    <p>{item?.productId?.unit}</p>
                   </TableCell>
                   <TableCell>
                     {" "}
                     <p>{item?.quantity}</p>
+                  </TableCell>
+                  <TableCell>
+                    {" "}
+                    <p>{item?.quantity - item?.totalReturnOrders}</p>
                   </TableCell>
                   <TableCell>
                     <p>{formatPrice(+item?.productId?.export_price)}</p>
@@ -68,19 +81,19 @@ const TableOrderData = ({ data, totalCustomerPay }: Props) => {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={6}>Số lượng</TableCell>
+              <TableCell colSpan={7}>Số lượng</TableCell>
               <TableCell>
                 <p>{data?.totalQuantity}</p>
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={6}>Chiết khấu</TableCell>
+              <TableCell colSpan={7}>Chiết khấu</TableCell>
               <TableCell>
                 <p>0</p>
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={6}>Tổng tiền</TableCell>
+              <TableCell colSpan={7}>Tổng tiền</TableCell>
               <TableCell>
                 <p>{formatPrice(totalCustomerPay)}</p>
               </TableCell>

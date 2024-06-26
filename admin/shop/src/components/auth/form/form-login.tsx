@@ -11,7 +11,7 @@ import {
 } from "../../ui/form";
 import { Input } from "../../ui/input";
 import { RoleData, User } from "@/types";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch } from "@/hooks/hooks";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -19,12 +19,9 @@ import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Label } from "../../ui/label";
 import { loginUser } from "@/api/userApi";
 import { saveToken } from "@/lib/saveToken";
-import {
-  loginFailed,
-  loginStart,
-  loginSuccess,
-} from "@/redux/slices/authSlice";
+import { loginSuccess } from "@/redux/slices/authSlice";
 import { roles } from "@/constants/role";
+import { useState } from "react";
 
 const LoginForm = () => {
   const form = useForm<UserFormSchema>({
@@ -36,36 +33,34 @@ const LoginForm = () => {
     },
   });
   const dispatch = useAppDispatch();
-  const { isFetching } = useAppSelector((state) => state.auth);
-
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const onSubmit = async () => {
-    dispatch(loginStart());
+  const handleLogin = async () => {
+    setLoading(true);
     try {
       const formData = form.getValues() as unknown as User;
       const response = await loginUser(formData);
       if (response.data.success) {
         saveToken(response.data.token);
-
         dispatch(loginSuccess(response.data.user));
       }
+      setLoading(false);
       toast.success("Đăng nhập thành công");
       navigate(`/dashboard`);
     } catch (error) {
+      setLoading(false);
       toast.error("Sai mật khẩu .Vui lòng đăng nhập lại");
     }
-
-    dispatch(loginFailed("Login Failed"));
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(handleLogin)}>
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-white">Email</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -80,9 +75,9 @@ const LoginForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel className="text-white">Password</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,7 +91,9 @@ const LoginForm = () => {
             name="role"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Đăng nhập với tư cách </FormLabel>
+                <FormLabel className="text-white">
+                  Đăng nhập với tư cách{" "}
+                </FormLabel>
                 <FormControl>
                   <RadioGroup
                     defaultValue={field.value}
@@ -105,15 +102,16 @@ const LoginForm = () => {
                     {roles.map((role: RoleData) => (
                       <div
                         key={role.name}
-                        className={`flex items-center space-x-2 `}
+                        className={`flex items-center space-x-2 text-white`}
                       >
                         <RadioGroupItem
                           {...field}
                           id={`option-${role.name}`}
                           value={role.name}
+                          className="bg-white"
                         />
 
-                        <Label className={``} htmlFor={`option-${role.name}`}>
+                        <Label htmlFor={`option-${role.name}`}>
                           {role.value}
                         </Label>
                       </div>
@@ -125,7 +123,7 @@ const LoginForm = () => {
             )}
           />
         </div>
-        {isFetching ? (
+        {loading ? (
           <button
             className="mt-3 py-3 bg-[#14C79F] w-full text-white"
             type="submit"

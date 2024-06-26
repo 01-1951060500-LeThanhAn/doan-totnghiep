@@ -16,28 +16,8 @@ export type CreateOrders = {
   }[];
 };
 
-export type UpdateOrders = {
-  _id: string;
-  code: string;
-  partnerId: string;
-  customerId: string;
-  userId: string;
-  generalId: string;
-  order_status: string;
-  payment_status: string;
-  received_date: string | Date;
-  delivery_address: string;
-  total_ship: string;
-  invoice_address: string;
-  payment_method: string;
-  products: {
-    productId: string;
-    quantity: number;
-  }[];
-};
-
 export type OrdersData = {
-  _id: string | undefined;
+  _id: string;
   code: string;
   generalId: {
     _id: string;
@@ -73,11 +53,33 @@ export type OrdersData = {
   totalQuantity: number;
   createdAt: string;
   updatedAt: string;
+  delivery_address: string;
+  invoice_address: string;
   totalCustomerPay: number;
+  totalReturnOrders: number;
+};
+
+export type UpdateOrders = {
+  _id: string;
+  code: string;
+  partnerId: string;
+  customerId: string;
+  userId: string;
+  generalId: string;
+  received_date: string | Date;
+  delivery_address: string;
+  total_ship: string;
+  invoice_address: string;
+  payment_method: string;
+  products: {
+    productId: string;
+    quantity: number;
+  }[];
 };
 
 export type DetailOrderData = {
   totalCustomerPay: number;
+  totalReturnOrders: number;
   _id: string;
   customerId: {
     _id: string;
@@ -121,6 +123,7 @@ export type DetailOrderData = {
 export type Product = {
   productId: ProductId;
   quantity: number;
+  totalReturnOrders: number;
   _id: string;
 };
 

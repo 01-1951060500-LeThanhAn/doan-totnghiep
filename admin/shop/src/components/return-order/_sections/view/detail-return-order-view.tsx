@@ -6,13 +6,42 @@ import { CircleCheck, Loader2, Truck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/config/format-price";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useEffect, useState } from "react";
+import { updateReturnOrderAsync } from "@/redux/slices/returnOrderSlice";
+import { toast } from "sonner";
 
 type Props = {
   data: DetailReturnOrderData;
+  id: string;
 };
 
-const DetailReturnOrderView = ({ data }: Props) => {
+const DetailReturnOrderView = ({ data, id }: Props) => {
   const { theme } = useTheme();
+  const { isEdit } = useAppSelector((state) => state.returnOrders);
+  const [refundStatus, setRefundStatus] = useState(data?.refund_status);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    setRefundStatus(data?.refund_status);
+  }, [data]);
+
+  const handleUpdateRefundtatus = async () => {
+    try {
+      await dispatch(
+        updateReturnOrderAsync({
+          orderId: id,
+          data: {
+            refund_status: "refunded",
+          },
+        })
+      );
+      setRefundStatus("refunded");
+      toast.success(" Hoàn tiền cho khách hàng thành công");
+    } catch (error) {
+      console.log(error);
+      toast.error("Lỗi hoàn tiền thanh toán cho khách");
+    }
+  };
 
   return (
     <>
@@ -145,63 +174,98 @@ const DetailReturnOrderView = ({ data }: Props) => {
             theme === "dark" ? "bg-[#29343F]" : "shadow-md"
           }`}
         >
-          {data?.refund_status === "not-refund" ? (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-x-2">
-                <Truck color="orange" />
-                <p className="text-lg font-semibold">
-                  Chưa hoàn tiền cho khách
+          {refundStatus === "not-refund" ? (
+            <>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-x-2">
+                  <Truck color="orange" />
+                  <p className="text-lg font-semibold">
+                    Chưa hoàn tiền cho khách
+                  </p>
+                </div>
+
+                <div>
+                  {isEdit ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button onClick={handleUpdateRefundtatus}>
+                      <p>Hoàn tiền</p>
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <Separator className="my-3" />
+              <div className="flex items-center gap-x-3">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <p>{data?.code}</p>
+                <p className="text-slate-400">
+                  {new Date(data?.createdAt ?? "").toLocaleString()}
                 </p>
               </div>
-
-              <div>
-                {data?.totalPrice > 600000000 ? (
-                  <Button disabled>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Please wait
-                  </Button>
-                ) : (
-                  <Button>
-                    <p>Hoàn tiền</p>
-                  </Button>
-                )}
+              <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+              <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
+                <div className="flex items-center gap-x-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <p>Tiền cần trả khách hàng: </p>
+                  <p className="font-semibold">
+                    {formatPrice(data?.totalPrice)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-3">
+                  <p>Đã trả : </p>
+                  <p className="text-slate-400">0</p>
+                </div>
+                <div className="flex items-center gap-x-3">
+                  <p>Còn phải trả :</p>
+                  <p className="text-slate-400">
+                    {formatPrice(data?.totalPrice)}
+                  </p>
+                </div>
               </div>
-            </div>
+            </>
           ) : (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-x-2">
-                <CircleCheck color="green" />
-                <p className="text-lg font-semibold">
-                  Đơn hàng đã được hoàn tiền
+            <>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-x-2">
+                  <CircleCheck color="green" />
+                  <p className="text-lg font-semibold">
+                    Đơn hàng đã được hoàn tiền
+                  </p>
+                </div>
+              </div>
+              <Separator className="my-3" />
+              <div className="flex items-center gap-x-3">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <p>{data?.code}</p>
+                <p className="text-slate-400">
+                  {new Date(data?.createdAt ?? "").toLocaleString()}
                 </p>
               </div>
-            </div>
+              <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+              <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
+                <div className="flex items-center gap-x-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <p>Tiền cần trả khách hàng: </p>
+                  <p className="font-semibold">
+                    {formatPrice(data?.totalPrice)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-3">
+                  <p>Đã trả : </p>
+                  <p className="text-slate-400">
+                    {formatPrice(data?.totalPrice)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-x-3">
+                  <p>Còn phải trả :</p>
+                  <p className="text-slate-400">0</p>
+                </div>
+              </div>
+            </>
           )}
-
-          <Separator className="my-3" />
-          <div className="flex items-center gap-x-3">
-            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <p>{data?.code}</p>
-            <p className="text-slate-400">
-              {new Date(data?.createdAt ?? "").toLocaleString()}
-            </p>
-          </div>
-          <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
-          <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
-            <div className="flex items-center gap-x-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <p>Tiền cần trả khách hàng: </p>
-              <p className="font-semibold">{formatPrice(data?.totalPrice)}</p>
-            </div>
-            <div className="flex items-center gap-x-3">
-              <p>Đã trả : </p>
-              <p className="text-slate-400">0</p>
-            </div>
-            <div className="flex items-center gap-x-3">
-              <p>Còn phải trả :</p>
-              <p className="text-slate-400">{formatPrice(data?.totalPrice)}</p>
-            </div>
-          </div>
         </div>
       </HomeLayout>
     </>

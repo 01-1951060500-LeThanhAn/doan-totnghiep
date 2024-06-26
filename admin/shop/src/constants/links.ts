@@ -44,7 +44,7 @@ const links = [
         href: "/dashboard/product",
       },
       {
-        name: "Đặt hàng nhập",
+        name: "Đặt hàng ",
         href: "/dashboard/purchase-order",
       },
       {

@@ -1,5 +1,12 @@
-import { createReturnOrder, deleteReturnOrder } from "@/api/returnOrderApi";
-import { CreateReturnOrderData } from "@/types/return_order";
+import {
+  createReturnOrder,
+  deleteReturnOrder,
+  updateReturnOrder,
+} from "@/api/returnOrderApi";
+import {
+  CreateReturnOrderData,
+  UpdateReturnOrderData,
+} from "@/types/return_order";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type ReturnOrderState = {
@@ -29,6 +36,29 @@ export const deleteReturnOrderAsync = createAsyncThunk(
   async (orderId: string) => {
     const response = await deleteReturnOrder(orderId);
     return response.data;
+  }
+);
+
+export const updateReturnOrderAsync = createAsyncThunk(
+  "return-orders/updateReturnOrderAsync",
+  async (updateData: {
+    orderId: string | undefined;
+    data:
+      | {
+          refund_status?: string;
+        }
+      | UpdateReturnOrderData;
+  }) => {
+    try {
+      const response = await updateReturnOrder(
+        updateData.orderId as string,
+        updateData.data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating return orders:", error);
+      throw error;
+    }
   }
 );
 
@@ -66,6 +96,24 @@ export const returnOrderSlice = createSlice({
         }
       )
       .addCase(deleteReturnOrderAsync.rejected, (state) => {
+        state.error = true;
+      })
+      .addCase(updateReturnOrderAsync.pending, (state) => {
+        state.isEdit = true;
+        state.error = false;
+      })
+      .addCase(
+        updateReturnOrderAsync.fulfilled,
+        (state, action: PayloadAction<UpdateReturnOrderData>) => {
+          const index = state.returnOrders.findIndex(
+            (item) => item._id === action.payload._id
+          );
+          state.returnOrders[index] = action.payload;
+          state.isEdit = false;
+        }
+      )
+      .addCase(updateReturnOrderAsync.rejected, (state) => {
+        state.isEdit = true;
         state.error = true;
       });
   },

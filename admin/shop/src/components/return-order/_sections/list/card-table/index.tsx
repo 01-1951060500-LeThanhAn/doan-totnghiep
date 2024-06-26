@@ -34,7 +34,6 @@ import { useTheme } from "next-themes";
 import HomeLayout from "@/layouts/home-layout";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { Badge } from "@/components/ui/badge";
-import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
 import { formatPrice } from "@/config/format-price";
 import { ReturnOrderTableProps } from "@/types/return_order";
@@ -50,9 +49,7 @@ export const columns: ColumnDef<ReturnOrderTableProps>[] = [
     header: "Mã đơn trả hàng",
     cell: ({ row }) => (
       <Link to={`/dashboard/return-orders/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("code")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("code")}</p>
       </Link>
     ),
   },
@@ -67,9 +64,7 @@ export const columns: ColumnDef<ReturnOrderTableProps>[] = [
     header: "Mã đơn hàng",
     cell: ({ row }) => (
       <Link to={`/dashboard/orders/${row.getValue("orderId")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("orderCode")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("orderCode")}</p>
       </Link>
     ),
   },
@@ -100,6 +95,43 @@ export const columns: ColumnDef<ReturnOrderTableProps>[] = [
     cell: ({ row }) => (
       <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
     ),
+  },
+
+  {
+    accessorKey: "status",
+    header: "Trạng thái trả hàng",
+    cell: ({ row, table }) => {
+      const { theme } = table.options.meta as Data;
+      return (
+        <p className="capitalize">
+          {row.getValue("status") === "not-received" ? (
+            <>
+              {theme === "light" ? (
+                <Badge variant="default" className="capitalize">
+                  Chưa trả
+                </Badge>
+              ) : (
+                <Badge variant="default" className="capitalize">
+                  Chưa trả
+                </Badge>
+              )}
+            </>
+          ) : (
+            <>
+              {theme === "light" ? (
+                <Badge variant="secondary" className="capitalize">
+                  Đã trả
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="capitalize">
+                  Đã trả
+                </Badge>
+              )}
+            </>
+          )}
+        </p>
+      );
+    },
   },
 
   {
@@ -261,7 +293,7 @@ export default function ReturnOrderTableData({ data }: Props) {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length && !loading ? (
+                {table.getRowModel().rows?.length ? (
                   table
                     .getRowModel()
 
@@ -289,8 +321,10 @@ export default function ReturnOrderTableData({ data }: Props) {
                 ) : (
                   <>
                     <TableRow>
-                      <TableCell colSpan={9} className="h-24 ">
-                        <CustomSkeleton />
+                      <TableCell colSpan={9} className="h-24">
+                        <p className="text-center">
+                          Chưa có phiếu trả hàng nào
+                        </p>
                       </TableCell>
                     </TableRow>
                   </>

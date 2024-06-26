@@ -37,13 +37,23 @@ const OrderDetailView = ({ id }: Props) => {
         text2="Quản lý đơn  hàng"
         onClick={handleDeleteOrder}
       />
-      <Custombreadcumb
-        href2={`/dashboard/orders/`}
-        breadcumbItem="Đơn  hàng"
-        breadcumbPage="Thông tin chi tiết đơn  hàng"
-        linkBtn={`/dashboard/return-orders/${id}/create`}
-        title="Đổi trả hàng"
-      />
+      {order?.payment_status === "unpaid" ? (
+        <Custombreadcumb
+          href2={`/dashboard/orders/`}
+          breadcumbItem="Đơn  hàng"
+          breadcumbPage="Thông tin chi tiết đơn  hàng"
+          linkBtn={`/dashboard/orders/${id}/edit`}
+          title="Chỉnh sửa đơn hàng"
+        />
+      ) : (
+        <Custombreadcumb
+          href2={`/dashboard/orders/`}
+          breadcumbItem="Đơn  hàng"
+          breadcumbPage="Thông tin chi tiết đơn  hàng"
+          linkBtn={`/dashboard/return-orders/${id}/create`}
+          title="Đổi trả hàng"
+        />
+      )}
 
       <DetailOrderView id={id as string} data={order as DetailOrderData} />
     </>

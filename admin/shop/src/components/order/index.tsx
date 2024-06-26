@@ -1,6 +1,7 @@
 import { Custombreadcumb } from "@/features/custom-breadcumb";
 import Header from "./header";
 import FormAddOrder from "./add/form-add-order";
+import FormEditOrder from "./edit/form-edit-order";
 
 const OrderMain = () => {
   return (
@@ -25,7 +26,11 @@ const OrderMain = () => {
         }
       />
 
-      <FormAddOrder />
+      {location.pathname === "/dashboard/orders/create" ? (
+        <FormAddOrder />
+      ) : (
+        <FormEditOrder />
+      )}
     </>
   );
 };

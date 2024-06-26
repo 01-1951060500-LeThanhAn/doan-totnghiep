@@ -11,13 +11,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, EllipsisVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -41,8 +42,21 @@ import { Badge } from "@/components/ui/badge";
 
 type Data = {
   theme: string | undefined;
+  onDisconnect: (id: string) => void;
+  onConnect: (id: string) => void;
 };
 export const columns: ColumnDef<PartnerData>[] = [
+  {
+    accessorKey: "code",
+    header: "Mã đối tác",
+    cell: ({ row }) => {
+      return (
+        <Link to={`/dashboard/shipping-partner/${row.getValue("_id")}/detail`}>
+          <p className="capitalize text-blue-400">{row.getValue("code")}</p>
+        </Link>
+      );
+    },
+  },
   {
     accessorKey: "username",
     header: "Tên đối tác",
@@ -53,17 +67,7 @@ export const columns: ColumnDef<PartnerData>[] = [
     header: "",
     cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
   },
-  {
-    accessorKey: "code",
-    header: "Mã đối tác",
-    cell: ({ row }) => {
-      return (
-        <Link to={`/dashboard/shipping-partner/${row.getValue("_id")}/detail`}>
-          <p className="capitalize">{row.getValue("code")}</p>
-        </Link>
-      );
-    },
-  },
+
   {
     accessorKey: "email",
     header: "Email đối tác",
@@ -77,7 +81,7 @@ export const columns: ColumnDef<PartnerData>[] = [
   },
   {
     accessorKey: "status",
-    header: "Trạng thái hoạt động",
+    header: "Trạng thái kết nối",
     cell: ({ row, table }) => {
       const { theme } = table.options.meta as Data;
       return (
@@ -85,12 +89,12 @@ export const columns: ColumnDef<PartnerData>[] = [
           {row.getValue("status") === "passive" ? (
             <>
               {theme === "light" ? (
-                <Badge variant="default" className="capitalize">
-                  Ngừng hoạt động
+                <Badge variant="destructive" className="capitalize">
+                  Ngừng kết nối
                 </Badge>
               ) : (
-                <Badge variant="default" className="capitalize">
-                  Ngừng hoạt động
+                <Badge variant="destructive" className="capitalize">
+                  Ngừng kết nối
                 </Badge>
               )}
             </>
@@ -98,11 +102,11 @@ export const columns: ColumnDef<PartnerData>[] = [
             <>
               {theme === "light" ? (
                 <Badge variant="secondary" className="capitalize">
-                  Đang hoạt động
+                  Đang kết nối
                 </Badge>
               ) : (
                 <Badge variant="outline" className="capitalize">
-                  Đang hoạt động
+                  Đang kết nối
                 </Badge>
               )}
             </>
@@ -111,12 +115,50 @@ export const columns: ColumnDef<PartnerData>[] = [
       );
     },
   },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Hành động",
+    cell: ({ table, row }) => {
+      const { onDisconnect, onConnect } = table.options.meta as Data;
+      const shipId = row.getValue("_id") as string;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <EllipsisVertical className="h-6 w-6" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <div onClick={() => onDisconnect(shipId)}>
+                <p>Ngừng liên kết</p>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div onClick={() => onConnect(shipId)}>
+                <p>Kích hoạt liên kết</p>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
 ];
 type Props = {
   data: PartnerData[];
+  onDisconnect: (id: string) => void;
+  onConnect: (id: string) => void;
 };
 
-export default function SuppliersTableData({ data }: Props) {
+export default function SuppliersTableData({
+  data,
+  onDisconnect,
+
+  onConnect,
+}: Props) {
   const [startIndex, setStartIndex] = React.useState(0);
   const [endIndex, setEndIndex] = React.useState(4);
   const [loading, setLoading] = React.useState(false);
@@ -152,6 +194,9 @@ export default function SuppliersTableData({ data }: Props) {
       theme: theme,
       loading,
       setLoading,
+      onDisconnect,
+
+      onConnect,
     },
   });
 

@@ -1,4 +1,4 @@
-import { createStaff, updateStaff } from "@/api/staffApi";
+import { createStaff, deleteStaff, updateStaff } from "@/api/staffApi";
 import { CreateStaffData, UpdateStaffData } from "@/types/staff";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -6,6 +6,7 @@ type GeneralState = {
   staffs: CreateStaffData[];
   loading: boolean;
   isEdit: boolean;
+  isDelete: boolean;
   error: boolean;
 };
 
@@ -14,12 +15,21 @@ const initialState: GeneralState = {
   loading: false,
   isEdit: false,
   error: false,
+  isDelete: false,
 };
 
 export const createStaffAsync = createAsyncThunk(
   "staffs/createStaffAsync",
   async (staff: CreateStaffData) => {
     const response = await createStaff(staff);
+    return response.data;
+  }
+);
+
+export const deleteStaffAsync = createAsyncThunk(
+  "staffs/deleteStaffAsync",
+  async (staffId: string) => {
+    const response = await deleteStaff(staffId);
     return response.data;
   }
 );
@@ -81,6 +91,27 @@ export const staffSlice = createSlice({
       .addCase(updateStaffAsync.rejected, (state) => {
         state.isEdit = true;
         state.error = true;
+      })
+      .addCase(deleteStaffAsync.pending, (state) => {
+        state.loading = true;
+        state.error = false;
+        state.isDelete = true;
+      })
+      .addCase(
+        deleteStaffAsync.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          const index = state.staffs.findIndex(
+            (item) => item._id === action.payload
+          );
+          state.staffs.splice(index, 1);
+          state.loading = false;
+          state.error = false;
+          state.isDelete = false;
+        }
+      )
+      .addCase(deleteStaffAsync.rejected, (state) => {
+        state.error = true;
+        state.isDelete = true;
       });
   },
 });

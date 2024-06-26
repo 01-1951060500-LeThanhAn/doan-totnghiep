@@ -2,7 +2,10 @@ import { z } from "zod";
 
 export const customerSchema = z.object({
   username: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Email is required"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("This is not a valid email."),
   code: z.string().min(1, "Code customer is required"),
   specific_address: z.string().min(1, "Address customer is required"),
   type: z.string().min(1, "Type customer is required"),

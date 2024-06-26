@@ -27,6 +27,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { createStaffAsync, updateStaffAsync } from "@/redux/slices/staffSlice";
 import { roles } from "@/constants/role";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   id?: string;
@@ -54,7 +55,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
 
   const { loading, isEdit } = useAppSelector((state) => state.staffs);
   const dispatch = useAppDispatch();
-
+  const navigate = useNavigate();
   useEffect(() => {
     form.setValue("username", defaultValues?.username);
     form.setValue("email", defaultValues?.email);
@@ -68,6 +69,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
       const formData = form.getValues() as CreateStaffData;
       await dispatch(createStaffAsync(formData));
       toast.success("Tạo nhân viên thành công");
+      navigate(`/dashboard/management/staff`);
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log(error?.message);
@@ -276,7 +278,10 @@ const FormStaff = ({ initialValues, id }: Props) => {
                   )}
                 </>
               )}
-              <Button className="ml-3">
+              <Button
+                onClick={() => navigate(`/dashboard/management/staff`)}
+                className="ml-3"
+              >
                 <p>Quay lại trang chính</p>
               </Button>
             </div>

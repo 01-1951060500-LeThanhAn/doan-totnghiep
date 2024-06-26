@@ -14,4 +14,9 @@ const updateStaff = async (staffId: string, data: UpdateStaffData) => {
   return response;
 };
 
-export { createStaff, updateStaff };
+const deleteStaff = async (staffId: string) => {
+  const response = await adminApi.delete<string>(`/users/${staffId}`);
+  return response;
+};
+
+export { createStaff, updateStaff, deleteStaff };

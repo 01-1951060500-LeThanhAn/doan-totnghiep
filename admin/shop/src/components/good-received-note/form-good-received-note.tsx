@@ -320,7 +320,10 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
               </Button>
             )}
 
-            <Button className="ml-3">
+            <Button
+              onClick={() => navigate(`/dashboard/good-received-note`)}
+              className="ml-3"
+            >
               <p>Quay lại trang chính</p>
             </Button>
           </div>

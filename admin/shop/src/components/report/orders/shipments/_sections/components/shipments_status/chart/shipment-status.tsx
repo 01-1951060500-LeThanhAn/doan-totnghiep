@@ -16,7 +16,11 @@ const ShipmentStatusChart = () => {
         <Doughnut
           data={{
             labels: shipmentStatus.map((data) =>
-              data.status === "pending" ? "Đang giao hàng" : "Đã giao hàng"
+              data.status === "pending"
+                ? "Đang giao hàng"
+                : data.status === "delivered"
+                ? "Đã giao hàng"
+                : "Đã hủy"
             ),
             datasets: [
               {
@@ -25,10 +29,12 @@ const ShipmentStatusChart = () => {
                 backgroundColor: [
                   "rgba(250, 192, 19, 0.8)",
                   "rgba(245, 107, 57, 0.8)",
+                  "rgba(125, 243, 133, 0.8)",
                 ],
                 borderColor: [
                   "rgba(250, 192, 19, 0.8)",
                   "rgba(245, 107, 57, 0.8)",
+                  "rgba(114, 248, 77, 0.729)",
                 ],
               },
             ],

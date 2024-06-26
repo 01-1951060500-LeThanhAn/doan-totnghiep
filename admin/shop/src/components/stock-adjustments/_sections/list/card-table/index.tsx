@@ -102,7 +102,7 @@ export const columns: ColumnDef<StockAdjustmentTableProps>[] = [
     cell: ({ row }) => {
       return (
         <p className="capitalize">
-          {new Date(row.getValue("stocktaking_day")).toLocaleString()}
+          {new Date(row.getValue("stocktaking_day")).toLocaleDateString()}
         </p>
       );
     },

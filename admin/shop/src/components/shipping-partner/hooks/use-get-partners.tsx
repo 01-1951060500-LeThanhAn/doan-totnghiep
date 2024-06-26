@@ -13,7 +13,7 @@ const useGetPartners = () => {
     };
 
     fetchListPartner();
-  }, []);
+  }, [partners]);
 
   return { partners };
 };

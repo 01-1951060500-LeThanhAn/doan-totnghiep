@@ -12,6 +12,7 @@ export type UserTableData = {
   phone: string;
   address: string;
   role: string;
+  picture: string;
 };
 
 export type UserDataTableProps = {
@@ -22,6 +23,7 @@ export type UserDataTableProps = {
   phone: string;
   address: string;
   role: string;
+  picture: string;
 };
 
 export type UserData = UserTableData;

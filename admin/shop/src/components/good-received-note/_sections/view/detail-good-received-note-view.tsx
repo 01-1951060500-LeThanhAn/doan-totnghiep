@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { updateGRNAsync } from "@/redux/slices/grnSlice";
 import { formatPrice } from "@/config/format-price";
+import { Badge } from "@/components/ui/badge";
 
 type Props = {
   data: DetailGoodReceivedNote;
@@ -125,7 +126,33 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
 
               <div className="flex items-center justify-between my-3">
                 <p>Trạng thái hàng: </p>
-                <span>Đang vận chuyển</span>
+                <p>
+                  {orderStatus === "pending" ? (
+                    <>
+                      {theme === "light" ? (
+                        <Badge variant="default" className="capitalize">
+                          Đang vận chuyển
+                        </Badge>
+                      ) : (
+                        <Badge variant="default" className="capitalize">
+                          Đang vận chuyển
+                        </Badge>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {theme === "light" ? (
+                        <Badge variant="secondary" className="capitalize">
+                          Đã nhập
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="capitalize">
+                          Đã nhập
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </p>
               </div>
             </div>
           </div>

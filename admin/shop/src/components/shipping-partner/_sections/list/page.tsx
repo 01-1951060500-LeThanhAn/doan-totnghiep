@@ -2,9 +2,42 @@ import { Custombreadcumb } from "@/features/custom-breadcumb";
 import Heading from "./heading";
 import useGetPartners from "../../hooks/use-get-partners";
 import PartnerTableData from "./card-table";
+import { useAppDispatch } from "@/hooks/hooks";
+import { toast } from "sonner";
+import { updatePartnerAsync } from "@/redux/slices/partnerSlice";
+import useRefreshTable from "@/hooks/use-refresh-table";
 
 const PartnerPage = () => {
   const { partners } = useGetPartners();
+  const dispatch = useAppDispatch();
+  const { refreshTable } = useRefreshTable(partners);
+
+  const handleDisconnectPartner = async (id: string) => {
+    try {
+      await dispatch(
+        updatePartnerAsync({ shipId: id, data: { status: "passive" } })
+      );
+      await refreshTable();
+      return toast.success("Đã ngừng kết nối");
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+    }
+  };
+
+  const handleConnectPartner = async (id: string) => {
+    try {
+      await dispatch(
+        updatePartnerAsync({ shipId: id, data: { status: "active" } })
+      );
+      await refreshTable();
+      return toast.success("Đã kết nối");
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau");
+    }
+  };
+
   return (
     <>
       <Heading />
@@ -16,7 +49,11 @@ const PartnerPage = () => {
         title="Thêm đối tác vận chuyển"
       />
 
-      <PartnerTableData data={partners} />
+      <PartnerTableData
+        data={partners}
+        onDisconnect={handleDisconnectPartner}
+        onConnect={handleConnectPartner}
+      />
     </>
   );
 };
