@@ -35,6 +35,10 @@ const OrderPurchaseSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "supplier",
     },
+    staffId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+    },
     generalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "general",
