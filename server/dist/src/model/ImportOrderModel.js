@@ -87,6 +87,15 @@ OrderPurchaseSchema.pre("find", function (next) {
 OrderPurchaseSchema.pre("find", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.populate({
+            path: "staffId",
+            select: "username code",
+        });
+        next();
+    });
+});
+OrderPurchaseSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.populate({
             path: "generalId",
             select: "name",
         });
