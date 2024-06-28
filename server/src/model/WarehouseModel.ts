@@ -133,4 +133,4 @@ WarehouseSchema.pre("find", async function (next) {
   next();
 });
 
-export default mongoose.model("purchase_orders", WarehouseSchema);
+export default mongoose.model("good_received_notes", WarehouseSchema);

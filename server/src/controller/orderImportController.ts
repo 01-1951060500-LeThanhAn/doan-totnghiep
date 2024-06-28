@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import ImportOrderModel from "../model/ImportOrderModel";
+import ImportOrderModel from "../model/PurchaseOrderModel";
 import WarehouseModel from "../model/WarehouseModel";
 import ProductModel from "../model/ProductModel";
 import SupplierModel from "../model/SupplierModel";

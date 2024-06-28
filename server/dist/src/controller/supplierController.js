@@ -31,10 +31,10 @@ const getListSuppliers = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const suppliers = yield SupplierModel_1.default.aggregate([
             {
                 $lookup: {
-                    from: "purchase_orders",
+                    from: "good_received_notes",
                     localField: "_id",
                     foreignField: "supplierId",
-                    as: "purchase_orders",
+                    as: "good_received_notes",
                 },
             },
             {
@@ -44,13 +44,13 @@ const getListSuppliers = (req, res) => __awaiter(void 0, void 0, void 0, functio
                     totalSpending: {
                         $sum: {
                             $cond: {
-                                if: { $isArray: "$purchase_orders" },
-                                then: { $sum: "$purchase_orders.totalSupplierPay" },
+                                if: { $isArray: "$good_received_notes" },
+                                then: { $sum: "$good_received_notes.totalSupplierPay" },
                                 else: 0,
                             },
                         },
                     },
-                    totalOrders: { $sum: { $size: "$purchase_orders" } },
+                    totalOrders: { $sum: { $size: "$good_received_notes" } },
                 },
             },
             {

@@ -138,4 +138,4 @@ WarehouseSchema.pre("find", function (next) {
         next();
     });
 });
-exports.default = mongoose_1.default.model("purchase_orders", WarehouseSchema);
+exports.default = mongoose_1.default.model("good_received_notes", WarehouseSchema);

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIncomePurchaseOrdersSuppliers = exports.getIncomePurchaseOrdersProducts = exports.getIncomePurchaseOrders = exports.deleteImportOrder = exports.getDetailImportOrder = exports.updateImportOrder = exports.getAllOrderImport = exports.createImportOrder = void 0;
-const ImportOrderModel_1 = __importDefault(require("../model/ImportOrderModel"));
+const PurchaseOrderModel_1 = __importDefault(require("../model/PurchaseOrderModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
@@ -39,7 +39,7 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             totalPrice = products.reduce((acc, product) => acc +
                 Number(product.inventory_number) * Number(productData.export_price), 0);
         }
-        const newImportOrder = new ImportOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
+        const newImportOrder = new PurchaseOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
         const currentBalance = supplier.balance_increases + supplier.opening_balance;
         yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
             balance_increases: currentBalance + totalPrice,
@@ -56,7 +56,7 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
 exports.createImportOrder = createImportOrder;
 const getAllOrderImport = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const orders = yield ImportOrderModel_1.default.find()
+        const orders = yield PurchaseOrderModel_1.default.find()
             .populate("products.productId supplierId generalId")
             .sort({ createdAt: -1 });
         res.status(200).json(orders);
@@ -71,7 +71,7 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const orderId = req.params.id;
         if (!orderId)
             return res.status(404).json("Đơn đặt hàng này không tồn tại");
-        const order = yield ImportOrderModel_1.default.findByIdAndUpdate(orderId, {
+        const order = yield PurchaseOrderModel_1.default.findByIdAndUpdate(orderId, {
             order_status: "entered",
         }, { new: true });
         if (!order) {
@@ -121,7 +121,7 @@ const getDetailImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, fun
         return res.status(404).json("Đơn đặt hàng này không tồn tại");
     }
     try {
-        const data = yield ImportOrderModel_1.default.findById(orderImportId)
+        const data = yield PurchaseOrderModel_1.default.findById(orderImportId)
             .populate("products.productId")
             .populate({
             path: "generalId",
@@ -150,7 +150,7 @@ const deleteImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
         return res.status(404).json("Đơn đặt hàng này không tồn tại");
     }
     try {
-        const order = yield ImportOrderModel_1.default.findByIdAndDelete(orderImportId);
+        const order = yield PurchaseOrderModel_1.default.findByIdAndDelete(orderImportId);
         if (!order) {
             return res.status(404).json("Đơn đặt hàng này không tồn tại");
         }
@@ -166,7 +166,7 @@ const getIncomePurchaseOrders = (req, res) => __awaiter(void 0, void 0, void 0, 
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     try {
-        const incomeData = yield ImportOrderModel_1.default.aggregate([
+        const incomeData = yield PurchaseOrderModel_1.default.aggregate([
             {
                 $match: {
                     updatedAt: { $gte: previousMonth },
@@ -255,7 +255,7 @@ const getIncomePurchaseOrdersProducts = (req, res) => __awaiter(void 0, void 0, 
                 },
             },
         ];
-        const results = yield ImportOrderModel_1.default.aggregate(pipeline);
+        const results = yield PurchaseOrderModel_1.default.aggregate(pipeline);
         res.status(200).json(results);
     }
     catch (err) {
@@ -268,7 +268,7 @@ const getIncomePurchaseOrdersSuppliers = (req, res) => __awaiter(void 0, void 0,
     const date = new Date();
     const previousMonth = new Date(date.setMonth(date.getMonth() - 1));
     try {
-        const incomeData = yield ImportOrderModel_1.default.aggregate([
+        const incomeData = yield PurchaseOrderModel_1.default.aggregate([
             {
                 $match: {
                     createdAt: { $gte: previousMonth },

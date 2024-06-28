@@ -494,29 +494,29 @@ const getWareHouseByGeneral = async (req: Request, res: Response) => {
     const incomeData = [
       {
         $lookup: {
-          from: "purchase_orders",
+          from: "good_received_notes",
           localField: "_id",
           foreignField: "generalId",
-          as: "purchase_orders",
+          as: "good_received_notes",
         },
       },
       {
-        $unwind: "$purchase_orders",
+        $unwind: "$good_received_notes",
       },
       {
         $match: {
-          "purchase_orders.payment_status": "delivered",
+          "good_received_notes.payment_status": "delivered",
         },
       },
       {
         $project: {
           _id: {
-            code: "$purchase_orders.generalId",
+            code: "$good_received_notes.generalId",
           },
           quantity: {
-            $first: "$purchase_orders.products.inventory_number",
+            $first: "$good_received_notes.products.inventory_number",
           },
-          totalPrice: "$purchase_orders.totalSupplierPay",
+          totalPrice: "$good_received_notes.totalSupplierPay",
         },
       },
       {
@@ -632,24 +632,26 @@ const getWareHouseByOrders = async (req: Request, res: Response) => {
       },
       {
         $lookup: {
-          from: "purchase_orders",
+          from: "good_received_notes",
           localField: "_id",
           foreignField: "supplierId",
-          as: "purchase_orders",
+          as: "good_received_notes",
         },
       },
       {
-        $unwind: "$purchase_orders",
+        $unwind: "$good_received_notes",
       },
       {
         $project: {
           _id: {
-            _id: "$purchase_orders._id",
-            code: "$purchase_orders.code",
+            _id: "$good_received_notes._id",
+            code: "$good_received_notes.code",
           },
-          totalQuantity: { $sum: "$purchase_orders.products.inventory_number" },
+          totalQuantity: {
+            $sum: "$good_received_notes.products.inventory_number",
+          },
           totalPrice: {
-            $sum: "$purchase_orders.totalSupplierPay",
+            $sum: "$good_received_notes.totalSupplierPay",
           },
         },
       },

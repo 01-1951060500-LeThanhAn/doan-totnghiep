@@ -112,4 +112,4 @@ OrderPurchaseSchema.pre("save", async function (next) {
   next();
 });
 
-export default mongoose.model("order_suppliers", OrderPurchaseSchema);
+export default mongoose.model("purchase_orders", OrderPurchaseSchema);
