@@ -1,7 +1,7 @@
 import {
   DeliveryNoteFormSchema,
   deliveryNoteSchema,
-} from "@/actions/deliveryNote";
+} from "@/schema/deliveryNote";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateDeliveryNoteData } from "@/types/delivery_note";
 import { zodResolver } from "@hookform/resolvers/zod";

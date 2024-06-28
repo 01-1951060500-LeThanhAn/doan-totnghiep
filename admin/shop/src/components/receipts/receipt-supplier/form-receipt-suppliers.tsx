@@ -1,7 +1,7 @@
 import {
   ReceiptSupplierFormSchema,
   receiptSupplierSchema,
-} from "@/actions/receiptSupplierSchema";
+} from "@/schema/receiptSupplierSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateSupplierReceiptData } from "@/types/receipt_supplier";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -2,6 +2,7 @@ export type CreatePurchaseOrderData = {
   _id: string;
   code: string;
   supplierId: string;
+  staffId: string;
   generalId: string;
   received_date: string | Date;
   payment_status: string;
@@ -31,6 +32,10 @@ export type PurchaseOrdersData = {
   generalId: {
     _id: string;
     name: string;
+  };
+  staffId: {
+    username: string;
+    code: string;
   };
   payment_status: string;
   received_date: string;

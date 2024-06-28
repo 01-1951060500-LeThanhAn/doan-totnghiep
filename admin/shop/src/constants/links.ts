@@ -26,7 +26,10 @@ const links = [
         name: "Danh sách đơn hàng",
         href: "/dashboard/orders",
       },
-
+      {
+        name: "Tìm kiếm đơn hàng theo ngày ",
+        href: "/dashboard/report/shipments",
+      },
       {
         name: "Khách trả hàng",
         href: "/dashboard/return-order",
@@ -138,8 +141,9 @@ const links = [
         name: "Quản lý vận đơn",
         href: "/dashboard/shipments",
       },
+
       {
-        name: "Kết nối đối tác",
+        name: "Đối tác vận chuyển",
         href: "/dashboard/shipping-partner",
       },
     ],
@@ -194,7 +198,10 @@ const linkSub = [
         name: "Danh sách đơn hàng",
         href: "/dashboard/orders",
       },
-
+      {
+        name: "Tìm kiếm đơn hàng theo ngày",
+        href: "/dashboard/report/shipments",
+      },
       {
         name: "Khách trả hàng",
         href: "/dashboard/return-order",
@@ -287,8 +294,9 @@ const linkSub = [
         name: "Quản lý vận đơn",
         href: "/dashboard/shipments",
       },
+
       {
-        name: "Kết nối đối tác",
+        name: "Đối tác vận chuyển",
         href: "/dashboard/shipping-partner",
       },
     ],

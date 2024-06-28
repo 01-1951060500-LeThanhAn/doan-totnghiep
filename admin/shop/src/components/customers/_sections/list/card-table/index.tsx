@@ -41,6 +41,17 @@ import { formatPrice } from "@/config/format-price";
 
 export const columns: ColumnDef<CustomerData>[] = [
   {
+    accessorKey: "code",
+    header: "Mã khách hàng",
+    cell: ({ row }) => {
+      return (
+        <Link to={`/dashboard/customer/${row.getValue("_id")}/detail`}>
+          <p className="capitalize text-blue-400">{row.getValue("code")}</p>
+        </Link>
+      );
+    },
+  },
+  {
     accessorKey: "username",
     header: "Tên khách hàng",
     cell: ({ row }) => <p className="capitalize">{row.getValue("username")}</p>,
@@ -50,17 +61,7 @@ export const columns: ColumnDef<CustomerData>[] = [
     header: "",
     cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
   },
-  {
-    accessorKey: "code",
-    header: "Mã khách hàng",
-    cell: ({ row }) => {
-      return (
-        <Link to={`/dashboard/customer/${row.getValue("_id")}/detail`}>
-          <p className="capitalize">{row.getValue("code")}</p>
-        </Link>
-      );
-    },
-  },
+
   {
     accessorKey: "email",
     header: "Email khách hàng",

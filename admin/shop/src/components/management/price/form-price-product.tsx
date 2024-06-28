@@ -1,7 +1,7 @@
 import {
   ProductPriceFormSchema,
   formProductPriceSchema,
-} from "@/actions/productSchema";
+} from "@/schema/productSchema";
 import {
   Form,
   FormControl,

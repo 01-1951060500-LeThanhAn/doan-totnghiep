@@ -60,6 +60,17 @@ const deleteOrder = async (orderId: string) => {
   return response;
 };
 
+const searchOrders = async (
+  startDate: Date | undefined,
+  endDate: Date | undefined
+) => {
+  const response = await adminApi.get<OrdersData[]>(
+    `/orders/search/date-orders?startDate=${startDate}&endDate=${endDate}`
+  );
+
+  return response;
+};
+
 export {
   createOrder,
   getOrders,
@@ -68,4 +79,5 @@ export {
   updateOrder,
   deleteOrder,
   getCancelledOrders,
+  searchOrders,
 };

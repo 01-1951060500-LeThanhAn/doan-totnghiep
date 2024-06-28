@@ -20,6 +20,7 @@ export type GoodReceivedNoteData = {
   _id: string;
   code: string;
   generalId: GeneralIdData;
+  manager: Manager;
   totalPrice: number;
   totalSupplierPay: number;
   totalQuantity: number;
@@ -29,6 +30,12 @@ export type GoodReceivedNoteData = {
   delivery_date: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type Manager = {
+  _id: string;
+  username: string;
+  email: string;
 };
 
 export type GoodReceivedNoteDataTableProps = {

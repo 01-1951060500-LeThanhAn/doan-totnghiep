@@ -9,6 +9,7 @@ type Props = {
 
 const DetailPartnerInformation = ({ data }: Props) => {
   const { theme } = useTheme();
+
   return (
     <>
       <div

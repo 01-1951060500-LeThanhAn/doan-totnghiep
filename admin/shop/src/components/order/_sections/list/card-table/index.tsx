@@ -98,21 +98,21 @@ export const columns: ColumnDef<OrdersData>[] = [
     accessorKey: "order_status",
     header: "Trạng thái đơn hàng",
     cell: ({ row, table }) => {
-      const currentDate = new Date();
+      // const currentDate = new Date();
 
-      let orderStatus = row.getValue("order_status");
+      // let orderStatus = row.getValue("order_status");
 
-      if (
-        orderStatus === "pending" &&
-        currentDate > new Date(row.getValue("received_date"))
-      ) {
-        orderStatus = "delivered";
-      }
+      // if (
+      //   orderStatus === "pending" &&
+      //   currentDate > new Date(row.getValue("received_date"))
+      // ) {
+      //   orderStatus = "delivered";
+      // }
 
       const { theme } = table.options.meta as Data;
       return (
         <p className="capitalize">
-          {orderStatus === "pending" ? (
+          {row.getValue("order_status") === "pending" ? (
             <>
               {theme === "light" ? (
                 <Badge variant="default" className="capitalize">
@@ -126,7 +126,7 @@ export const columns: ColumnDef<OrdersData>[] = [
             </>
           ) : (
             <>
-              {orderStatus === "cancelled" ? (
+              {row.getValue("order_status") === "cancelled" ? (
                 <>
                   {theme === "light" ? (
                     <Badge variant="destructive" className="capitalize">

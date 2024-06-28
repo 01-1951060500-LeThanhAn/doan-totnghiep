@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
-import { GoodReceivedNoteFormSchema } from "@/actions/goodReceivedNote";
+import { GoodReceivedNoteFormSchema } from "@/schema/goodReceivedNote";
 import { Input } from "@/components/ui/input";
 
 type Props = {

@@ -11,7 +11,7 @@ export const orderSchema = z.object({
   generalId: z.string().min(1, "ID General is required"),
   delivery_address: z.string().min(1, "Delivery Address is required"),
   invoice_address: z.string().min(1, "Invoice Address is required"),
-  userId: z.string().min(1, "ID Salesman is required"),
+  userId: z.string().min(1, "ID staff is required"),
   received_date: z.date({
     required_error: "A date of birth is required.",
   }),

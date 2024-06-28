@@ -1,4 +1,4 @@
-import { CategoryFormSchema, categorySchema } from "@/actions/categorySchema";
+import { CategoryFormSchema, categorySchema } from "@/schema/categorySchema";
 import {
   Form,
   FormControl,

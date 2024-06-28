@@ -1,7 +1,7 @@
 import {
   GoodReceivedNoteFormSchema,
   goodReceivedNoteSchema,
-} from "@/actions/goodReceivedNote";
+} from "@/schema/goodReceivedNote";
 import HomeLayout from "@/layouts/home-layout";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ControllerRenderProps, FieldValues, useForm } from "react-hook-form";
@@ -212,7 +212,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
                 name="manager"
                 render={({ field }) => (
                   <FormItem>
-                    <p>Chọn nhân viên quản lý </p>
+                    <p>Chọn người nhập</p>
                     <FormControl>
                       <div>
                         <Select
@@ -220,7 +220,7 @@ const FormGoodReceivedNote = ({ initialValues }: Props) => {
                           defaultValue={field.value}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Chọn nhân viên quản lý" />
+                            <SelectValue placeholder="Chọn người nhập" />
                           </SelectTrigger>
 
                           <SelectContent>

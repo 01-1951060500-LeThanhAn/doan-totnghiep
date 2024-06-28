@@ -49,9 +49,7 @@ export const columns: ColumnDef<PurchaseOrdersDataTableProps>[] = [
     header: "Mã đơn đặt",
     cell: ({ row }) => (
       <Link to={`/dashboard/purchase-order/${row.getValue("_id")}/detail`}>
-        <p className="capitalize text-blue-400 underline">
-          {row.getValue("code")}
-        </p>
+        <p className="capitalize text-blue-400 ">{row.getValue("code")}</p>
       </Link>
     ),
   },
@@ -67,7 +65,7 @@ export const columns: ColumnDef<PurchaseOrdersDataTableProps>[] = [
       return (
         <Link to={`/dashboard/purchase-order/${row.getValue("_id")}/detail`}>
           <p className="capitalize">
-            {new Date(row.getValue("createdAt")).toLocaleDateString()}
+            {new Date(row.getValue("createdAt")).toLocaleString()}
           </p>
         </Link>
       );
@@ -81,6 +79,11 @@ export const columns: ColumnDef<PurchaseOrdersDataTableProps>[] = [
         {new Date(row.getValue("received_date")).toLocaleDateString()}
       </p>
     ),
+  },
+  {
+    accessorKey: "staffId",
+    header: "Nguời tạo đơn",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("staffId")}</p>,
   },
 
   {

@@ -74,6 +74,7 @@ import StockAdjustmentPage from "@/pages/report/stock-adjustments/page";
 import AddReturnOrderPage from "@/pages/return-order/add/page";
 import ViewReturnOrderPage from "@/pages/return-order/page";
 import ViewShipmentsPage from "@/pages/shipments/page";
+import ReportOrderByDayPage from "@/pages/shipments/report/page";
 import AddShippingPartnerPage from "@/pages/shipping-partner/add/page";
 import EditShippingPartnerPage from "@/pages/shipping-partner/edit/page";
 import ViewShippingPartnerPage from "@/pages/shipping-partner/page";
@@ -363,7 +364,16 @@ const routes = [
         <ViewShipmentsPage />
       </DashBoardLayout>
     ),
-    name: "Danh sách đối tác vận chuyển",
+    name: "Quản lý vận đơn",
+  },
+  {
+    path: "/dashboard/report/shipments",
+    element: (
+      <DashBoardLayout>
+        <ReportOrderByDayPage />
+      </DashBoardLayout>
+    ),
+    name: "Báo cáo vận đơn theo ngày",
   },
   {
     path: "/dashboard/management",

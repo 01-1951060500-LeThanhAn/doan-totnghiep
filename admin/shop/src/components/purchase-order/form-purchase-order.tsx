@@ -1,7 +1,7 @@
 import {
   PurchaseOrderFormSchema,
   purchaseOrderSchema,
-} from "@/actions/purchaseOrderSchema";
+} from "@/schema/purchaseOrderSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreatePurchaseOrderData } from "@/types/purchaseOrder";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,6 +37,7 @@ import { createPurchaseOrderAsync } from "@/redux/slices/purchaseOrderSlice";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import useGetUsers from "../suppliers/hooks/use-get-users";
 type Props = {
   initialValues: CreatePurchaseOrderData;
 };
@@ -47,6 +48,7 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
       code: initialValues?.code ?? "",
       generalId: initialValues?.generalId ?? "",
       supplierId: initialValues?.supplierId ?? "",
+      staffId: initialValues?.staffId ?? "",
       received_date:
         initialValues?.received_date ?? new Date(initialValues?.received_date),
       products: initialValues.products.map((product) => ({
@@ -70,6 +72,8 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
     },
   });
   const { suppliers } = useGetSuppliers();
+  const { users } = useGetUsers();
+
   const { generals } = useGetGenerals();
   const { products } = useGetProducts();
   const { theme } = useTheme();
@@ -85,7 +89,7 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
           product.productId || product.inventory_number || product.import_price
       );
       await dispatch(createPurchaseOrderAsync(formData));
-      toast.success("Thêm đơn đặt hàng thành công");
+      toast.success("Tạo đơn đặt hàng thành công");
       navigate(`/dashboard/purchase-order`);
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -102,11 +106,11 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
   };
   return (
     <>
-      <HomeLayout>
+      <HomeLayout className="xl:mx-6 md:mx-6 mx-6 mt-4 h-full lg:max-h-[75vh] overflow-y-scroll">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleCreatePurchaseOrders)}
-            className="grid grid-cols-1 lg:grid-cols-1 lg:gap-3 gap-y-3 h-full w-full"
+            className="grid grid-cols-1  lg:grid-cols-1 lg:gap-3 gap-y-3 h-full w-full"
           >
             <div
               className={`${
@@ -161,51 +165,89 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
                     )}
                   />
                 </div>
-              </div>
-              <div className="my-2">
-                <FormField
-                  control={form.control}
-                  name="supplierId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <p>Chọn nhà cung cấp </p>
-                      <FormControl>
-                        <div>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn nhà cung cấp" />
-                            </SelectTrigger>
+                <div className="my-2">
+                  <FormField
+                    control={form.control}
+                    name="supplierId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <p>Chọn nhà cung cấp </p>
+                        <FormControl>
+                          <div>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chọn nhà cung cấp" />
+                              </SelectTrigger>
 
-                            <SelectContent>
-                              <SelectGroup>
-                                {suppliers.map((item) => (
-                                  <SelectItem
-                                    key={item?.supplier?._id}
-                                    value={item?.supplier?._id}
-                                  >
-                                    {item?.supplier?.supplier_name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                              <SelectContent>
+                                <SelectGroup>
+                                  {suppliers.map((item) => (
+                                    <SelectItem
+                                      key={item?.supplier?._id}
+                                      value={item?.supplier?._id}
+                                    >
+                                      {item?.supplier?.supplier_name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="my-2">
+                  <FormField
+                    control={form.control}
+                    name="staffId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <p>Người đặt hàng</p>
+                        <FormControl>
+                          <div>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Người đặt hàng" />
+                              </SelectTrigger>
+
+                              <SelectContent>
+                                <SelectGroup>
+                                  {users.map((item) => (
+                                    <SelectItem
+                                      key={item?._id}
+                                      value={item?._id}
+                                    >
+                                      {item?.username}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
+
               <div className="my-2">
                 <FormField
                   control={form.control}
                   name="generalId"
                   render={({ field }) => (
                     <FormItem>
-                      <p>Chọn kho nhập hàng nếu đặt hàng xong </p>
+                      <p>Chọn kho đặt hàng </p>
                       <FormControl>
                         <div>
                           <Select
@@ -213,7 +255,7 @@ const FormPurchaseOrder = ({ initialValues }: Props) => {
                             defaultValue={field.value}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Chọn kho nhập hàng" />
+                              <SelectValue placeholder="Chọn kho đặt hàng" />
                             </SelectTrigger>
 
                             <SelectContent>

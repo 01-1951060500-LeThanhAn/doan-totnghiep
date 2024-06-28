@@ -44,6 +44,17 @@ type Data = {
 
 export const columns: ColumnDef<ProductTableProps>[] = [
   {
+    accessorKey: "code",
+    header: "Mã sản phẩm",
+    cell: ({ row }) => {
+      return (
+        <Link to={`/dashboard/product/${row.getValue("_id")}/detail`}>
+          <p className="capitalize text-blue-400">{row.getValue("code")}</p>
+        </Link>
+      );
+    },
+  },
+  {
     accessorKey: "name_product",
     header: "Tên sản phẩm",
     cell: ({ row }) => (
@@ -55,17 +66,7 @@ export const columns: ColumnDef<ProductTableProps>[] = [
     header: "",
     cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
   },
-  {
-    accessorKey: "code",
-    header: "Mã sản phẩm",
-    cell: ({ row }) => {
-      return (
-        <Link to={`/dashboard/product/${row.getValue("_id")}/detail`}>
-          <p className="capitalize">{row.getValue("code")}</p>
-        </Link>
-      );
-    },
-  },
+
   {
     accessorKey: "img",
     header: "Hình ảnh sản phẩm",

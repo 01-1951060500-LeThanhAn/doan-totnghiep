@@ -7,7 +7,7 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { CustomerFormSchema, customerSchema } from "@/actions/customerSchema";
+import { CustomerFormSchema, customerSchema } from "@/schema/customerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateCustomerData, UpdateCustomerData } from "@/types/customer";
 import { useEffect, useMemo, useState } from "react";

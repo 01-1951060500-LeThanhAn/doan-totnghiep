@@ -13,7 +13,7 @@ type Props = {
 const Header = ({ title, text1, text2, onClick }: Props) => {
   return (
     <>
-      <div className="border-b p-6 mb-4 flex justify-between items-center">
+      <div className="border-b p-6 mb-4 flex flex-wrap gap-3 justify-between items-center">
         <div className="flex items-center">
           <ListRouteModal />
           <div className="mx-2">

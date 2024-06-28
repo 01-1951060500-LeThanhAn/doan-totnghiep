@@ -89,6 +89,11 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
     ),
   },
   {
+    accessorKey: "manager",
+    header: "Người tạo",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("manager")}</p>,
+  },
+  {
     accessorKey: "supplierId",
     header: "Nhà cung cấp",
     cell: ({ row }) => (

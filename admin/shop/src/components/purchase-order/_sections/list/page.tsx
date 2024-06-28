@@ -14,6 +14,7 @@ const PurchaseOrdersPage = () => {
     totalQuantity: item?.totalQuantity,
     generalId: item?.generalId?.name,
     supplierId: item.supplierId?.supplier_name,
+    staffId: item?.staffId?.username,
   }));
   return (
     <>

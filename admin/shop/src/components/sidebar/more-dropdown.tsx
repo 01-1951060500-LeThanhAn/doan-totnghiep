@@ -1,4 +1,4 @@
-"use client";
+import "./fake.css";
 import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
@@ -57,7 +57,7 @@ const MoredropDown = () => {
             variant={"ghost"}
             className="md:w-full !justify-start !ml-2  space-x-2 !px-3"
           >
-            <Settings className="inline-block rounded-full animate-spin animate-ease-in-out" />
+            <Settings className="setting" />
             <div className="hidden lg:block ">
               <p>Cài đặt</p>
             </div>

@@ -103,7 +103,7 @@ export const productSlice = createSlice({
       })
       .addCase(
         updateProductAsync.fulfilled,
-        (state, action: PayloadAction<UpdateProductDataType>) => {
+        (state, action: PayloadAction<CreateProductDataType>) => {
           const index = state.products.findIndex(
             (item) => item._id === action.payload._id
           );

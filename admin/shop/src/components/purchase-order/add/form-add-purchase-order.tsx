@@ -12,6 +12,7 @@ const FormAddPurchaseOrder = () => {
           received_date: "",
           generalId: "",
           supplierId: "",
+          staffId: "",
           products: [
             {
               inventory_number: 0,

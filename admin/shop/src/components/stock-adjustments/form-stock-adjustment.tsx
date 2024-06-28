@@ -1,7 +1,7 @@
 import {
   StockAdjustmentFormSchema,
   stockAdjustmentSchema,
-} from "@/actions/stockAdjustmentSchema";
+} from "@/schema/stockAdjustmentSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateStockAdjustment } from "@/types/stock_adjustment";
 import { zodResolver } from "@hookform/resolvers/zod";

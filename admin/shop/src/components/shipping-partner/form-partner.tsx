@@ -1,4 +1,4 @@
-import { PartnerFormSchema, partnerSchema } from "@/actions/partnerSchema";
+import { PartnerFormSchema, partnerSchema } from "@/schema/partnerSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreatePartnerData, UpdatePartnerData } from "@/types/partner";
 import { zodResolver } from "@hookform/resolvers/zod";

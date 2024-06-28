@@ -1,4 +1,4 @@
-import { formProductSchema, ProductFormSchema } from "@/actions/productSchema";
+import { formProductSchema, ProductFormSchema } from "@/schema/productSchema";
 import {
   Form,
   FormControl,
@@ -9,7 +9,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import HomeLayout from "@/layouts/home-layout";
-import { CreateProductDataType, ProductData } from "@/types/product";
+import {
+  CreateProductDataType,
+  ProductData,
+  UpdateProductDataType,
+} from "@/types/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -29,7 +33,7 @@ import SectionSelect from "./add/components/section-select";
 import { Loader2 } from "lucide-react";
 
 type Props = {
-  initialValues: CreateProductDataType | ProductData;
+  initialValues: CreateProductDataType | UpdateProductDataType | ProductData;
   productId?: string | undefined;
 };
 
@@ -37,10 +41,10 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   const defaultValues = useMemo(
     () => ({
       desc: initialValues?.desc ?? "",
-      img: initialValues?.img ?? undefined,
       name_product: initialValues?.name_product ?? "",
       code: initialValues?.code ?? "",
       unit: initialValues?.unit ?? "",
+      img: initialValues?.img ?? "",
       import_price: initialValues?.import_price ?? "",
       export_price: initialValues?.export_price ?? "",
       inventory_number: initialValues?.inventory_number ?? 0,
@@ -70,6 +74,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isEdit } = useAppSelector((state) => state.products);
+
   const handleCreateProduct = async () => {
     try {
       setLoading(true);
@@ -97,32 +102,28 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       navigate(`/dashboard/product`);
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast.error("Thêm mo");
+        toast.error("Thêm sản phẩm thất bại");
       }
     }
   };
   const handleEditProduct = async () => {
     try {
-      const formData = form.getValues() as CreateProductDataType;
-      const imageData = new FormData();
-      imageData.append("file", file as File);
-      imageData.append("upload_preset", "ecommerce");
-      imageData.append("cloud_name", "dhwufmyi4");
+      const formData = form.getValues() as UpdateProductDataType;
+      const data = new FormData();
+      if (file) {
+        data.append("file", file as File);
+      }
+      data.append("upload_preset", "ecommerce");
+      data.append("cloud_name", "dhwufmyi4");
 
-      const imageResponse = await axios.post(
-        `https://api.cloudinary.com/v1_1/dhwufmyi4/image/upload`,
-        imageData
-      );
-
-      const newProductData = {
+      const newProducts = {
         ...formData,
-        img: imageResponse.data?.url,
-      } as CreateProductDataType;
-
-      dispatch(
+        img: defaultValues?.img,
+      } as UpdateProductDataType;
+      await dispatch(
         updateProductAsync({
           productId,
-          data: newProductData,
+          data: newProducts,
         })
       );
 
@@ -150,13 +151,31 @@ const FormProduct = ({ initialValues, productId }: Props) => {
             }
             className="grid grid-cols-1 lg:grid-cols-3 gap-3 "
           >
-            <div
+            {location.pathname === "/dashboard/add-product" ? (
+              <div
+                className={`${
+                  theme === "dark" ? "bg-[#212B36]" : "shadow-lg"
+                } rounded-lg p-3`}
+              >
+                <FormUpload name="img" setFile={setFile} />
+              </div>
+            ) : (
+              <div className="mt-4">
+                <p className="text-2xl font-semibold">Hình ảnh sản phẩm</p>
+                <img
+                  className="w-full h-80 mt-4"
+                  src={defaultValues?.img}
+                  alt=""
+                />
+              </div>
+            )}
+            {/* <div
               className={`${
                 theme === "dark" ? "bg-[#212B36]" : "shadow-lg"
               } rounded-lg p-3`}
             >
               <FormUpload name="img" setFile={setFile} />
-            </div>
+            </div> */}
             <div
               className={`col-span-2 ${
                 theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
@@ -172,11 +191,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                     <FormItem>
                       <p>Tên sản phẩm</p>
                       <FormControl>
-                        <Input
-                          placeholder="Enter name product..."
-                          defaultValue={defaultValues?.name_product}
-                          {...field}
-                        />
+                        <Input placeholder="Enter name product..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -191,11 +206,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                         <FormItem>
                           <p>Gía nhập</p>
                           <FormControl>
-                            <Input
-                              defaultValue={defaultValues?.import_price}
-                              placeholder="Gía nhập..."
-                              {...field}
-                            />
+                            <Input placeholder="Gía nhập..." {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -210,11 +221,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
                         <FormItem>
                           <p>Gía bán</p>
                           <FormControl>
-                            <Input
-                              defaultValue={defaultValues?.export_price}
-                              placeholder="Gía bán..."
-                              {...field}
-                            />
+                            <Input placeholder="Gía bán..." {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

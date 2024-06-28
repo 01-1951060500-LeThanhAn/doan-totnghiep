@@ -1,4 +1,4 @@
-import { GeneralFormSchema, generalSchema } from "@/actions/generalSchema";
+import { GeneralFormSchema, generalSchema } from "@/schema/generalSchema";
 import {
   Form,
   FormControl,

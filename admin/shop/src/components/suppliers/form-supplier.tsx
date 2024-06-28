@@ -1,4 +1,4 @@
-import { SupplierFormSchema, supplierSchema } from "@/actions/supplierSchema";
+import { SupplierFormSchema, supplierSchema } from "@/schema/supplierSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateSupplierData, UpdateSupplierData } from "@/types/supplier";
 import { zodResolver } from "@hookform/resolvers/zod";

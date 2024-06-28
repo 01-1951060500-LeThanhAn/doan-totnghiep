@@ -1,4 +1,4 @@
-import { OrderFormSchema, orderSchema } from "@/actions/orderSchema";
+import { OrderFormSchema, orderSchema } from "@/schema/orderSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateOrders } from "@/types/orders";
 import { zodResolver } from "@hookform/resolvers/zod";

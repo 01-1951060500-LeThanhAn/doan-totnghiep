@@ -1,4 +1,4 @@
-import { StaffFormSchema, staffSchema } from "@/actions/staffSchema";
+import { StaffFormSchema, staffSchema } from "@/schema/staffSchema";
 import {
   Form,
   FormControl,

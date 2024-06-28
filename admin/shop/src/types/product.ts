@@ -13,7 +13,20 @@ export type CreateProductDataType = {
   code: string;
 };
 
-export type UpdateProductDataType = CreateProductDataType;
+export type UpdateProductDataType = {
+  _id: string;
+  name_product: string;
+  desc: string;
+  img: string;
+  type: string;
+  unit: string;
+  generalId: string;
+  manager: string;
+  import_price: string;
+  export_price: string;
+  inventory_number: number;
+  code: string;
+};
 
 export type UpdatePriceProduct = {
   import_price: string;

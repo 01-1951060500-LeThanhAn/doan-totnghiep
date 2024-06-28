@@ -5,12 +5,12 @@ import { useParams } from "react-router-dom";
 import FormOrder from "../form-order";
 
 const FormEditOrder = () => {
-  const [data, setData] = useState<OrdersData>();
+  const [data, setData] = useState<OrdersData | undefined>();
   const { orders } = useGetOrders();
   const { orderId } = useParams<{ orderId: string }>();
 
   useEffect(() => {
-    const selectedOrder = orders?.find((item) => item._id === orderId);
+    const selectedOrder = orders && orders.find((item) => item._id === orderId);
 
     setData(selectedOrder);
   }, [orderId, orders]);

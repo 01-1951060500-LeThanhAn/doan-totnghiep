@@ -1,4 +1,4 @@
-import { EditStaffFormSchema, staffEditSchema } from "@/actions/staffSchema";
+import { EditStaffFormSchema, staffEditSchema } from "@/schema/staffSchema";
 import {
   Form,
   FormControl,

@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const formProductSchema = z.object({
   name_product: z.string({
     required_error: "Product name is required",
@@ -8,8 +7,8 @@ export const formProductSchema = z.object({
   desc: z.string().min(1, "Description is required"),
   code: z.string().min(1, "Code product is required"),
   unit: z.string().min(1, "Unit product is required"),
-  generalId: z.string().min(1, "General is required"),
 
+  generalId: z.string().min(1, "General is required"),
   manager: z.string().min(1, "General is required"),
   import_price: z.string().min(1, "Import price is required"),
   export_price: z.string().min(1, "Export price is required"),

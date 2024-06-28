@@ -41,6 +41,19 @@ import { formatPrice } from "@/config/format-price";
 
 export const columns: ColumnDef<SupplierData>[] = [
   {
+    accessorKey: "supplier_code",
+    header: "Mã nhà cung cấp",
+    cell: ({ row }) => {
+      return (
+        <Link to={`/dashboard/supplier/${row.getValue("_id")}/detail`}>
+          <p className="capitalize text-blue-400">
+            {row.getValue("supplier_code")}
+          </p>
+        </Link>
+      );
+    },
+  },
+  {
     accessorKey: "supplier_name",
     header: "Tên nhà cung cấp",
     cell: ({ row }) => (
@@ -52,17 +65,7 @@ export const columns: ColumnDef<SupplierData>[] = [
     header: "",
     cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
   },
-  {
-    accessorKey: "supplier_code",
-    header: "Mã nhà cung cấp",
-    cell: ({ row }) => {
-      return (
-        <Link to={`/dashboard/supplier/${row.getValue("_id")}/detail`}>
-          <p className="capitalize">{row.getValue("supplier_code")}</p>
-        </Link>
-      );
-    },
-  },
+
   {
     accessorKey: "email_supplier",
     header: "Email nhà cung cấp",
