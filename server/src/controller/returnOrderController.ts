@@ -123,14 +123,14 @@ const updateReturnOrders = async (req: Request, res: Response) => {
     }
 
     for (let results of updatedReturnOrderData?.products) {
-      const updatedReturnOrders = order?.products.map(async () => {
+      const updatedReturnOrders = order?.products.map(async (item) => {
         const matchingProductIndex = order.products.findIndex(
-          (p) => p.productId === results.productId
+          (p) => results.productId === item.productId
         );
 
         if (matchingProductIndex !== -1) {
-          order.products[matchingProductIndex].totalReturnOrders -=
-            results.quantity;
+          order.products[matchingProductIndex].quantity -=
+            item.totalReturnOrders;
         }
 
         await order.save();

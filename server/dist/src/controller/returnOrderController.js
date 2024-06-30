@@ -113,11 +113,11 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return res.status(400).json({ message: "Order not found" });
         }
         for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
-            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map(() => __awaiter(void 0, void 0, void 0, function* () {
-                const matchingProductIndex = order.products.findIndex((p) => p.productId === results.productId);
+            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+                const matchingProductIndex = order.products.findIndex((p) => results.productId === item.productId);
                 if (matchingProductIndex !== -1) {
-                    order.products[matchingProductIndex].totalReturnOrders -=
-                        results.quantity;
+                    order.products[matchingProductIndex].quantity -=
+                        item.totalReturnOrders;
                 }
                 yield order.save();
             }));
