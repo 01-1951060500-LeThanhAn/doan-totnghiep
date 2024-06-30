@@ -102,26 +102,26 @@ const OrderSchema = new mongoose.Schema(
   }
 );
 
-OrderSchema.pre("save", async function (next) {
-  const order = this;
-  order.totalPrice = 0;
-  for (const product of order.products) {
-    const productDoc = await mongoose
-      .model("products")
-      .findById(product.productId);
+// OrderSchema.pre("save", async function (next) {
+//   const order = this;
+//   order.totalPrice = 0;
+//   for (const product of order.products) {
+//     const productDoc = await mongoose
+//       .model("products")
+//       .findById(product.productId);
 
-    if (!productDoc) {
-      console.warn(
-        `Product with ID ${product.productId} not found while calculating total price.`
-      );
-      continue;
-    }
+//     if (!productDoc) {
+//       console.warn(
+//         `Product with ID ${product.productId} not found while calculating total price.`
+//       );
+//       continue;
+//     }
 
-    order.totalPrice += productDoc.export_price * product.quantity;
-  }
+//     order.totalPrice += productDoc.export_price * product.quantity;
+//   }
 
-  next();
-});
+//   next();
+// });
 
 OrderSchema.pre("save", async function (next) {
   const order = this;

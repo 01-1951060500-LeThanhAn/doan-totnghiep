@@ -113,8 +113,8 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return res.status(400).json({ message: "Order not found" });
         }
         for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
-            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((productItem) => __awaiter(void 0, void 0, void 0, function* () {
-                const matchingProductIndex = order.products.findIndex((p) => p.productId === productItem.productId);
+            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map(() => __awaiter(void 0, void 0, void 0, function* () {
+                const matchingProductIndex = order.products.findIndex((p) => p.productId === results.productId);
                 if (matchingProductIndex !== -1) {
                     order.products[matchingProductIndex].totalReturnOrders -=
                         results.quantity;
@@ -123,33 +123,6 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             }));
             yield Promise.all(updatedReturnOrders);
         }
-        // const paymentStatusChangedToPaid =
-        //   originalReturnOrderData?.refund_status !== "refunded" &&
-        //   updatedReturnOrderData?.refund_status === "refunded";
-        // if (paymentStatusChangedToPaid) {
-        //   const customerId = updatedReturnOrderData.customerId;
-        //   const totalPrice = updatedReturnOrderData.totalPrice;
-        //   const customer = await CustomerModel.findById(customerId);
-        //   const currentBalanceIncreases = customer?.balance_increases || 0;
-        //   const currentBalanceDecreases = customer?.balance_decreases || 0;
-        //   const remainingDecreases =
-        //     Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-        //   const updatedRemainingDecreases = Math.max(
-        //     remainingDecreases - totalPrice,
-        //     0
-        //   );
-        //   await CustomerModel.findByIdAndUpdate(customerId, {
-        //     balance_increases: currentBalanceIncreases - totalPrice,
-        //     balance_decreases: currentBalanceIncreases - totalPrice,
-        //     remaining_decreases: updatedRemainingDecreases,
-        //     ending_balance: updatedRemainingDecreases,
-        //   });
-        // }
-        // if (paymentStatusChangedToPaid) {
-        //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
-        //     $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
-        //   });
-        // }
         res.status(200).json(updatedReturnOrderData);
     }
     catch (error) {

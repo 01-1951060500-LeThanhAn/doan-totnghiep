@@ -123,9 +123,9 @@ const updateReturnOrders = async (req: Request, res: Response) => {
     }
 
     for (let results of updatedReturnOrderData?.products) {
-      const updatedReturnOrders = order?.products.map(async (productItem) => {
+      const updatedReturnOrders = order?.products.map(async () => {
         const matchingProductIndex = order.products.findIndex(
-          (p) => p.productId === productItem.productId
+          (p) => p.productId === results.productId
         );
 
         if (matchingProductIndex !== -1) {
@@ -137,40 +137,6 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       });
       await Promise.all(updatedReturnOrders);
     }
-
-    // const paymentStatusChangedToPaid =
-    //   originalReturnOrderData?.refund_status !== "refunded" &&
-    //   updatedReturnOrderData?.refund_status === "refunded";
-
-    // if (paymentStatusChangedToPaid) {
-    //   const customerId = updatedReturnOrderData.customerId;
-    //   const totalPrice = updatedReturnOrderData.totalPrice;
-
-    //   const customer = await CustomerModel.findById(customerId);
-
-    //   const currentBalanceIncreases = customer?.balance_increases || 0;
-    //   const currentBalanceDecreases = customer?.balance_decreases || 0;
-    //   const remainingDecreases =
-    //     Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-
-    //   const updatedRemainingDecreases = Math.max(
-    //     remainingDecreases - totalPrice,
-    //     0
-    //   );
-
-    //   await CustomerModel.findByIdAndUpdate(customerId, {
-    //     balance_increases: currentBalanceIncreases - totalPrice,
-    //     balance_decreases: currentBalanceIncreases - totalPrice,
-    //     remaining_decreases: updatedRemainingDecreases,
-    //     ending_balance: updatedRemainingDecreases,
-    //   });
-    // }
-
-    // if (paymentStatusChangedToPaid) {
-    //   await OrderModel.findByIdAndUpdate(updatedReturnOrderData?._id, {
-    //     $inc: { totalPrice: -updatedReturnOrderData?.totalPrice },
-    //   });
-    // }
 
     res.status(200).json(updatedReturnOrderData);
   } catch (error) {

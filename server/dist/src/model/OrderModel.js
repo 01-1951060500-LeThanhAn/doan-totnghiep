@@ -109,23 +109,23 @@ const OrderSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true,
 });
-OrderSchema.pre("save", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const order = this;
-        order.totalPrice = 0;
-        for (const product of order.products) {
-            const productDoc = yield mongoose_1.default
-                .model("products")
-                .findById(product.productId);
-            if (!productDoc) {
-                console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
-                continue;
-            }
-            order.totalPrice += productDoc.export_price * product.quantity;
-        }
-        next();
-    });
-});
+// OrderSchema.pre("save", async function (next) {
+//   const order = this;
+//   order.totalPrice = 0;
+//   for (const product of order.products) {
+//     const productDoc = await mongoose
+//       .model("products")
+//       .findById(product.productId);
+//     if (!productDoc) {
+//       console.warn(
+//         `Product with ID ${product.productId} not found while calculating total price.`
+//       );
+//       continue;
+//     }
+//     order.totalPrice += productDoc.export_price * product.quantity;
+//   }
+//   next();
+// });
 OrderSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const order = this;
