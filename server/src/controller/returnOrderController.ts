@@ -130,7 +130,7 @@ const updateReturnOrders = async (req: Request, res: Response) => {
 
         if (matchingProductIndex !== -1) {
           order.products[matchingProductIndex].quantity -=
-            item.totalReturnOrders;
+            order?.totalReturnOrders;
         }
 
         await order.save();
