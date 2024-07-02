@@ -40,7 +40,7 @@ const ViewBox = () => {
                 <Eye />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-slate-400">Nhân viên</p>
+                <p className="text-sm text-slate-400">Người dùng</p>
                 <span className="text-2xl font-bold">{users?.length}</span>
               </div>
             </div>

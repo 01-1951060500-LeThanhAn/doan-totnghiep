@@ -1,5 +1,5 @@
 import LoginForm from "@/components/auth/form/form-login";
-
+import "./login.css";
 const LoginPage = () => {
   return (
     <>
@@ -15,6 +15,11 @@ const LoginPage = () => {
         }}
       >
         <div className="absolute top-0 right-0 left-0 bottom-0 w-full h-full bg-[rgba(0,0,0,0.4)]">
+          <div className=" text-center w-full">
+            <p className="text-4xl mt-12 title -mb-20 text-white font-bold">
+              CÔNG TY QUẢN LÝ NGUYÊN PHỤ LIỆU MAY MẶC AN VIỆT
+            </p>
+          </div>
           <div className="flex items-center w-full">
             <div className="w-2/5 flex flex-1 justify-center items-center min-h-[100vh]">
               <div className="">

@@ -28,7 +28,7 @@ export function DeliveryDate({ field }: Props) {
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {field?.value ? (
-            format(field?.value, "PPP")
+            <p>{format(field?.value, "PPP")}</p>
           ) : (
             <span>Pick a date</span>
           )}

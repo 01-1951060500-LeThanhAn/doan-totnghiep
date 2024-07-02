@@ -96,7 +96,7 @@ export const columns: ColumnDef<SupplierData>[] = [
   },
   {
     accessorKey: "totalPrice",
-    header: "Tổng chi tiêu",
+    header: "Tổng tiền nhập",
     cell: ({ row }) => {
       return (
         <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>

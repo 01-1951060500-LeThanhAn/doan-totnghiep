@@ -39,8 +39,6 @@ const GoodReceivedNoteDetailView = ({ id }: Props) => {
         href2={`/dashboard/good-received-note/`}
         breadcumbItem="Đơn nhập hàng"
         breadcumbPage="Thông tin chi tiết đơn nhập hàng"
-        linkBtn={`/dashboard/good-received-note/${id}/edit`}
-        title="Chỉnh sửa đơn nhập hàng"
       />
       <DetailGoodReceivedNoteView
         id={id}

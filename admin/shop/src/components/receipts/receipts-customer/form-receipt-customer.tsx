@@ -5,7 +5,7 @@ import {
 import HomeLayout from "@/layouts/home-layout";
 import { CreateReceiptData } from "@/types/receipt";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -41,6 +41,9 @@ type Props = {
 };
 
 const FormCustomerReceipt = ({ initialValues }: Props) => {
+  const [selectedOption, setSelectedOption] = useState("customer");
+  const [selectedTypeReceipt, setSelectedTypeReceipt] =
+    useState("debt-customer");
   const defaultValues = useMemo(
     () => ({
       code: initialValues?.code ?? "",
@@ -68,6 +71,12 @@ const FormCustomerReceipt = ({ initialValues }: Props) => {
     resolver: zodResolver(receiptCustomerSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    form.setValue("code", defaultValues?.code);
+    form.setValue("receipt_type", selectedTypeReceipt);
+    form.setValue("submitter", selectedOption);
+  }, [form, defaultValues, selectedOption, selectedTypeReceipt]);
 
   const handleCreateCustomerReceipt = async () => {
     try {
@@ -108,14 +117,17 @@ const FormCustomerReceipt = ({ initialValues }: Props) => {
                   <FormField
                     control={form.control}
                     name="submitter"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <p>Nhóm người nộp</p>
                         <FormControl>
                           <div>
                             <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
+                              disabled
+                              value={selectedOption}
+                              onValueChange={(value) => {
+                                setSelectedOption(value);
+                              }}
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Chọn nhóm người nộp" />
@@ -199,14 +211,17 @@ const FormCustomerReceipt = ({ initialValues }: Props) => {
                   <FormField
                     control={form.control}
                     name="receipt_type"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <p>Loại phiếu thu </p>
                         <FormControl>
                           <div>
                             <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
+                              disabled
+                              value={selectedTypeReceipt}
+                              onValueChange={(value) => {
+                                setSelectedTypeReceipt(value);
+                              }}
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Loại phiếu thu" />

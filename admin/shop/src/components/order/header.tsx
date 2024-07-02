@@ -1,3 +1,4 @@
+import React from "react"; // Import React
 import ListRouteModal from "@/components/modals/routes";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
@@ -5,7 +6,7 @@ import { Save } from "lucide-react";
 type Props = {
   title: string;
   text1: string;
-  text2: string;
+  text2: string | React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 

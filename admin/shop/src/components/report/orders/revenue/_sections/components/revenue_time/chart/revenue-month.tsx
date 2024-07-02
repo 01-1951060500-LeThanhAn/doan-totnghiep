@@ -69,7 +69,7 @@ const RevenueMonthChart = () => {
             },
             plugins: {
               title: {
-                text: "Tổng doanh thu tháng bán hàng của công ty",
+                text: "Tổng doanh thu tháng bán hàng của kho hàng theo tháng",
                 color: `${theme === "dark" ? "white" : "black"}`,
               },
             },

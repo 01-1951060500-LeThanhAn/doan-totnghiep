@@ -1,0 +1,23 @@
+.title {
+  position: relative;
+}
+
+.title::before {
+  position: absolute;
+
+  overflow: hidden;
+  animation: animate 6s linear infinite;
+  height: 100%;
+}
+
+@keyframes animate {
+  0%,
+  10%,
+  100% {
+    width: 0;
+  }
+  70%,
+  90% {
+    width: 100%;
+  }
+}

@@ -38,8 +38,6 @@ const PurchaseOrderDetailView = ({ id }: Props) => {
         href2={`/dashboard/purchase-order/`}
         breadcumbItem="Đơn đặt hàng"
         breadcumbPage="Thông tin chi tiết đơn đặt hàng"
-        linkBtn={`/dashboard/purchase-order/${id}/edit`}
-        title="Chỉnh sửa đơn đặt hàng"
       />
       <DetailPurchaseView
         id={id as string}

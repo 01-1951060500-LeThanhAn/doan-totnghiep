@@ -2,7 +2,7 @@ import { OrderFormSchema, orderSchema } from "@/schema/orderSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateOrders } from "@/types/orders";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ControllerRenderProps, FieldValues, useForm } from "react-hook-form";
 import {
   Form,
@@ -54,8 +54,7 @@ const FormOrder = ({ initialValues }: Props) => {
       invoice_address: initialValues?.invoice_address ?? "",
       customerId: initialValues?.customerId ?? "",
       payment_method: initialValues?.payment_method ?? "",
-      received_date:
-        initialValues?.received_date ?? new Date(initialValues?.received_date),
+
       products: initialValues?.products.map((product) => ({
         quantity: product?.quantity ? product?.quantity : "",
         productId: product?.productId ?? "",
@@ -67,11 +66,9 @@ const FormOrder = ({ initialValues }: Props) => {
     resolver: zodResolver(orderSchema),
     defaultValues: {
       ...defaultValues,
-      received_date: defaultValues?.received_date
-        ? new Date(defaultValues?.received_date)
-        : new Date(),
     },
   });
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { generals } = useGetGenerals();
@@ -80,7 +77,18 @@ const FormOrder = ({ initialValues }: Props) => {
   const { partners } = useGetPartners();
   const { theme } = useTheme();
   const { users } = useGetUsers();
-  const { loading } = useAppSelector((state) => state.orders);
+  const { loading, isEdit } = useAppSelector((state) => state.orders);
+
+  useEffect(() => {
+    form.setValue("code", defaultValues?.code);
+    form.setValue("total_ship", defaultValues?.total_ship);
+    form.setValue("payment_method", defaultValues?.payment_method);
+    form.setValue("customerId", defaultValues?.customerId);
+    form.setValue("delivery_address", defaultValues?.delivery_address);
+    form.setValue("received_date", new Date());
+    form.setValue("invoice_address", defaultValues?.invoice_address);
+  }, [form, defaultValues]);
+
   const handleCreateOrder = async () => {
     try {
       const formData = form.getValues() as CreateOrders;
@@ -174,7 +182,8 @@ const FormOrder = ({ initialValues }: Props) => {
                           <div>
                             <Select
                               onValueChange={field.onChange}
-                              defaultValue={field.value}
+                              defaultValue={defaultValues?.customerId}
+                              {...field}
                             >
                               <SelectTrigger>
                                 <SelectValue placeholder="Chọn khách hàng" />
@@ -356,6 +365,7 @@ const FormOrder = ({ initialValues }: Props) => {
                         <p>Phương thức thanh toán</p>
                         <FormControl>
                           <RadioGroup
+                            defaultValue="online"
                             onValueChange={field.onChange}
                             className="flex flex-col space-y-1"
                           >
@@ -403,15 +413,32 @@ const FormOrder = ({ initialValues }: Props) => {
             <div></div>
 
             <div>
-              {loading ? (
-                <Button disabled>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </Button>
+              {location.pathname === "/dashboard/orders/create" ? (
+                <>
+                  {loading ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button type="submit">
+                      <p>Tạo đơn hàng</p>
+                    </Button>
+                  )}
+                </>
               ) : (
-                <Button type="submit">
-                  <p>Tạo đơn hàng</p>
-                </Button>
+                <>
+                  {isEdit ? (
+                    <Button disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Please wait
+                    </Button>
+                  ) : (
+                    <Button type="submit">
+                      <p>Cập nhật đơn hàng</p>
+                    </Button>
+                  )}
+                </>
               )}
 
               <Button

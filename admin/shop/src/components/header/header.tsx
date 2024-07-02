@@ -13,17 +13,17 @@ const Header = () => {
 
   return (
     <>
-      <div className="flex justify-between flex-wrap space-y-3 items-center">
-        <div className="">
+      <div className="flex justify-between gap-x-3 space-y-3 items-center">
+        <div className="max-w-2xl">
           <p className="text-slate-600 text-base mb-2 md:mb-0">
-            Hello, {currentUser?.username}
+            Xin chào, {currentUser?.username}
           </p>
           <p className="text-2xl font-bold">
             Công ty dịch vụ nguyên phụ liệu may mặc An Việt
           </p>
         </div>
-        <div className="flex items-center">
-          <div className="mr-2">
+        <div className="flex justify-center items-center">
+          <div className="mr-2 hidden xl:block">
             <p className="text-base font-semibold">{currentUser?.username}</p>
             <p className="text-sm text-slate-400">Quản lý kho </p>
           </div>

@@ -50,7 +50,7 @@ const RevenueSupplierChart = () => {
             labels: revenueSuppliers.map((item) => item.name),
             datasets: [
               {
-                label: "Tổng tiền hành nhập của nhà cung cấp",
+                label: "Tổng tiền hàng nhập của nhà cung cấp",
                 data: revenueSuppliers.map((item) => item.totalPrice),
                 backgroundColor: ["rgba(253, 135, 135, 0.8)"],
                 borderRadius: 5,

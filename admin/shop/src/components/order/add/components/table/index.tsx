@@ -45,10 +45,13 @@ const AddOrderTable = ({ data }: Props) => {
                 <p>Hình sản phẩm</p>
               </TableHead>
               <TableHead>
+                <p>Thuộc kho</p>
+              </TableHead>
+              <TableHead>
                 <p>Đơn giá</p>
               </TableHead>
               <TableHead>
-                <p>Số lượng đơn hàng</p>
+                <p>Số lượng hàng</p>
               </TableHead>
               <TableHead>
                 <p>Chọn SP tạo đơn</p>
@@ -70,6 +73,9 @@ const AddOrderTable = ({ data }: Props) => {
                     alt=""
                     className="w-24 h-12 object-contain"
                   />
+                </TableCell>
+                <TableCell>
+                  <p>{item?.generalId?.name}</p>
                 </TableCell>
                 <TableCell>
                   <p>{formatPrice(+item?.export_price)}</p>
