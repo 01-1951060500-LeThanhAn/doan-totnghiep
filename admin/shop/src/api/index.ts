@@ -20,3 +20,12 @@ export const adminApi = axios.create({
 if (TOKEN) {
   baseApi.defaults.headers.common.Authorization = `Bearer ${TOKEN}`;
 }
+
+baseApi.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
