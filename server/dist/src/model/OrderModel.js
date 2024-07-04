@@ -93,6 +93,11 @@ const OrderSchema = new mongoose_1.default.Schema({
         enum: ["pending", "delivered", "cancelled"],
         default: "pending",
     },
+    transport_status: {
+        type: String,
+        enum: ["transporting", "shipped"],
+        default: "transporting",
+    },
     payment_method: {
         type: String,
         enum: ["online", "offline"],
