@@ -21,7 +21,7 @@ if (TOKEN) {
   baseApi.defaults.headers.common.Authorization = `Bearer ${TOKEN}`;
 }
 
-baseApi.interceptors.response.use(
+adminApi.interceptors.response.use(
   function (response) {
     return response;
   },

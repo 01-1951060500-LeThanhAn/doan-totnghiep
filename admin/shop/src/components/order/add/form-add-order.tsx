@@ -14,6 +14,7 @@ const FormAddOrder = () => {
           customerId: "",
           partnerId: "",
           payment_method: "",
+          transport_status: "",
           received_date: "",
           total_ship: "",
           products: [

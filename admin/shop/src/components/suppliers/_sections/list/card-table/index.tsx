@@ -33,7 +33,7 @@ import { useTheme } from "next-themes";
 
 import HomeLayout from "@/layouts/home-layout";
 import { Link } from "react-router-dom";
-import { CreateSupplierData, SupplierData } from "@/types/supplier";
+import { SupplierData } from "@/types/supplier";
 import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
@@ -85,13 +85,10 @@ export const columns: ColumnDef<SupplierData>[] = [
     cell: ({ row }) => <p className="capitalize">{row.getValue("website")}</p>,
   },
   {
-    accessorKey: "purchase_orders",
+    accessorKey: "totalOrders",
     header: "Tổng SL đơn nhập",
     cell: ({ row }) => {
-      const orders = row.getValue("purchase_orders") as CreateSupplierData[];
-      const totalOrders = orders?.length;
-
-      return <p className="capitalize">{totalOrders}</p>;
+      return <p className="capitalize">{row.getValue("totalOrders")}</p>;
     },
   },
   {

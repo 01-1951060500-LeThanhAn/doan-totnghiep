@@ -4,8 +4,8 @@ import useGetTransactions from "../hooks/use-get-all-transaction";
 import TransactionTableData from "./card-table";
 import { TransactionTableProps } from "@/types/transaction";
 import * as XLSX from "xlsx";
-import saveAs from "file-saver";
 import HomeLayout from "@/layouts/home-layout";
+import { saveAs } from "file-saver";
 
 const ViewReportTransactionPage = () => {
   const { transactions } = useGetTransactions();
@@ -32,7 +32,7 @@ const ViewReportTransactionPage = () => {
   const handleExportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(data);
 
-    worksheet["A1"] = { v: "Bảng lịch sử giao dịch", t: "s" }; // Title with styling (optional)
+    worksheet["A1"] = { v: "Bảng lịch sử giao dịch", t: "s" };
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
@@ -50,6 +50,11 @@ const ViewReportTransactionPage = () => {
     } catch (err) {
       console.error("XLSX.writeFile failed:", err);
     }
+
+    // const wb = XLSX.utils.book_new();
+    // const ws = XLSX.utils.json_to_sheet(data);
+    // XLSX.utils.book_append_sheet(wb, ws, "Transactions");
+    // XLSX.writeFile(wb, "LS_giao_dich.xlsx");
   };
 
   return (

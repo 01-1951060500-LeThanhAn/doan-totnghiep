@@ -38,15 +38,19 @@ const ProductPage = () => {
   const { general: main } = useGetDetailGeneral({ id: generalIdList[0] });
   const { general: sub } = useGetDetailGeneral({ id: generalIdList[1] });
 
-  const mainProducts = main?.general[0]?.products.map((product) => ({
-    ...product,
-    general: main?.results?.name,
-  }));
+  const mainProducts =
+    main &&
+    main?.general[0]?.products.map((product) => ({
+      ...product,
+      general: main?.results?.name,
+    }));
 
-  const subProducts = sub?.general[0]?.products.map((product) => ({
-    ...product,
-    general: sub?.results?.name,
-  }));
+  const subProducts =
+    sub &&
+    sub?.general[0]?.products.map((product) => ({
+      ...product,
+      general: sub?.results?.name,
+    }));
 
   return (
     <>

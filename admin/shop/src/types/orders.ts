@@ -9,6 +9,7 @@ export type CreateOrders = {
   delivery_address: string;
   invoice_address: string;
   payment_method: string;
+  transport_status: string;
   total_ship: string;
   products: {
     productId: string;

@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GoodReceivedPage = () => {
   const { goodReceivedNotes } = useGetGoodReceivedNotes();
-  console.log(goodReceivedNotes);
   const { warehouseOrders } = useGetStatusGoodReceivedNoteOrders();
   const data = goodReceivedNotes.map((goodReceivedNote) => ({
     _id: goodReceivedNote._id,

@@ -5,9 +5,11 @@ import Heading from "./heading";
 
 const SupplierPage = () => {
   const { suppliers } = useGetSuppliers();
+
   const data = suppliers.map((item) => ({
     ...item.supplier,
     totalPrice: item?.totalSpending,
+    totalOrders: item?.totalOrders,
   }));
   return (
     <>
