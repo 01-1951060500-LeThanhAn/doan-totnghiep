@@ -256,8 +256,7 @@ const deleteOrder = async (req: Request, res: Response) => {
     }
 
     const customerId = deletedOrder.customerId;
-    const orderTotalPrice = deletedOrder.totalPrice; // Get the order's total price
-
+    const orderTotalPrice = deletedOrder.totalPrice;
     const customer = await CustomerModel.findById(customerId);
     if (!customer) {
       throw new Error(`Customer not found: ${customerId}`);

@@ -204,7 +204,7 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(404).json({ message: "Đơn hàng không tồn tại" });
         }
         const customerId = deletedOrder.customerId;
-        const orderTotalPrice = deletedOrder.totalPrice; // Get the order's total price
+        const orderTotalPrice = deletedOrder.totalPrice;
         const customer = yield CustomerModel_1.default.findById(customerId);
         if (!customer) {
             throw new Error(`Customer not found: ${customerId}`);
