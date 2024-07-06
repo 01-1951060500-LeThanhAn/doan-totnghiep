@@ -278,10 +278,7 @@ const deleteOrder = async (req: Request, res: Response) => {
       ending_balance: updatedEndingBalance,
     });
 
-    if (
-      deletedOrder.order_status === "pending" &&
-      deletedOrder.payment_status === "unpaid"
-    ) {
+    if (deletedOrder.order_status === "pending") {
       for (const product of deletedOrder.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
           $inc: { pendingOrderQuantity: -product.quantity },
@@ -291,7 +288,7 @@ const deleteOrder = async (req: Request, res: Response) => {
 
     if (
       deletedOrder.order_status === "cancelled" &&
-      deletedOrder.payment_status === "unpaid"
+      deletedOrder?.payment_status === "unpaid"
     ) {
       for (const product of deletedOrder.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
