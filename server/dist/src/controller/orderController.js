@@ -219,7 +219,8 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedEndingBalance,
         });
-        if (deletedOrder.payment_status === "unpaid") {
+        if (deletedOrder.order_status === "pending" ||
+            deletedOrder.order_status === "cancelled") {
             for (const product of deletedOrder.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
                     $inc: { pendingOrderQuantity: -product.quantity },
