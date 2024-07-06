@@ -219,21 +219,6 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             remaining_decreases: updatedRemainingDecreases,
             ending_balance: updatedEndingBalance,
         });
-        if (deletedOrder.order_status === "pending") {
-            for (const product of deletedOrder.products) {
-                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                    $inc: { pendingOrderQuantity: -product.quantity },
-                });
-            }
-        }
-        if (deletedOrder.order_status === "cancelled" &&
-            (deletedOrder === null || deletedOrder === void 0 ? void 0 : deletedOrder.payment_status) === "unpaid") {
-            for (const product of deletedOrder.products) {
-                yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                    $inc: { pendingOrderQuantity: -product.quantity },
-                });
-            }
-        }
         res.status(200).json({
             message: "Sản phẩm đã được xóa khỏi giỏ hàng.",
         });
