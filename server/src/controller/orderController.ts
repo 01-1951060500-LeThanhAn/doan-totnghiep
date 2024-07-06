@@ -279,8 +279,19 @@ const deleteOrder = async (req: Request, res: Response) => {
     });
 
     if (
-      deletedOrder.order_status === "pending" ||
-      deletedOrder.order_status === "cancelled"
+      deletedOrder.order_status === "pending" &&
+      deletedOrder.payment_status === "unpaid"
+    ) {
+      for (const product of deletedOrder.products) {
+        await ProductModel.findByIdAndUpdate(product.productId, {
+          $inc: { pendingOrderQuantity: -product.quantity },
+        });
+      }
+    }
+
+    if (
+      deletedOrder.order_status === "cancelled" &&
+      deletedOrder.payment_status === "unpaid"
     ) {
       for (const product of deletedOrder.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
