@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatPrice } from "@/config/format-price";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch } from "@/hooks/hooks";
 import HomeLayout from "@/layouts/home-layout";
 import { updateOrderAsync } from "@/redux/slices/orderSlice";
 import { DetailOrderData } from "@/types/orders";
@@ -20,14 +20,14 @@ type Props = {
 const DetailOrderView = ({ data, id }: Props) => {
   const { theme } = useTheme();
   const componentRef = useRef<HTMLElement | null>(null);
-  const { isEdit, loading } = useAppSelector((state) => state?.orders);
   const [isCancelled, setIsCancelled] = useState(false);
   const dispatch = useAppDispatch();
   const [paymentStatus, setPaymentStatus] = useState(data?.payment_status);
   const [orderStatus, setOrderStatus] = useState(data?.order_status);
-
+  const [loading, setLoading] = useState(false);
   const handleUpdatePaymentStatus = async () => {
     try {
+      setLoading(true);
       await dispatch(
         updateOrderAsync({
           orderId: id,
@@ -36,10 +36,12 @@ const DetailOrderView = ({ data, id }: Props) => {
           },
         })
       );
+      setLoading(false);
       setPaymentStatus("paid");
       toast.success(" Đơn hàng thanh toán thành công");
     } catch (error) {
       console.log(error);
+      setLoading(false);
       toast.error("Đơn hàng thanh toán thất bại");
     }
   };
@@ -58,7 +60,6 @@ const DetailOrderView = ({ data, id }: Props) => {
       setOrderStatus("cancelled");
       setIsCancelled(false);
       toast.success(" Đơn hàng đã hủy thành công");
-      // navigate("/dashboard/orders");
     } catch (error) {
       console.log(error);
       toast.error("Đơn hàng đã hủy thất bại");
@@ -239,7 +240,7 @@ const DetailOrderView = ({ data, id }: Props) => {
                   </div>
 
                   <div>
-                    {isEdit ? (
+                    {loading ? (
                       <Button disabled>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Please wait
@@ -322,7 +323,7 @@ const DetailOrderView = ({ data, id }: Props) => {
                       <p>Hủy đơn hàng</p>
                     </Button>
                   )}
-                  {loading ? (
+                  {isCancelled ? (
                     <Button disabled>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Please wait

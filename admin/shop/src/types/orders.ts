@@ -72,6 +72,7 @@ export type UpdateOrders = {
   total_ship: string;
   invoice_address: string;
   payment_method: string;
+  transport_status: string;
   products: {
     productId: string;
     quantity: number;

@@ -185,34 +185,24 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
                       <p>Loại khách hàng</p>
                       <FormControl>
                         <div>
-                          {location.pathname ===
-                          `/dashboard/customer/${customerId}/edit` ? (
-                            <div>
-                              <Input defaultValue={defaultValues?.type} />
-                            </div>
-                          ) : (
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Phân loại khách hàng" />
-                              </SelectTrigger>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Phân loại khách hàng" />
+                            </SelectTrigger>
 
-                              <SelectContent>
-                                <SelectGroup>
-                                  {customerType.map((item) => (
-                                    <SelectItem
-                                      key={item.type}
-                                      value={item.name}
-                                    >
-                                      {item.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          )}
+                            <SelectContent>
+                              <SelectGroup>
+                                {customerType.map((item) => (
+                                  <SelectItem key={item.type} value={item.name}>
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -229,32 +219,24 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
                       <p>Nhóm khách hàng</p>
                       <FormControl>
                         <div>
-                          {location.pathname ===
-                          `/dashboard/customer/${customerId}/edit` ? (
-                            <Input defaultValue={defaultValues?.level} />
-                          ) : (
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Phân nhóm khách hàng" />
-                              </SelectTrigger>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Phân nhóm khách hàng" />
+                            </SelectTrigger>
 
-                              <SelectContent>
-                                <SelectGroup>
-                                  {customerGroup.map((item) => (
-                                    <SelectItem
-                                      key={item.type}
-                                      value={item.name}
-                                    >
-                                      {item.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          )}
+                            <SelectContent>
+                              <SelectGroup>
+                                {customerGroup.map((item) => (
+                                  <SelectItem key={item.type} value={item.name}>
+                                    {item.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -300,32 +282,27 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
                     <FormItem>
                       <p>Tỉnh, Thành phố</p>
                       <div>
-                        {location.pathname ===
-                        `/dashboard/customer/${customerId}/edit` ? (
-                          <Input defaultValue={defaultValues?.city} />
-                        ) : (
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn tỉnh, thành phố" />
-                            </SelectTrigger>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn tỉnh, thành phố" />
+                          </SelectTrigger>
 
-                            <SelectContent>
-                              <SelectGroup>
-                                {cities.map((item) => (
-                                  <SelectItem
-                                    key={item.level1_id}
-                                    value={item.name}
-                                  >
-                                    {item.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        )}
+                          <SelectContent>
+                            <SelectGroup>
+                              {cities.map((item) => (
+                                <SelectItem
+                                  key={item.level1_id}
+                                  value={item.name}
+                                >
+                                  {item.name}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <FormMessage />
                     </FormItem>

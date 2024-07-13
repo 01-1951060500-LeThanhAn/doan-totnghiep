@@ -32,11 +32,11 @@ const DetailGoodReceivedNoteView = ({ data, id }: Props) => {
       await dispatch(updateGRNAsync(id));
       setLoading(false);
       setPaymentStatus("paid");
-      toast.success("Thanh toán đơn hàng thành công");
+      toast.success("Thanh toán đơn nhập hàng thành công");
     } catch (error) {
       console.log(error);
       setLoading(false);
-      toast.error("Thanh toán đơn hàng thất bại");
+      toast.error("Thanh toán đơn nhập hàng thất bại");
     }
   };
 
