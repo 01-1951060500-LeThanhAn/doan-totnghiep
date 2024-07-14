@@ -173,10 +173,30 @@ const deletePartner = async (req: Request, res: Response) => {
   }
 };
 
+const searchPartner = async (req: Request, res: Response) => {
+  const status = req.query.status as string;
+
+  try {
+    const newStatus = new RegExp(status, "i");
+
+    const results = await PartnerModel.find({
+      status: newStatus,
+    });
+
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server not found!",
+    });
+  }
+};
+
 export {
   createPartner,
   getPartners,
   getInfoPartner,
   deletePartner,
   updatePartner,
+  searchPartner,
 };

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updatePartner = exports.deletePartner = exports.getInfoPartner = exports.getPartners = exports.createPartner = void 0;
+exports.searchPartner = exports.updatePartner = exports.deletePartner = exports.getInfoPartner = exports.getPartners = exports.createPartner = void 0;
 const PartnerModel_1 = __importDefault(require("../model/PartnerModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createPartner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -183,3 +183,20 @@ const deletePartner = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.deletePartner = deletePartner;
+const searchPartner = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const status = req.query.status;
+    try {
+        const newStatus = new RegExp(status, "i");
+        const results = yield PartnerModel_1.default.find({
+            status: newStatus,
+        });
+        return res.status(200).json(results);
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Server not found!",
+        });
+    }
+});
+exports.searchPartner = searchPartner;

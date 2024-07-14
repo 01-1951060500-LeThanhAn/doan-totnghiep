@@ -12,4 +12,5 @@ router.get("/", auth_1.verifyTokenAndAuthorization, partnerController_1.getPartn
 router.get("/:id", auth_1.verifyTokenAndAuthorization, partnerController_1.getInfoPartner);
 router.delete("/:id", auth_1.verifyTokenAndAdmin, partnerController_1.deletePartner);
 router.patch("/:id", auth_1.verifyTokenAndAdmin, partnerController_1.updatePartner);
+router.get("/search/status-partner", auth_1.verifyTokenAndAuthorization, partnerController_1.searchPartner);
 exports.default = router;

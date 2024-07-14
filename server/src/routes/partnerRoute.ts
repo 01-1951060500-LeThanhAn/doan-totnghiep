@@ -5,6 +5,7 @@ import {
   getInfoPartner,
   updatePartner,
   getPartners,
+  searchPartner,
 } from "../controller/partnerController";
 import {
   verifyTokenAndAdmin,
@@ -22,5 +23,11 @@ router.get("/:id", verifyTokenAndAuthorization, getInfoPartner);
 router.delete("/:id", verifyTokenAndAdmin, deletePartner);
 
 router.patch("/:id", verifyTokenAndAdmin, updatePartner);
+
+router.get(
+  "/search/status-partner",
+  verifyTokenAndAuthorization,
+  searchPartner
+);
 
 export default router;
