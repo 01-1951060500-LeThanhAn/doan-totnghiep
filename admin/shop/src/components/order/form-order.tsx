@@ -28,7 +28,6 @@ import { ProductData } from "@/types/product";
 import AddOrderTable from "./add/components/table";
 import useGetCustomers from "../customers/hooks/use-get-customers";
 import useGetUsers from "../suppliers/hooks/use-get-users";
-import useGetPartners from "../shipping-partner/hooks/use-get-partners";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
@@ -37,6 +36,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import useGetStatusPartners from "../shipping-partner/hooks/use-get-status-partner";
 
 type Props = {
   orderId?: string;
@@ -74,7 +74,7 @@ const FormOrder = ({ initialValues }: Props) => {
   const { generals } = useGetGenerals();
   const { products } = useGetProducts();
   const { customers } = useGetCustomers();
-  const { partners } = useGetPartners();
+  const { partners } = useGetStatusPartners();
   const { theme } = useTheme();
   const { users } = useGetUsers();
   const { loading, isEdit } = useAppSelector((state) => state.orders);

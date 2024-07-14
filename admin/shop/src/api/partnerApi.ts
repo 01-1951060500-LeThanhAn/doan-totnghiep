@@ -37,6 +37,14 @@ const getListPartner = async () => {
   return response;
 };
 
+const getStatusPartner = async () => {
+  const response = await adminApi.get<PartnerData[]>(
+    `/partner/search/status-partner?status=active`
+  );
+
+  return response;
+};
+
 const getDetailPartner = async (shipId: string) => {
   const response = await adminApi.get<DetailPartnerData>(`/partner/${shipId}`);
 
@@ -49,4 +57,5 @@ export {
   deletePartner,
   getDetailPartner,
   updatePartner,
+  getStatusPartner,
 };
