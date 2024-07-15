@@ -148,6 +148,9 @@ const updateOrder = async (req: Request, res: Response) => {
     const OrderStatusChangedToCancelled =
       originalOrder?.order_status !== "cancelled" &&
       updatedOrder?.order_status === "cancelled";
+    const OrderStatusChangedToDelivered =
+      originalOrder?.order_status !== "delivered" &&
+      updatedOrder?.order_status === "delivered";
 
     if (paymentStatusChangedToPaid) {
       const customerId = updatedOrder.customerId;
@@ -223,14 +226,16 @@ const updateOrder = async (req: Request, res: Response) => {
       }
     }
 
-    const transactionHistory = new TransactionModel({
-      transaction_type: "order",
-      transaction_date: Date.now(),
-      orderId: updatedOrder?._id,
-      totalPrice: updatedOrder?.totalCustomerPay,
-    });
+    if (OrderStatusChangedToDelivered) {
+      const transactionHistory = new TransactionModel({
+        transaction_type: "order",
+        transaction_date: Date.now(),
+        orderId: updatedOrder?._id,
+        totalPrice: updatedOrder?.totalCustomerPay,
+      });
 
-    await transactionHistory.save();
+      await transactionHistory.save();
+    }
 
     res.status(200).json(updatedOrder);
   } catch (error) {

@@ -117,6 +117,8 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.payment_status) === "paid";
         const OrderStatusChangedToCancelled = (originalOrder === null || originalOrder === void 0 ? void 0 : originalOrder.order_status) !== "cancelled" &&
             (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.order_status) === "cancelled";
+        const OrderStatusChangedToDelivered = (originalOrder === null || originalOrder === void 0 ? void 0 : originalOrder.order_status) !== "delivered" &&
+            (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.order_status) === "delivered";
         if (paymentStatusChangedToPaid) {
             const customerId = updatedOrder.customerId;
             const totalPrice = updatedOrder.totalPrice;
@@ -176,13 +178,15 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 });
             }
         }
-        const transactionHistory = new TransactionModel_1.default({
-            transaction_type: "order",
-            transaction_date: Date.now(),
-            orderId: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id,
-            totalPrice: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.totalCustomerPay,
-        });
-        yield transactionHistory.save();
+        if (OrderStatusChangedToDelivered) {
+            const transactionHistory = new TransactionModel_1.default({
+                transaction_type: "order",
+                transaction_date: Date.now(),
+                orderId: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder._id,
+                totalPrice: updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.totalCustomerPay,
+            });
+            yield transactionHistory.save();
+        }
         res.status(200).json(updatedOrder);
     }
     catch (error) {
