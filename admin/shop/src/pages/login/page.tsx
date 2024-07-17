@@ -24,12 +24,14 @@ const LoginPage = () => {
             <div className="w-2/5 flex flex-1 justify-center items-center min-h-[100vh]">
               <div className="">
                 <img
-                  className="w-64 h-64 object-cover"
-                  src="https://res.cloudinary.com/dhwufmyi4/image/upload/v1715153476/436749221_7771422172901509_7228334318994765128_n-removebg-preview_uyr5dn.png"
+                  className="w-64 h-64 object-cover rounded-full mt-12"
+                  src="https://res.cloudinary.com/thanhan2001/image/upload/v1721047379/Screenshot_2024-07-15_194025_x8yfcg.png"
                   alt=""
                 />
 
-                <LoginForm />
+                <div className="">
+                  <LoginForm />
+                </div>
               </div>
             </div>
           </div>
