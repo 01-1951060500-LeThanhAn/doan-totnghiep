@@ -24,6 +24,7 @@ export type UserDataTableProps = {
   address: string;
   role: string;
   picture: string;
+  isAdmin: boolean;
 };
 
 export type UserData = UserTableData;

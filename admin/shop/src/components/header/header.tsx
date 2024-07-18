@@ -7,9 +7,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import useGetDetailUser from "@/hooks/use-get-detail-user";
 
 const Header = () => {
   const { currentUser } = useAppSelector((state) => state.auth);
+
+  const { user } = useGetDetailUser({ id: currentUser?._id });
 
   return (
     <>
@@ -24,32 +27,36 @@ const Header = () => {
         </div>
         <div className="flex justify-center items-center">
           <div className="mr-2 hidden xl:block">
-            <p className="text-base font-semibold">{currentUser?.username}</p>
-            <p className="text-sm text-slate-400">Quản lý kho </p>
+            <p className="text-base font-semibold">{user?.results?.username}</p>
+            <p className="text-sm text-slate-400">
+              {currentUser?.isAdmin === true ? "Quản lý kho" : "Nhân viên kho"}{" "}
+            </p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
                 <AvatarImage
                   className="w-12 h-12 rounded-full object-cover"
-                  src={currentUser?.picture ? currentUser?.picture : undefined}
+                  src={
+                    user?.results?.picture ? user?.results?.picture : undefined
+                  }
                   alt=""
                 />
-                <AvatarFallback>{currentUser?.username}</AvatarFallback>
+                <AvatarFallback>{user?.results?.username}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="mr-4">
               <DropdownMenuItem>
-                <p>{currentUser?.username}</p>
+                <p>{user?.results?.username}</p>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <p>{currentUser?.email}</p>
+                <p>{user?.results?.email}</p>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <p>{currentUser?.phone}</p>
+                <p>{user?.results?.phone}</p>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <p>{currentUser?.address}</p>
+                <p>{user?.results?.address}</p>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link

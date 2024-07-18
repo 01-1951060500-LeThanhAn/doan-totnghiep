@@ -14,7 +14,9 @@ const HomeChart = () => {
   const data = transactions.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
-    general: transaction?.orderId?.generalId?.name,
+    general:
+      transaction?.orderId?.generalId?.name ||
+      transaction?.warehouseId?.generalId?.name,
     totalPrice: transaction?.totalPrice,
     _id: transaction?.orderId?._id || transaction?.warehouseId?._id,
     totalQuantity:

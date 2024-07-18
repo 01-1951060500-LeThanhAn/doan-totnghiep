@@ -17,11 +17,12 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group";
 import { Label } from "../../ui/label";
-import { loginUser } from "@/api/userApi";
+import { getUserInfo, loginUser } from "@/api/userApi";
 import { saveToken } from "@/lib/saveToken";
 import { loginSuccess } from "@/redux/slices/authSlice";
 import { roles } from "@/constants/role";
 import { useState } from "react";
+import setAuthToken from "@/lib/setAuthToken";
 
 const LoginForm = () => {
   const form = useForm<UserFormSchema>({
@@ -42,11 +43,15 @@ const LoginForm = () => {
       const response = await loginUser(formData);
       if (response.data.success) {
         saveToken(response.data.token);
-        dispatch(loginSuccess(response.data.user));
+        setAuthToken(response.data.token);
+        const users = await getUserInfo();
+        if (users.data.success) {
+          dispatch(loginSuccess(users.data.user));
+        }
+        setLoading(false);
+        toast.success("Đăng nhập thành công");
+        navigate(`/dashboard`);
       }
-      setLoading(false);
-      toast.success("Đăng nhập thành công");
-      navigate(`/dashboard`);
     } catch (error) {
       setLoading(false);
       toast.error("Sai mật khẩu .Vui lòng đăng nhập lại");

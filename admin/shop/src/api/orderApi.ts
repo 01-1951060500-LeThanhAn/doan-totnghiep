@@ -32,9 +32,9 @@ const getOrders = async () => {
   return response;
 };
 
-const getStatusOrders = async () => {
+const getStatusOrders = async (text: string) => {
   const response = await adminApi.get<OrdersData[]>(
-    "/orders/search/status-orders?keyword=pending"
+    `/orders/search/status-orders?keyword=${text}`
   );
 
   return response;

@@ -25,6 +25,7 @@ export const staffEditSchema = z.object({
   email: z.string().min(1, "Email staff is required"),
   address: z.string().min(1, "Address staff is required"),
   phone: z.string().min(1, "Phone number staff is required"),
+  picture: z.string().min(1, "Phone number staff is required"),
 });
 
 export type EditStaffFormSchema = z.infer<typeof staffEditSchema>;

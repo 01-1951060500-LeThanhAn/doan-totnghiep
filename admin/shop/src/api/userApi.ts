@@ -9,7 +9,7 @@ type UserStatsData = {
 };
 
 const getUserInfo = () => {
-  return baseApi.get(`/users/info-user`);
+  return baseApi.get(`/users/info/detail-user`);
 };
 
 const loginUser = async (data: User) => {

@@ -45,9 +45,9 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { Badge } from "@/components/ui/badge";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
-import { UserDataTableProps } from "@/types";
+import { UserData, UserDataTableProps } from "@/types";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 
 import { AppDispatch } from "@/redux/store";
 import StaffDetailView from "../../view";
@@ -56,6 +56,7 @@ type Data = {
   theme: string | undefined;
   dispatch: AppDispatch;
   onDeleteStaff: (id: string) => void;
+  currentUser: UserData;
 };
 
 export const columns: ColumnDef<UserDataTableProps>[] = [
@@ -202,7 +203,7 @@ export default function StaffTableData({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const { theme } = useTheme();
   const dispatch = useAppDispatch();
-
+  const { currentUser } = useAppSelector((state) => state.auth);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -231,7 +232,7 @@ export default function StaffTableData({
       products: data,
       theme: theme,
       loading,
-
+      currentUser,
       dispatch,
       onDeleteStaff,
     },

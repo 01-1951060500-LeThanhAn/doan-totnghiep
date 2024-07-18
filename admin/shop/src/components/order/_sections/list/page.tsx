@@ -6,11 +6,14 @@ import { OrdersData } from "@/types/orders";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useGetStatusOrders from "../../hooks/use-get-status-order";
-import useGetCancelledOrders from "../../hooks/use-get-cancelled-orders";
 const OrderPage = () => {
   const { orders } = useGetOrders();
-  const { statusOrders } = useGetStatusOrders();
-  const { cancelledOrders } = useGetCancelledOrders();
+  const { statusOrders: pendingOrders } = useGetStatusOrders({
+    text: "pending",
+  });
+  const { statusOrders: cancelledOrders } = useGetStatusOrders({
+    text: "cancelled",
+  });
   const data = orders.map((order) => ({
     _id: order?._id,
     code: order?.code,
@@ -24,7 +27,7 @@ const OrderPage = () => {
     general: order?.generalId?.name,
   }));
 
-  const status = statusOrders.map((order) => ({
+  const pending = pendingOrders.map((order) => ({
     _id: order?._id,
     code: order?.code,
     payment_status: order?.payment_status,
@@ -77,7 +80,7 @@ const OrderPage = () => {
           <OrderTableData data={data as unknown as OrdersData[]} />
         </TabsContent>
         <TabsContent value="pending">
-          <OrderTableData data={status as unknown as OrdersData[]} />
+          <OrderTableData data={pending as unknown as OrdersData[]} />
         </TabsContent>
         <TabsContent value="cancelled">
           <OrderTableData data={cancelled as unknown as OrdersData[]} />

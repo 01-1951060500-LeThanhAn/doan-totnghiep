@@ -84,6 +84,7 @@ const FormUploadStaff = ({ setFile, name }: Props) => {
                         {...field}
                         onChange={handleChangeFile}
                         type="file"
+                        value={undefined}
                         id="upload"
                         hidden
                         accept=".jpg, .png, .jpeg"

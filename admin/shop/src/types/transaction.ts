@@ -30,6 +30,11 @@ export type WarehouseReportData = {
   payment_status: string;
   order_status: string;
   totalPrice: number;
+  generalId: {
+    name: string;
+    address: string;
+    code: string;
+  };
 };
 
 export type TransactionTableProps = {

@@ -12,7 +12,9 @@ const ViewReportTransactionPage = () => {
   const data = transactions.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
-    general: transaction?.orderId?.generalId?.name,
+    general:
+      transaction?.orderId?.generalId?.name ||
+      transaction?.warehouseId?.generalId?.name,
     totalPrice: transaction?.totalPrice,
     _id: transaction?.orderId?._id || transaction?.warehouseId?._id,
     totalQuantity:
@@ -50,11 +52,6 @@ const ViewReportTransactionPage = () => {
     } catch (err) {
       console.error("XLSX.writeFile failed:", err);
     }
-
-    // const wb = XLSX.utils.book_new();
-    // const ws = XLSX.utils.json_to_sheet(data);
-    // XLSX.utils.book_append_sheet(wb, ws, "Transactions");
-    // XLSX.writeFile(wb, "LS_giao_dich.xlsx");
   };
 
   return (

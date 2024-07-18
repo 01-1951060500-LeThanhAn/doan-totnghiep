@@ -20,6 +20,9 @@ const userSlice = createSlice({
       localStorage.setItem("userInfo", JSON.stringify(action.payload));
       setAuthToken(action.payload.token);
     },
+    addUser: (state, action) => {
+      state.currentUser = action.payload;
+    },
     loginFailed: (state, action) => {
       state.isFetching = false;
       state.error = action.payload || "Login failed";
@@ -33,7 +36,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { loginStart, loginFailed, loginSuccess, logOut } =
+export const { loginStart, loginFailed, loginSuccess, logOut, addUser } =
   userSlice.actions;
 
 export default userSlice.reducer;

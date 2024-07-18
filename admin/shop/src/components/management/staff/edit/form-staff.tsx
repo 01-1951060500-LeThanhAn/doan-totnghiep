@@ -53,6 +53,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
     form.setValue("email", defaultValues?.email);
     form.setValue("address", defaultValues?.address);
     form.setValue("phone", defaultValues?.phone);
+    form.setValue("picture", defaultValues?.picture);
   }, [form, defaultValues]);
 
   const handleEditStaff = async () => {
@@ -70,7 +71,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
 
       const updatedStaff = {
         ...formData,
-        picture: res.data?.url,
+        picture: res.data?.url ?? defaultValues?.picture,
       } as UpdateStaffData;
 
       await dispatch(
@@ -81,7 +82,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
       );
       setLoading(false);
       toast.success("Cập nhật nhân viên thành công");
-      navigate(`/dashboard/management/staff`);
+      navigate(`/dashboard`);
     } catch (error) {
       setLoading(false);
       if (error instanceof AxiosError) {
