@@ -69,7 +69,7 @@ const createWareHouse = async (req: Request, res: Response) => {
         await newProduct.save();
       } else {
         await ProductModel.findOneAndUpdate(
-          { _id: productId, generalId: existingProduct?.generalId },
+          { _id: productId },
           { $inc: { inventory_number } },
           { upsert: true, new: true }
         );
@@ -169,12 +169,6 @@ const getInfoWareHouse = async (req: Request, res: Response) => {
       (acc: number, product: any) => acc + Number(product.inventory_number),
       0
     );
-
-    const results = {
-      detailWarehouse,
-      totalPrice,
-      totalQuantity,
-    };
 
     res.status(200).json(detailWarehouse);
   } catch (error) {

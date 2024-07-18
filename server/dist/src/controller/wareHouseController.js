@@ -69,7 +69,7 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 yield newProduct.save();
             }
             else {
-                yield ProductModel_1.default.findOneAndUpdate({ _id: productId, generalId: existingProduct === null || existingProduct === void 0 ? void 0 : existingProduct.generalId }, { $inc: { inventory_number } }, { upsert: true, new: true });
+                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
             }
         }));
         yield Promise.all([productUpdates]);
@@ -139,11 +139,6 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
         const totalPrice = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
         const totalQuantity = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
-        const results = {
-            detailWarehouse,
-            totalPrice,
-            totalQuantity,
-        };
         res.status(200).json(detailWarehouse);
     }
     catch (error) {
