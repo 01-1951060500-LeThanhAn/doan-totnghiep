@@ -125,7 +125,7 @@ const createWareHouse = async (req: Request, res: Response) => {
 const getWareHouse = async (req: Request, res: Response) => {
   try {
     const warehouse = await WarehouseModel.find()
-      .populate("supplierId products.productId generalId")
+      .populate("supplierId products.productId generalId manager")
       .sort({ createdAt: -1 });
 
     return res.status(200).json(warehouse);
@@ -262,6 +262,8 @@ const updateWarehouse = async (req: Request, res: Response) => {
 
       await transactionHistory.save();
     }
+
+    console.log(updatedWarehouseData);
 
     res.status(200).json(updatedWarehouseData);
   } catch (error) {

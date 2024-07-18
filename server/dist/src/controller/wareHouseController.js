@@ -103,7 +103,7 @@ exports.createWareHouse = createWareHouse;
 const getWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const warehouse = yield WarehouseModel_1.default.find()
-            .populate("supplierId products.productId generalId")
+            .populate("supplierId products.productId generalId manager")
             .sort({ createdAt: -1 });
         return res.status(200).json(warehouse);
     }
@@ -211,6 +211,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             });
             yield transactionHistory.save();
         }
+        console.log(updatedWarehouseData);
         res.status(200).json(updatedWarehouseData);
     }
     catch (error) {

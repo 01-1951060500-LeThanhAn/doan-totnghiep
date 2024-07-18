@@ -14,7 +14,7 @@ const TransactionSchema = new mongoose_1.default.Schema({
     totalPrice: { type: Number, required: true, default: 0 },
     orderId: { type: mongoose_1.default.Types.ObjectId, ref: "orders" },
     shipId: { type: mongoose_1.default.Types.ObjectId, ref: "shipping_warehouse" },
-    warehouseId: { type: mongoose_1.default.Types.ObjectId, ref: "purchase_orders" },
+    warehouseId: { type: mongoose_1.default.Types.ObjectId, ref: "good_received_notes" },
 }, {
     timestamps: true,
 });
