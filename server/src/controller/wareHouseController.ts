@@ -258,14 +258,16 @@ const updateWarehouse = async (req: Request, res: Response) => {
       });
     }
 
-    const transactionHistory = new TransactionModel({
-      transaction_type: "import",
-      transaction_date: Date.now(),
-      totalPrice: updatedWarehouseData?.totalSupplierPay,
-      warehouseId: updatedWarehouseData?._id,
-    });
+    if (updatedWarehouseData) {
+      const transactionHistory = new TransactionModel({
+        transaction_type: "import",
+        transaction_date: Date.now(),
+        totalPrice: updatedWarehouseData?.totalSupplierPay,
+        warehouseId: updatedWarehouseData?._id,
+      });
 
-    await transactionHistory.save();
+      await transactionHistory.save();
+    }
 
     res.status(200).json(updatedWarehouseData);
   } catch (error) {
