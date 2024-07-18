@@ -93,28 +93,10 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.registerUser = registerUser;
 const getAllUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        const { user } = req.user;
-        if (!user || !(user === null || user === void 0 ? void 0 : user.role)) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
-        let users = [];
-        if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
-            users = yield UserModel_1.default.find()
-                .select("-password -confirmPassword")
-                .populate("role");
-        }
-        else if ((user === null || user === void 0 ? void 0 : user.role) === "manager") {
-            users = yield UserModel_1.default.find({ _id: user._id })
-                .populate("-password -confirmPassword")
-                .sort({ createdAt: -1 });
-        }
-        else {
-            users = [];
-        }
-        return res.status(200).json(users);
+        const listusers = yield UserModel_1.default.find()
+            .select("-password -confirmPassword")
+            .populate("role");
+        return res.status(200).json(listusers);
     }
     catch (error) {
         res.status(500).json({

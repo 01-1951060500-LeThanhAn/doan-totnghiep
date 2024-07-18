@@ -18,7 +18,7 @@ router.post(`/login`, loginUser);
 
 router.post(`/`, verifyTokenAndAdmin, registerUser);
 
-router.get(`/`, verifyTokenAndAdmin, getAllUsers);
+router.get(`/`, verifyTokenAndAuthorization, getAllUsers);
 
 router.get(`/:id`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 

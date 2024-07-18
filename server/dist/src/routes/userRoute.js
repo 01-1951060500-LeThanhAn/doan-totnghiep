@@ -10,7 +10,7 @@ const checkLogin_1 = __importDefault(require("../middleware/checkLogin"));
 const router = express_1.default.Router();
 router.post(`/login`, userController_1.loginUser);
 router.post(`/`, auth_1.verifyTokenAndAdmin, userController_1.registerUser);
-router.get(`/`, auth_1.verifyTokenAndAdmin, userController_1.getAllUsers);
+router.get(`/`, auth_1.verifyTokenAndAuthorization, userController_1.getAllUsers);
 router.get(`/:id`, checkLogin_1.default, auth_1.verifyTokenAndAuthorization, userController_1.getInfoUser);
 // router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 router.patch(`/:id`, auth_1.verifyTokenAndAuthorization, userController_1.updateUser);
