@@ -207,7 +207,7 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 $inc: { totalPrice: -(updatedWarehouseData === null || updatedWarehouseData === void 0 ? void 0 : updatedWarehouseData.totalPrice) },
             });
         }
-        if (updatedWarehouseData) {
+        if (paymentStatusChangedToPaid) {
             const transactionHistory = new TransactionModel_1.default({
                 transaction_type: "import",
                 transaction_date: Date.now(),

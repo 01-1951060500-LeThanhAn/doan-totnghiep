@@ -258,7 +258,7 @@ const updateWarehouse = async (req: Request, res: Response) => {
       });
     }
 
-    if (updatedWarehouseData) {
+    if (paymentStatusChangedToPaid) {
       const transactionHistory = new TransactionModel({
         transaction_type: "import",
         transaction_date: Date.now(),
