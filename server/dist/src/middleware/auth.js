@@ -53,7 +53,7 @@ exports.verifyTokenAndAuthorization = verifyTokenAndAuthorization;
 const verifyTokenAndAdmin = (req, res, next) => {
     checkToken(req, res, () => {
         var _a, _b;
-        if (((_b = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.isAdmin) === true) {
+        if (((_b = (_a = req.user) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.role) === "admin") {
             next();
         }
         else {
