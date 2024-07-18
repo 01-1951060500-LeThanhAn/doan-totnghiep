@@ -106,13 +106,30 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-const getAllUsers = async (req: Request, res: Response) => {
+const getAllUsers = async (req: UserRequest, res: Response) => {
   try {
-    const listusers = await UserModel.find()
-      .select("-password -confirmPassword")
-      .populate("role");
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { user } = req.user as any;
 
-    return res.status(200).json(listusers);
+    if (!user || !user?.role) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    let users: any[] = [];
+    if (user?.role === "admin") {
+      users = await UserModel.find()
+        .select("-password -confirmPassword")
+        .populate("role");
+    } else if (user?.role === "manager") {
+      users = await UserModel.find({ _id: user._id })
+        .populate("-password -confirmPassword")
+        .sort({ createdAt: -1 });
+    } else {
+      users = [];
+    }
+
+    return res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
       message: "Failed to get list user",
