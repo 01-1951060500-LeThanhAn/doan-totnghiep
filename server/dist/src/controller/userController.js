@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.getInfoUser = exports.getAllUsers = exports.registerUser = exports.loginUser = void 0;
+exports.getDetailUser = exports.deleteUser = exports.updateUser = exports.getInfoUser = exports.getAllUsers = exports.registerUser = exports.loginUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_validator_1 = require("express-validator");
 const UserModel_1 = __importDefault(require("../model/UserModel"));
@@ -128,6 +128,25 @@ const getInfoUser = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getInfoUser = getInfoUser;
+const getDetailUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { user } = req.user;
+    try {
+        const userInfo = yield UserModel_1.default.findById(user === null || user === void 0 ? void 0 : user._id).select("-password -confirmPassword");
+        if (userInfo)
+            return res.status(200).json({
+                success: true,
+                user: userInfo,
+            });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Server not found!",
+        });
+    }
+});
+exports.getDetailUser = getDetailUser;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.id;

@@ -6,6 +6,7 @@ import {
   loginUser,
   registerUser,
   updateUser,
+  getDetailUser,
 } from "../controller/userController";
 import {
   verifyTokenAndAdmin,
@@ -22,7 +23,7 @@ router.get(`/`, verifyTokenAndAuthorization, getAllUsers);
 
 router.get(`/:id`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
 
-// router.get(`/info-user`, checkLogin, verifyTokenAndAuthorization, getInfoUser);
+router.get(`/info/detail-user`, checkLogin, getDetailUser);
 
 router.patch(`/:id`, verifyTokenAndAuthorization, updateUser);
 

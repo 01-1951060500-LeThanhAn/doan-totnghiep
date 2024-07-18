@@ -6,7 +6,10 @@ import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import RoleModel from "../model/RoleModel";
 
 interface UserRequest extends Request {
-  user?: JwtPayload | (string & { userId?: string });
+  user?:
+    | JwtPayload
+    | (string & { userId?: string })
+    | (string & { user?: string | undefined });
 }
 
 const loginUser = async (req: Request, res: Response) => {
@@ -145,6 +148,27 @@ const getInfoUser = async (req: UserRequest, res: Response) => {
   }
 };
 
+const getDetailUser = async (req: UserRequest, res: Response) => {
+  const { user } = req.user as any;
+
+  try {
+    const userInfo = await UserModel.findById(user?._id).select(
+      "-password -confirmPassword"
+    );
+    if (userInfo)
+      return res.status(200).json({
+        success: true,
+        user: userInfo,
+      });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server not found!",
+    });
+  }
+};
+
 const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
@@ -199,4 +223,5 @@ export {
   getInfoUser,
   updateUser,
   deleteUser,
+  getDetailUser,
 };
