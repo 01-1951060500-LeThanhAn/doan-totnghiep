@@ -46,97 +46,97 @@ router.get("/income/revenue-orders-day", verifyTokenAndAdmin, getIncomeOrders);
 
 router.get(
   "/income/revenue-orders-month",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersMonth
 );
 
 router.get(
   "/income/revenue-orders-general",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersGeneral
 );
 
 router.get(
   "/income/revenue-orders-staff",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersStaff
 );
 
 router.get(
   "/income/revenue-orders-product",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersProducts
 );
 
 router.get(
   "/income/revenue-orders-customer",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersCustomer
 );
 
 router.get(
   "/income/revenue-orders-customer-group",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getRevenueOrdersCustomerGroup
 );
 
 router.get(
   "/income/shipments-orders-time",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getShipmentOrdersTime
 );
 
 router.get(
   "/income/shipments-orders-staff",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getShipmentOrdersStaff
 );
 
 router.get(
   "/income/shipments-orders-partner",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getShipmentOrderPartner
 );
 
 router.get(
   "/income/shipments-orders-general",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getShipmentOrderGeneral
 );
 
 router.get(
   "/income/payments-orders-time",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getPaymentOrderTime
 );
 
 router.get(
   "/income/payments-orders-staff",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getPaymentOrderStaff
 );
 
 router.get(
   "/income/total-orders-general",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getIncomeOrdersGeneral
 );
 
 router.get(
   "/income/total-orders-area",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getIncomeOrdersArea
 );
 
 router.get(
   "/income/total-orders-product",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getIncomeOrdersProduct
 );
 
 router.get(
   "/income/total-orders-customer-group",
-  verifyTokenAndAdmin,
+  verifyTokenAndAuthorization,
   getIncomeOrdersCustomerGroup
 );
 
