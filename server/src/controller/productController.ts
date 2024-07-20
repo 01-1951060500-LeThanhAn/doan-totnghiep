@@ -45,13 +45,17 @@ const getListProducts = async (req: UserRequest, res: Response) => {
     if (user?.role === "admin") {
       generals = await ProductModel.find({
         status: status ? status : { $exists: true },
-      }).populate(
-        "type generalId manager stockAdjustmentHistory.stockAjustmentId"
-      );
+      })
+        .populate(
+          "type generalId manager stockAdjustmentHistory.stockAjustmentId"
+        )
+        .sort({ createdAt: -1 });
     } else if (user?.role === "manager") {
-      generals = await ProductModel.find().populate(
-        "generalId type manager stockAdjustmentHistory.stockAjustmentId"
-      );
+      generals = await ProductModel.find()
+        .populate(
+          "generalId type manager stockAdjustmentHistory.stockAjustmentId"
+        )
+        .sort({ createdAt: -1 });
     } else {
       generals = [];
     }

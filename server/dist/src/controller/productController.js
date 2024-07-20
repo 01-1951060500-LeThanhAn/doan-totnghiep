@@ -49,10 +49,14 @@ const getListProducts = (req, res) => __awaiter(void 0, void 0, void 0, function
         if ((user === null || user === void 0 ? void 0 : user.role) === "admin") {
             generals = yield ProductModel_1.default.find({
                 status: status ? status : { $exists: true },
-            }).populate("type generalId manager stockAdjustmentHistory.stockAjustmentId");
+            })
+                .populate("type generalId manager stockAdjustmentHistory.stockAjustmentId")
+                .sort({ createdAt: -1 });
         }
         else if ((user === null || user === void 0 ? void 0 : user.role) === "manager") {
-            generals = yield ProductModel_1.default.find().populate("generalId type manager stockAdjustmentHistory.stockAjustmentId");
+            generals = yield ProductModel_1.default.find()
+                .populate("generalId type manager stockAdjustmentHistory.stockAjustmentId")
+                .sort({ createdAt: -1 });
         }
         else {
             generals = [];
