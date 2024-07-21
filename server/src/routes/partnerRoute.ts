@@ -14,15 +14,15 @@ import {
 
 const router = express.Router();
 
-router.post("/", verifyTokenAndAdmin, createPartner);
+router.post("/", verifyTokenAndAuthorization, createPartner);
 
 router.get("/", verifyTokenAndAuthorization, getPartners);
 
 router.get("/:id", verifyTokenAndAuthorization, getInfoPartner);
 
-router.delete("/:id", verifyTokenAndAdmin, deletePartner);
+router.delete("/:id", verifyTokenAndAuthorization, deletePartner);
 
-router.patch("/:id", verifyTokenAndAdmin, updatePartner);
+router.patch("/:id", verifyTokenAndAuthorization, updatePartner);
 
 router.get(
   "/search/status-partner",
