@@ -131,18 +131,19 @@ const updatePartner = async (req: Request, res: Response) => {
   }
 
   try {
-    const partner = await PartnerModel.findByIdAndUpdate(partnerId, req.body, {
-      new: true,
-    });
-    if (!partner) {
+    const partnerUpdated = await PartnerModel.findByIdAndUpdate(
+      partnerId,
+      req.body,
+      {
+        new: true,
+      }
+    );
+    if (!partnerUpdated) {
       return res.status(400).json({
         message: "Partner not found",
       });
     }
-    return res.status(200).json({
-      message: "Partner updated",
-      results: partner,
-    });
+    return res.status(200).json(partnerUpdated);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

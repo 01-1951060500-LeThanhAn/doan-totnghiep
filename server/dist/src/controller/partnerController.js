@@ -140,18 +140,15 @@ const updatePartner = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     try {
-        const partner = yield PartnerModel_1.default.findByIdAndUpdate(partnerId, req.body, {
+        const partnerUpdated = yield PartnerModel_1.default.findByIdAndUpdate(partnerId, req.body, {
             new: true,
         });
-        if (!partner) {
+        if (!partnerUpdated) {
             return res.status(400).json({
                 message: "Partner not found",
             });
         }
-        return res.status(200).json({
-            message: "Partner updated",
-            results: partner,
-        });
+        return res.status(200).json(partnerUpdated);
     }
     catch (error) {
         console.log(error);
