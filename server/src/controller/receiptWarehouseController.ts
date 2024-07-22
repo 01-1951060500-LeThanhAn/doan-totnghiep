@@ -56,7 +56,7 @@ const createReceiptSupplier = async (req: Request, res: Response) => {
 
 const getReceiptSupplier = async (req: Request, res: Response) => {
   try {
-    const supplier = await ReceiptSupplierModel.find();
+    const supplier = await ReceiptSupplierModel.find().populate("supplierId");
     res.status(200).json(supplier);
   } catch (error: any) {
     res.status(500).json("Server error: " + error.message);

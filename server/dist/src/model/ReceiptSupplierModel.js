@@ -35,7 +35,7 @@ const ReceiptSupplierSchema = new mongoose_1.default.Schema({
         {
             warehouseId: {
                 type: mongoose_1.default.Schema.Types.ObjectId,
-                ref: "purchase_orders",
+                ref: "good_received_notes",
                 required: true,
             },
             totalPrice: {

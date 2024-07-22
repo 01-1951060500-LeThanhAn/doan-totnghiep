@@ -57,7 +57,7 @@ const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.createReceiptSupplier = createReceiptSupplier;
 const getReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const supplier = yield ReceiptSupplierModel_1.default.find();
+        const supplier = yield ReceiptSupplierModel_1.default.find().populate("supplierId");
         res.status(200).json(supplier);
     }
     catch (error) {
