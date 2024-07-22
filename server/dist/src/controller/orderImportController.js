@@ -95,6 +95,7 @@ const updateImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
             code: order.code,
             totalQuantity,
             products: order.products,
+            manager: order.staffId,
             delivery_date: order.received_date,
             supplierId: order.supplierId,
             generalId: order.generalId,
