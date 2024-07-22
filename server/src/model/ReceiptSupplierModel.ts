@@ -79,7 +79,7 @@ ReceiptSupplierSchema.pre("find", async function (next) {
 
 ReceiptSupplierSchema.pre("find", async function (next) {
   this.populate({
-    path: "warehouseId",
+    path: "products.warehouseId",
     select: "code payment_status",
   });
   next();
