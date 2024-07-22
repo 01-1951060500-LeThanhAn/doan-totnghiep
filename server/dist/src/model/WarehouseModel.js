@@ -88,7 +88,7 @@ WarehouseSchema.pre("save", function (next) {
                 console.warn(`Product with ID ${product.productId} not found while calculating total price.`);
                 continue;
             }
-            order.totalPrice += productDoc.export_price * product.inventory_number;
+            order.totalPrice += productDoc.import_price * product.inventory_number;
         }
         next();
     });
@@ -106,7 +106,7 @@ WarehouseSchema.pre("save", function (next) {
                 continue;
             }
             order.totalSupplierPay +=
-                productDoc.export_price * product.inventory_number;
+                productDoc.import_price * product.inventory_number;
         }
         next();
     });

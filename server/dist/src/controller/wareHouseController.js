@@ -83,7 +83,7 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                     .json({ message: `Product not found: ${product.productId}` });
             }
             totalPrice = products.reduce((acc, product) => acc +
-                Number(product.inventory_number) * Number(productData.export_price), 0);
+                Number(product.inventory_number) * Number(productData.import_price), 0);
         }
         const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, totalQuantity, payment_status: "pending" }));
         const currentBalance = supplier.balance_increases + supplier.opening_balance;
@@ -137,8 +137,15 @@ const getInfoWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 message: "Mã đơn nhập hàng không hợp lệ hoặc không tồn tại",
             });
         }
-        const totalPrice = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + product.inventory_number * product.import_price, 0);
-        const totalQuantity = detailWarehouse === null || detailWarehouse === void 0 ? void 0 : detailWarehouse.products.reduce((acc, product) => acc + Number(product.inventory_number), 0);
+        // const totalPrice = detailWarehouse?.products.reduce(
+        //   (acc: number, product: any) =>
+        //     acc + product.inventory_number * product.import_price,
+        //   0
+        // );
+        // const totalQuantity = detailWarehouse?.products.reduce(
+        //   (acc: number, product: any) => acc + Number(product.inventory_number),
+        //   0
+        // );
         res.status(200).json(detailWarehouse);
     }
     catch (error) {

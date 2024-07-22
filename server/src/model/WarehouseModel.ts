@@ -81,7 +81,7 @@ WarehouseSchema.pre("save", async function (next) {
       continue;
     }
 
-    order.totalPrice += productDoc.export_price * product.inventory_number;
+    order.totalPrice += productDoc.import_price * product.inventory_number;
   }
 
   next();
@@ -103,7 +103,7 @@ WarehouseSchema.pre("save", async function (next) {
     }
 
     order.totalSupplierPay +=
-      productDoc.export_price * product.inventory_number;
+      productDoc.import_price * product.inventory_number;
   }
 
   next();
