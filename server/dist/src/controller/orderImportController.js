@@ -37,7 +37,7 @@ const createImportOrder = (req, res) => __awaiter(void 0, void 0, void 0, functi
                     .json({ message: `Product not found: ${product.productId}` });
             }
             totalPrice = products.reduce((acc, product) => acc +
-                Number(product.inventory_number) * Number(productData.export_price), 0);
+                Number(product.inventory_number) * Number(productData.import_price), 0);
         }
         const newImportOrder = new PurchaseOrderModel_1.default(Object.assign(Object.assign({}, req.body), { totalQuantity }));
         const currentBalance = supplier.balance_increases + supplier.opening_balance;
@@ -241,7 +241,7 @@ const getIncomePurchaseOrdersProducts = (req, res) => __awaiter(void 0, void 0, 
                     productName: "$product.name_product",
                     productCode: "$product.code",
                     quantity: "$products.inventory_number",
-                    price: "$product.export_price",
+                    price: "$product.import_price",
                     totalPrice: { $sum: { $multiply: ["$price", "$quantity"] } },
                 },
             },

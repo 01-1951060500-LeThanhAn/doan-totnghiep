@@ -32,7 +32,7 @@ const createImportOrder = async (req: Request, res: Response) => {
       totalPrice = products.reduce(
         (acc: number, product: any) =>
           acc +
-          Number(product.inventory_number) * Number(productData.export_price),
+          Number(product.inventory_number) * Number(productData.import_price),
         0
       );
     }
@@ -264,7 +264,7 @@ const getIncomePurchaseOrdersProducts = async (req: Request, res: Response) => {
           productName: "$product.name_product",
           productCode: "$product.code",
           quantity: "$products.inventory_number",
-          price: "$product.export_price",
+          price: "$product.import_price",
           totalPrice: { $sum: { $multiply: ["$price", "$quantity"] } },
         },
       },
