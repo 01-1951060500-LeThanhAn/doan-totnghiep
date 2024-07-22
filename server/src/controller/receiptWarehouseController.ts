@@ -98,7 +98,7 @@ const getInfoReceiptSupplier = async (req: Request, res: Response) => {
     const receipt = await ReceiptSupplierModel.findById(receiptId)
       .populate("supplierId staffId")
       .populate({
-        path: "warehouseId",
+        path: "products.warehouseId",
         select: "products code",
         populate: {
           path: "products.productId",

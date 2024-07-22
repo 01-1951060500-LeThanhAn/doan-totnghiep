@@ -97,7 +97,7 @@ const getInfoReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, f
         const receipt = yield ReceiptSupplierModel_1.default.findById(receiptId)
             .populate("supplierId staffId")
             .populate({
-            path: "warehouseId",
+            path: "products.warehouseId",
             select: "products code",
             populate: {
                 path: "products.productId",
