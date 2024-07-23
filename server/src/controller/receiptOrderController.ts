@@ -44,9 +44,26 @@ const createReceipt = async (req: Request, res: Response) => {
 
     await Promise.all([productUpdates]);
 
+    let totalPrice = 0;
+
+    for (const product of products) {
+      const productData = await OrderModel.findById(product.orderId);
+      if (!productData) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.orderId}` });
+      }
+
+      totalPrice = products.reduce(
+        (acc: number, product: any) => acc + Number(product.totalPrice),
+        0
+      );
+    }
+
     const receiptOrder = new ReceiptModel({
       ...req.body,
       customerId: customer._id,
+      total: totalPrice,
     });
 
     await receiptOrder.save();

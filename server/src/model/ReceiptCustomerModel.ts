@@ -30,6 +30,10 @@ const ReceiptCustomerSchema = new mongoose.Schema(
         },
       },
     ],
+    total: {
+      type: Number,
+      default: 0,
+    },
 
     staffId: {
       type: mongoose.Schema.Types.ObjectId,

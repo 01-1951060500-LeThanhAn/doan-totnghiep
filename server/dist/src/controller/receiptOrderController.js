@@ -46,7 +46,17 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             });
         }));
         yield Promise.all([productUpdates]);
-        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id }));
+        let totalPrice = 0;
+        for (const product of products) {
+            const productData = yield OrderModel_1.default.findById(product.orderId);
+            if (!productData) {
+                return res
+                    .status(400)
+                    .json({ message: `Product not found: ${product.orderId}` });
+            }
+            totalPrice = products.reduce((acc, product) => acc + Number(product.totalPrice), 0);
+        }
+        const receiptOrder = new ReceiptCustomerModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, total: totalPrice }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }

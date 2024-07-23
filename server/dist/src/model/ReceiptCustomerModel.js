@@ -41,6 +41,10 @@ const ReceiptCustomerSchema = new mongoose_1.default.Schema({
             },
         },
     ],
+    total: {
+        type: Number,
+        default: 0,
+    },
     staffId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "users",
