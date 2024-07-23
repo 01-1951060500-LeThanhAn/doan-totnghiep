@@ -46,7 +46,17 @@ const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, fu
             });
         }));
         yield Promise.all([productUpdates]);
-        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id }));
+        let totalPrice = 0;
+        for (const product of products) {
+            const productData = yield WarehouseModel_1.default.findById(product.warehouseId);
+            if (!productData) {
+                return res
+                    .status(400)
+                    .json({ message: `Product not found: ${product.warehouseId}` });
+            }
+            totalPrice = products.reduce((acc, product) => acc + Number(product.totalPrice), 0);
+        }
+        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, total: totalPrice }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }

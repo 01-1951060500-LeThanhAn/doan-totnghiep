@@ -42,9 +42,26 @@ const createReceiptSupplier = async (req: Request, res: Response) => {
 
     await Promise.all([productUpdates]);
 
+    let totalPrice = 0;
+
+    for (const product of products) {
+      const productData = await WarehouseModel.findById(product.warehouseId);
+      if (!productData) {
+        return res
+          .status(400)
+          .json({ message: `Product not found: ${product.warehouseId}` });
+      }
+
+      totalPrice = products.reduce(
+        (acc: number, product: any) => acc + Number(product.totalPrice),
+        0
+      );
+    }
+
     const receiptOrder = new ReceiptSupplierModel({
       ...req.body,
       supplierId: supplier._id,
+      total: totalPrice,
     });
 
     await receiptOrder.save();

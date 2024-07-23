@@ -36,6 +36,11 @@ const ReceiptSupplierSchema = new mongoose.Schema(
       },
     ],
 
+    total: {
+      type: Number,
+      default: 0,
+    },
+
     receipt_type: {
       type: String,
       enum: ["debt-customer", "receive-supplier"],
