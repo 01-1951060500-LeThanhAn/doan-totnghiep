@@ -18,6 +18,7 @@ const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
+const decimal_js_1 = __importDefault(require("decimal.js"));
 const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products, delivery_date, generalId, manager } = req.body;
@@ -179,11 +180,11 @@ const updateWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
             const supplierId = updatedWarehouseData.supplierId;
             const totalPrice = updatedWarehouseData.totalPrice;
             const supplier = yield SupplierModel_1.default.findById(supplierId);
-            const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
-            const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
-            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
-            const updatedBalanceDecreases = currentBalanceDecreases + Number(totalPrice);
-            const updatedRemainingDecreases = Math.max(remainingDecreases - Number(totalPrice), 0);
+            const currentBalanceIncreases = new decimal_js_1.default((supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0);
+            const currentBalanceDecreases = new decimal_js_1.default((supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0);
+            const remainingDecreases = decimal_js_1.default.max(currentBalanceIncreases.minus(currentBalanceDecreases), new decimal_js_1.default(0));
+            const updatedBalanceDecreases = currentBalanceDecreases.plus(totalPrice);
+            const updatedRemainingDecreases = decimal_js_1.default.max(remainingDecreases.minus(totalPrice), new decimal_js_1.default(0));
             yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
                 balance_decreases: updatedBalanceDecreases,
                 remaining_decreases: updatedRemainingDecreases,
@@ -245,15 +246,18 @@ const deleteWarehouse = (req, res) => __awaiter(void 0, void 0, void 0, function
         if (!supplier) {
             throw new Error(`Supplier not found: ${supplierId}`);
         }
-        const updatedBalanceIncreases = Math.max(supplier.balance_increases - orderTotalPrice, 0);
-        const updatedRemainingDecreases = supplier.opening_balance +
-            updatedBalanceIncreases -
-            supplier.balance_decreases;
+        const currentBalanceIncreases = new decimal_js_1.default(supplier.balance_increases);
+        const currentBalanceDecreases = new decimal_js_1.default(supplier.balance_decreases);
+        const openingBalance = new decimal_js_1.default(supplier.opening_balance);
+        const updatedBalanceIncreases = decimal_js_1.default.max(currentBalanceIncreases.minus(orderTotalPrice), new decimal_js_1.default(0));
+        const updatedRemainingDecreases = openingBalance
+            .plus(updatedBalanceIncreases)
+            .minus(currentBalanceDecreases);
         const updatedEndingBalance = updatedRemainingDecreases;
         yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
-            balance_increases: updatedBalanceIncreases,
-            remaining_decreases: updatedRemainingDecreases,
-            ending_balance: updatedEndingBalance,
+            balance_increases: updatedBalanceIncreases.toString(),
+            remaining_decreases: updatedRemainingDecreases.toString(),
+            ending_balance: updatedEndingBalance.toString(),
         });
         if (deleteProductId.payment_status === "pending") {
             for (const product of deleteProductId.products) {

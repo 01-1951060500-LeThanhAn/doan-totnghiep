@@ -16,52 +16,54 @@ exports.getInfoReceiptSupplier = exports.deleteReceiptSupplier = exports.getRece
 const SupplierModel_1 = __importDefault(require("../model/SupplierModel"));
 const WarehouseModel_1 = __importDefault(require("../model/WarehouseModel"));
 const ReceiptSupplierModel_1 = __importDefault(require("../model/ReceiptSupplierModel"));
+const decimal_js_1 = require("decimal.js");
 const createReceiptSupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { supplierId, products } = req.body;
         if (!supplierId || products.length === 0) {
-            return res.status(400).json("Missing supplierId or warehouseId");
+            return res
+                .status(400)
+                .json({ message: "Missing supplierId or products" });
         }
         const supplier = yield SupplierModel_1.default.findById(supplierId);
         if (!supplier) {
-            return res.status(400).json("Supplier not found");
+            return res.status(400).json({ message: "Supplier not found" });
         }
-        const productUpdates = products === null || products === void 0 ? void 0 : products.map((product) => __awaiter(void 0, void 0, void 0, function* () {
+        let totalReceiptPrice = new decimal_js_1.Decimal(0);
+        for (const product of products) {
             const { totalPrice, warehouseId } = product;
             if (!warehouseId || !totalPrice) {
-                return res.status(400).json({ message: "Missing receipt  details" });
+                return res.status(400).json({ message: "Missing receipt details" });
             }
-            const currentBalanceIncreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_increases) || 0;
-            const currentBalanceDecreases = (supplier === null || supplier === void 0 ? void 0 : supplier.balance_decreases) || 0;
-            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
-            const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            const decimalTotalPrice = new decimal_js_1.Decimal(totalPrice);
+            totalReceiptPrice = totalReceiptPrice.plus(decimalTotalPrice);
+            const currentBalanceIncreases = new decimal_js_1.Decimal(supplier.balance_increases || "0");
+            const currentBalanceDecreases = new decimal_js_1.Decimal(supplier.balance_decreases || "0");
+            const remainingDecreases = decimal_js_1.Decimal.max(currentBalanceIncreases.minus(currentBalanceDecreases), new decimal_js_1.Decimal(0));
+            const updatedBalanceDecreases = currentBalanceDecreases.plus(decimalTotalPrice);
+            const updatedRemainingDecreases = decimal_js_1.Decimal.max(remainingDecreases.minus(decimalTotalPrice), new decimal_js_1.Decimal(0));
             yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
-                balance_decreases: updatedBalanceDecreases,
-                remaining_decreases: updatedRemainingDecreases,
-                ending_balance: updatedRemainingDecreases,
+                balance_decreases: updatedBalanceDecreases.toString(),
+                remaining_decreases: updatedRemainingDecreases.toString(),
+                ending_balance: updatedRemainingDecreases.toString(),
             });
             yield WarehouseModel_1.default.findByIdAndUpdate(warehouseId, {
-                $inc: { totalPrice: -totalPrice },
+                $inc: { totalPrice: -decimalTotalPrice.toNumber() },
             });
-        }));
-        yield Promise.all([productUpdates]);
-        let totalPrice = 0;
-        for (const product of products) {
-            const productData = yield WarehouseModel_1.default.findById(product.warehouseId);
-            if (!productData) {
+            const updatedWarehouse = yield WarehouseModel_1.default.findById(warehouseId);
+            if (!updatedWarehouse) {
                 return res
                     .status(400)
-                    .json({ message: `Product not found: ${product.warehouseId}` });
+                    .json({ message: `Warehouse not found: ${warehouseId}` });
             }
-            totalPrice = products.reduce((acc, product) => acc + Number(product.totalPrice), 0);
         }
-        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, total: totalPrice }));
+        const receiptOrder = new ReceiptSupplierModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, total: totalReceiptPrice.toString() }));
         yield receiptOrder.save();
         return res.status(200).json(receiptOrder);
     }
     catch (error) {
-        res.status(500).json("Server error: " + error.message);
+        console.error("Error creating supplier receipt:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 });
 exports.createReceiptSupplier = createReceiptSupplier;

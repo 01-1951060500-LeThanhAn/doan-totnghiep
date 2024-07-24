@@ -4,6 +4,7 @@ import WarehouseModel from "../model/WarehouseModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
 import TransactionModel from "../model/TransactionModel";
 import SupplierModel from "../model/SupplierModel";
+import Decimal from "decimal.js";
 
 const createWareHouse = async (req: Request, res: Response) => {
   try {
@@ -214,15 +215,23 @@ const updateWarehouse = async (req: Request, res: Response) => {
 
       const supplier = await SupplierModel.findById(supplierId);
 
-      const currentBalanceIncreases = supplier?.balance_increases || 0;
-      const currentBalanceDecreases = supplier?.balance_decreases || 0;
-      const remainingDecreases =
-        currentBalanceIncreases - currentBalanceDecreases;
-      const updatedBalanceDecreases =
-        currentBalanceDecreases + Number(totalPrice);
-      const updatedRemainingDecreases = Math.max(
-        remainingDecreases - Number(totalPrice),
-        0
+      const currentBalanceIncreases = new Decimal(
+        supplier?.balance_increases || 0
+      );
+      const currentBalanceDecreases = new Decimal(
+        supplier?.balance_decreases || 0
+      );
+
+      const remainingDecreases = Decimal.max(
+        currentBalanceIncreases.minus(currentBalanceDecreases),
+        new Decimal(0)
+      );
+
+      const updatedBalanceDecreases = currentBalanceDecreases.plus(totalPrice);
+
+      const updatedRemainingDecreases = Decimal.max(
+        remainingDecreases.minus(totalPrice),
+        new Decimal(0)
       );
       await SupplierModel.findByIdAndUpdate(supplierId, {
         balance_decreases: updatedBalanceDecreases,
@@ -293,20 +302,24 @@ const deleteWarehouse = async (req: Request, res: Response) => {
       throw new Error(`Supplier not found: ${supplierId}`);
     }
 
-    const updatedBalanceIncreases = Math.max(
-      supplier.balance_increases - orderTotalPrice,
-      0
+    const currentBalanceIncreases = new Decimal(supplier.balance_increases);
+    const currentBalanceDecreases = new Decimal(supplier.balance_decreases);
+    const openingBalance = new Decimal(supplier.opening_balance);
+
+    const updatedBalanceIncreases = Decimal.max(
+      currentBalanceIncreases.minus(orderTotalPrice),
+      new Decimal(0)
     );
-    const updatedRemainingDecreases =
-      supplier.opening_balance +
-      updatedBalanceIncreases -
-      supplier.balance_decreases;
+    const updatedRemainingDecreases = openingBalance
+      .plus(updatedBalanceIncreases)
+      .minus(currentBalanceDecreases);
+
     const updatedEndingBalance = updatedRemainingDecreases;
 
     await SupplierModel.findByIdAndUpdate(supplierId, {
-      balance_increases: updatedBalanceIncreases,
-      remaining_decreases: updatedRemainingDecreases,
-      ending_balance: updatedEndingBalance,
+      balance_increases: updatedBalanceIncreases.toString(),
+      remaining_decreases: updatedRemainingDecreases.toString(),
+      ending_balance: updatedEndingBalance.toString(),
     });
 
     if (deleteProductId.payment_status === "pending") {
