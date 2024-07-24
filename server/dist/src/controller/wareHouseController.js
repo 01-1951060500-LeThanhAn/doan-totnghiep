@@ -87,10 +87,10 @@ const createWareHouse = (req, res) => __awaiter(void 0, void 0, void 0, function
                 Number(product.inventory_number) * Number(productData.import_price), 0);
         }
         const warehouse = new WarehouseModel_1.default(Object.assign(Object.assign({}, req.body), { supplierId: supplier._id, totalQuantity, payment_status: "pending" }));
-        const currentBalance = supplier.balance_increases + supplier.opening_balance;
+        const currentBalance = Number(supplier.balance_increases) + Number(supplier.opening_balance);
         yield SupplierModel_1.default.findByIdAndUpdate(supplierId, {
-            balance_increases: currentBalance + totalPrice,
-            ending_balance: currentBalance + totalPrice,
+            balance_increases: currentBalance + Number(totalPrice),
+            ending_balance: currentBalance + Number(totalPrice),
         });
         const newWarehouse = yield warehouse.save();
         res.status(200).json(newWarehouse);

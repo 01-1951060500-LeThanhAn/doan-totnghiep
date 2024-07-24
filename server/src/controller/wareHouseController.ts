@@ -108,10 +108,10 @@ const createWareHouse = async (req: Request, res: Response) => {
     });
 
     const currentBalance =
-      supplier.balance_increases + supplier.opening_balance;
+      Number(supplier.balance_increases) + Number(supplier.opening_balance);
     await SupplierModel.findByIdAndUpdate(supplierId, {
-      balance_increases: currentBalance + totalPrice,
-      ending_balance: currentBalance + totalPrice,
+      balance_increases: currentBalance + Number(totalPrice),
+      ending_balance: currentBalance + Number(totalPrice),
     });
 
     const newWarehouse = await warehouse.save();
