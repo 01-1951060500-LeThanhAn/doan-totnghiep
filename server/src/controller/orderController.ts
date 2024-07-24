@@ -70,11 +70,11 @@ const createOrder = async (req: Request, res: Response) => {
     });
 
     const currentBalance =
-      customer.balance_increases + customer.opening_balance;
+      Number(customer.balance_increases) + Number(customer.opening_balance);
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: currentBalance + totalPrice,
-      ending_balance: currentBalance + totalPrice,
+      balance_increases: currentBalance + Number(totalPrice),
+      ending_balance: currentBalance + Number(totalPrice),
     });
 
     const savedOrder = await newOrder.save();

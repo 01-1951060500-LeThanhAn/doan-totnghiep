@@ -54,10 +54,10 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         const newOrder = new OrderModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, userId,
             totalQuantity, totalPrice: totalPrice, payment_status: "unpaid", products: products.map((product) => (Object.assign(Object.assign({}, product), { totalReturnOrders: product.quantity }))) }));
-        const currentBalance = customer.balance_increases + customer.opening_balance;
+        const currentBalance = Number(customer.balance_increases) + Number(customer.opening_balance);
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: currentBalance + totalPrice,
-            ending_balance: currentBalance + totalPrice,
+            balance_increases: currentBalance + Number(totalPrice),
+            ending_balance: currentBalance + Number(totalPrice),
         });
         const savedOrder = yield newOrder.save();
         res.status(200).json(savedOrder);
