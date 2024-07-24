@@ -159,20 +159,25 @@ const updateOrder = async (req: Request, res: Response) => {
       const customer = await CustomerModel.findById(customerId);
 
       if (customer) {
-        // Cập nhật balance_decreases bằng cách cộng dồn totalPrice mới
-        const updatedBalanceDecreases =
-          (customer.balance_decreases || 0) + totalPrice;
+        const currentBalanceIncreases = parseFloat(
+          customer.balance_increases || "0"
+        );
+        const currentBalanceDecreases = parseFloat(
+          customer.balance_decreases || "0"
+        );
+        const totalPriceNumber = totalPrice;
 
-        // Tính toán lại remaining_decreases
+        const updatedBalanceDecreases =
+          currentBalanceDecreases + totalPriceNumber;
         const updatedRemainingDecreases = Math.max(
-          (customer.balance_increases || 0) - updatedBalanceDecreases,
+          currentBalanceIncreases - updatedBalanceDecreases,
           0
         );
 
         await CustomerModel.findByIdAndUpdate(customerId, {
-          balance_decreases: updatedBalanceDecreases,
-          remaining_decreases: updatedRemainingDecreases,
-          ending_balance: updatedRemainingDecreases,
+          balance_decreases: updatedBalanceDecreases.toString(),
+          remaining_decreases: updatedRemainingDecreases.toString(),
+          ending_balance: updatedRemainingDecreases.toString(),
         });
       }
 
@@ -270,19 +275,19 @@ const deleteOrder = async (req: Request, res: Response) => {
     }
 
     const updatedBalanceIncreases = Math.max(
-      customer.balance_increases - orderTotalPrice,
+      parseFloat(customer.balance_increases) - orderTotalPrice,
       0
     );
     const updatedRemainingDecreases =
       customer.opening_balance +
       updatedBalanceIncreases -
-      customer.balance_decreases;
+      parseFloat(customer.balance_decreases);
     const updatedEndingBalance = updatedRemainingDecreases;
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: updatedBalanceIncreases,
-      remaining_decreases: updatedRemainingDecreases,
-      ending_balance: updatedEndingBalance,
+      balance_increases: updatedBalanceIncreases.toString(),
+      remaining_decreases: updatedRemainingDecreases.toString(),
+      ending_balance: updatedEndingBalance.toString(),
     });
 
     res.status(200).json({

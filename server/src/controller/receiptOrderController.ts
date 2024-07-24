@@ -22,19 +22,23 @@ const createReceipt = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Missing receipt  details" });
       }
 
-      const currentBalanceIncreases = customer?.balance_increases || 0;
-      const currentBalanceDecreases = customer?.balance_decreases || 0;
-      const remainingDecreases =
-        currentBalanceIncreases - currentBalanceDecreases;
+      const currentBalanceIncreases =
+        parseFloat(customer?.balance_increases) || 0;
+      const currentBalanceDecreases =
+        parseFloat(customer?.balance_decreases) || 0;
+      const remainingDecreases = Math.max(
+        currentBalanceIncreases - currentBalanceDecreases,
+        0
+      );
       const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
       const updatedRemainingDecreases = Math.max(
         remainingDecreases - totalPrice,
         0
       );
       await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_decreases: updatedBalanceDecreases,
-        remaining_decreases: updatedRemainingDecreases,
-        ending_balance: updatedRemainingDecreases,
+        balance_decreases: updatedBalanceDecreases.toString(),
+        remaining_decreases: updatedRemainingDecreases.toString(),
+        ending_balance: updatedRemainingDecreases.toString(),
       });
 
       await OrderModel.findByIdAndUpdate(orderId, {

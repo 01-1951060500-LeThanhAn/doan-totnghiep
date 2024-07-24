@@ -31,15 +31,15 @@ const createReceipt = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             if (!orderId || !totalPrice) {
                 return res.status(400).json({ message: "Missing receipt  details" });
             }
-            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
-            const remainingDecreases = currentBalanceIncreases - currentBalanceDecreases;
+            const currentBalanceIncreases = parseFloat(customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
+            const currentBalanceDecreases = parseFloat(customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
+            const remainingDecreases = Math.max(currentBalanceIncreases - currentBalanceDecreases, 0);
             const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
             const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
             yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-                balance_decreases: updatedBalanceDecreases,
-                remaining_decreases: updatedRemainingDecreases,
-                ending_balance: updatedRemainingDecreases,
+                balance_decreases: updatedBalanceDecreases.toString(),
+                remaining_decreases: updatedRemainingDecreases.toString(),
+                ending_balance: updatedRemainingDecreases.toString(),
             });
             yield OrderModel_1.default.findByIdAndUpdate(orderId, {
                 $inc: { totalPrice: -totalPrice },
