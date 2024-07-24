@@ -5,6 +5,7 @@ import ProductModel from "../model/ProductModel";
 import TransactionModel from "../model/TransactionModel";
 import PartnerModel from "../model/PartnerModel";
 import GeneralDepotModel from "../model/GeneralDepotModel";
+import { Decimal } from "decimal.js";
 
 const createOrder = async (req: Request, res: Response) => {
   try {
@@ -154,26 +155,32 @@ const updateOrder = async (req: Request, res: Response) => {
 
     if (paymentStatusChangedToPaid) {
       const customerId = updatedOrder.customerId;
-      const totalPrice = +updatedOrder.totalPrice;
+      const totalPrice = new Decimal(updatedOrder.totalPrice);
 
       const customer = await CustomerModel.findById(customerId);
 
-      const currentBalanceIncreases = Number(customer?.balance_increases) || 0;
-      const currentBalanceDecreases = Number(customer?.balance_decreases) || 0;
-      const remainingDecreases =
-        Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+      const currentBalanceIncreases = new Decimal(
+        customer?.balance_increases || 0
+      );
+      const currentBalanceDecreases = new Decimal(
+        customer?.balance_decreases || 0
+      );
 
-      const updatedBalanceDecreases =
-        Number(currentBalanceDecreases) + Number(totalPrice);
+      const remainingDecreases = Decimal.max(
+        currentBalanceIncreases.minus(currentBalanceDecreases),
+        new Decimal(0)
+      );
 
-      const updatedRemainingDecreases = Math.max(
-        remainingDecreases - totalPrice,
-        0
+      const updatedBalanceDecreases = currentBalanceDecreases.plus(totalPrice);
+
+      const updatedRemainingDecreases = Decimal.max(
+        remainingDecreases.minus(totalPrice),
+        new Decimal(0)
       );
       await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_decreases: updatedBalanceDecreases,
-        remaining_decreases: updatedRemainingDecreases,
-        ending_balance: updatedRemainingDecreases,
+        balance_decreases: updatedBalanceDecreases.toString(),
+        remaining_decreases: updatedRemainingDecreases.toString(),
+        ending_balance: updatedRemainingDecreases.toString(),
       });
 
       for (const product of updatedOrder.products) {
@@ -263,26 +270,31 @@ const deleteOrder = async (req: Request, res: Response) => {
     }
 
     const customerId = deletedOrder.customerId;
-    const orderTotalPrice = deletedOrder.totalPrice;
+    const orderTotalPrice = new Decimal(deletedOrder.totalPrice);
     const customer = await CustomerModel.findById(customerId);
     if (!customer) {
       throw new Error(`Customer not found: ${customerId}`);
     }
 
-    const updatedBalanceIncreases = Math.max(
-      customer.balance_increases - orderTotalPrice,
-      0
+    const currentBalanceIncreases = new Decimal(customer.balance_increases);
+    const currentBalanceDecreases = new Decimal(customer.balance_decreases);
+    const openingBalance = new Decimal(customer.opening_balance);
+
+    const updatedBalanceIncreases = Decimal.max(
+      currentBalanceIncreases.minus(orderTotalPrice),
+      new Decimal(0)
     );
-    const updatedRemainingDecreases =
-      customer.opening_balance +
-      updatedBalanceIncreases -
-      customer.balance_decreases;
+
+    const updatedRemainingDecreases = openingBalance
+      .plus(updatedBalanceIncreases)
+      .minus(currentBalanceDecreases);
+
     const updatedEndingBalance = updatedRemainingDecreases;
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: updatedBalanceIncreases,
-      remaining_decreases: updatedRemainingDecreases,
-      ending_balance: updatedEndingBalance,
+      balance_increases: updatedBalanceIncreases.toString(),
+      remaining_decreases: updatedRemainingDecreases.toString(),
+      ending_balance: updatedEndingBalance.toString(),
     });
 
     res.status(200).json({

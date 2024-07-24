@@ -20,24 +20,24 @@ const CustomerSchema = new mongoose_1.default.Schema({
     website: { type: String },
     note: { type: String },
     opening_balance: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: "",
     },
     balance_increases: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: "",
     },
     balance_decreases: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: "",
     },
     remaining_decreases: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: "",
     },
     ending_balance: {
-        type: Number,
-        default: 0,
+        type: String,
+        default: "",
     },
 }, {
     timestamps: true,

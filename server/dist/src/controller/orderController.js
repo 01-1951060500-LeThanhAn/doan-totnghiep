@@ -19,6 +19,7 @@ const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const TransactionModel_1 = __importDefault(require("../model/TransactionModel"));
 const PartnerModel_1 = __importDefault(require("../model/PartnerModel"));
 const GeneralDepotModel_1 = __importDefault(require("../model/GeneralDepotModel"));
+const decimal_js_1 = require("decimal.js");
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { customerId, userId, products } = req.body;
@@ -121,17 +122,17 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             (updatedOrder === null || updatedOrder === void 0 ? void 0 : updatedOrder.order_status) === "delivered";
         if (paymentStatusChangedToPaid) {
             const customerId = updatedOrder.customerId;
-            const totalPrice = +updatedOrder.totalPrice;
+            const totalPrice = new decimal_js_1.Decimal(updatedOrder.totalPrice);
             const customer = yield CustomerModel_1.default.findById(customerId);
-            const currentBalanceIncreases = Number(customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-            const currentBalanceDecreases = Number(customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
-            const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-            const updatedBalanceDecreases = Number(currentBalanceDecreases) + Number(totalPrice);
-            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            const currentBalanceIncreases = new decimal_js_1.Decimal((customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0);
+            const currentBalanceDecreases = new decimal_js_1.Decimal((customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0);
+            const remainingDecreases = decimal_js_1.Decimal.max(currentBalanceIncreases.minus(currentBalanceDecreases), new decimal_js_1.Decimal(0));
+            const updatedBalanceDecreases = currentBalanceDecreases.plus(totalPrice);
+            const updatedRemainingDecreases = decimal_js_1.Decimal.max(remainingDecreases.minus(totalPrice), new decimal_js_1.Decimal(0));
             yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-                balance_decreases: updatedBalanceDecreases,
-                remaining_decreases: updatedRemainingDecreases,
-                ending_balance: updatedRemainingDecreases,
+                balance_decreases: updatedBalanceDecreases.toString(),
+                remaining_decreases: updatedRemainingDecreases.toString(),
+                ending_balance: updatedRemainingDecreases.toString(),
             });
             for (const product of updatedOrder.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
@@ -208,20 +209,23 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(404).json({ message: "Đơn hàng không tồn tại" });
         }
         const customerId = deletedOrder.customerId;
-        const orderTotalPrice = deletedOrder.totalPrice;
+        const orderTotalPrice = new decimal_js_1.Decimal(deletedOrder.totalPrice);
         const customer = yield CustomerModel_1.default.findById(customerId);
         if (!customer) {
             throw new Error(`Customer not found: ${customerId}`);
         }
-        const updatedBalanceIncreases = Math.max(customer.balance_increases - orderTotalPrice, 0);
-        const updatedRemainingDecreases = customer.opening_balance +
-            updatedBalanceIncreases -
-            customer.balance_decreases;
+        const currentBalanceIncreases = new decimal_js_1.Decimal(customer.balance_increases);
+        const currentBalanceDecreases = new decimal_js_1.Decimal(customer.balance_decreases);
+        const openingBalance = new decimal_js_1.Decimal(customer.opening_balance);
+        const updatedBalanceIncreases = decimal_js_1.Decimal.max(currentBalanceIncreases.minus(orderTotalPrice), new decimal_js_1.Decimal(0));
+        const updatedRemainingDecreases = openingBalance
+            .plus(updatedBalanceIncreases)
+            .minus(currentBalanceDecreases);
         const updatedEndingBalance = updatedRemainingDecreases;
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: updatedBalanceIncreases,
-            remaining_decreases: updatedRemainingDecreases,
-            ending_balance: updatedEndingBalance,
+            balance_increases: updatedBalanceIncreases.toString(),
+            remaining_decreases: updatedRemainingDecreases.toString(),
+            ending_balance: updatedEndingBalance.toString(),
         });
         res.status(200).json({
             message: "Sản phẩm đã được xóa khỏi giỏ hàng.",

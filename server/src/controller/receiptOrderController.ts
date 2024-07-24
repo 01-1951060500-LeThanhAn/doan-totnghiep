@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import ReceiptModel from "../model/ReceiptCustomerModel";
 import CustomerModel from "../model/CustomerModel";
 import OrderModel from "../model/OrderModel";
-
+import { Decimal } from "decimal.js";
 const createReceipt = async (req: Request, res: Response) => {
   try {
     const { customerId, products } = req.body;
@@ -25,7 +25,7 @@ const createReceipt = async (req: Request, res: Response) => {
       const currentBalanceIncreases = customer?.balance_increases || 0;
       const currentBalanceDecreases = customer?.balance_decreases || 0;
       const remainingDecreases =
-        currentBalanceIncreases - currentBalanceDecreases;
+        +currentBalanceIncreases - +currentBalanceDecreases;
       const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
       const updatedRemainingDecreases = Math.max(
         remainingDecreases - totalPrice,
