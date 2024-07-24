@@ -34,6 +34,12 @@ const createOrder = async (req: Request, res: Response) => {
       0
     );
 
+    for (const product of products) {
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingOrderQuantity: product.quantity },
+      });
+    }
+
     let totalPrice = new Decimal(0);
     for (const product of products) {
       const productData = await ProductModel.findById(product.productId);
@@ -43,13 +49,11 @@ const createOrder = async (req: Request, res: Response) => {
           .json({ message: `Product not found: ${product.productId}` });
       }
 
-      await ProductModel.findByIdAndUpdate(product.productId, {
-        $inc: { pendingOrderQuantity: product.quantity },
-      });
-
-      const productPrice = new Decimal(productData.export_price);
-      const quantity = new Decimal(product.quantity);
-      totalPrice = totalPrice.plus(productPrice.times(quantity));
+      totalPrice = products.reduce(
+        (acc: number, product: any) =>
+          acc + Number(product.quantity) * Number(productData.export_price),
+        0
+      );
     }
 
     const newOrder = new OrderModel({
@@ -57,7 +61,7 @@ const createOrder = async (req: Request, res: Response) => {
       customerId: customer._id,
       userId,
       totalQuantity,
-      totalPrice: totalPrice.toString(),
+      totalPrice: totalPrice,
       payment_status: "unpaid",
       products: products.map((product: any) => ({
         ...product,
@@ -79,11 +83,9 @@ const createOrder = async (req: Request, res: Response) => {
     const savedOrder = await newOrder.save();
 
     res.status(200).json(savedOrder);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating order:", error);
-    res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 
