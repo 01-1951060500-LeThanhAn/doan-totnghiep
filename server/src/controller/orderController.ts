@@ -154,7 +154,7 @@ const updateOrder = async (req: Request, res: Response) => {
 
     if (paymentStatusChangedToPaid) {
       const customerId = updatedOrder.customerId;
-      const totalPrice = updatedOrder.totalPrice;
+      const totalPrice = +updatedOrder.totalPrice;
 
       const customer = await CustomerModel.findById(customerId);
 
@@ -162,7 +162,9 @@ const updateOrder = async (req: Request, res: Response) => {
       const currentBalanceDecreases = customer?.balance_decreases || 0;
       const remainingDecreases =
         Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-      const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
+
+      const updatedBalanceDecreases = +currentBalanceDecreases + totalPrice;
+
       const updatedRemainingDecreases = Math.max(
         remainingDecreases - totalPrice,
         0
