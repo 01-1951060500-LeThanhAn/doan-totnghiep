@@ -34,13 +34,7 @@ const createOrder = async (req: Request, res: Response) => {
       0
     );
 
-    for (const product of products) {
-      await ProductModel.findByIdAndUpdate(product.productId, {
-        $inc: { pendingOrderQuantity: product.quantity },
-      });
-    }
-
-    let totalPrice = 0;
+    let totalPrice = new Decimal(0);
     for (const product of products) {
       const productData = await ProductModel.findById(product.productId);
       if (!productData) {
@@ -49,11 +43,13 @@ const createOrder = async (req: Request, res: Response) => {
           .json({ message: `Product not found: ${product.productId}` });
       }
 
-      totalPrice = products.reduce(
-        (acc: number, product: any) =>
-          acc + Number(product.quantity) * Number(productData.export_price),
-        0
-      );
+      await ProductModel.findByIdAndUpdate(product.productId, {
+        $inc: { pendingOrderQuantity: product.quantity },
+      });
+
+      const productPrice = new Decimal(productData.export_price);
+      const quantity = new Decimal(product.quantity);
+      totalPrice = totalPrice.plus(productPrice.times(quantity));
     }
 
     const newOrder = new OrderModel({
@@ -61,7 +57,7 @@ const createOrder = async (req: Request, res: Response) => {
       customerId: customer._id,
       userId,
       totalQuantity,
-      totalPrice: totalPrice,
+      totalPrice: totalPrice.toString(),
       payment_status: "unpaid",
       products: products.map((product: any) => ({
         ...product,
@@ -69,20 +65,25 @@ const createOrder = async (req: Request, res: Response) => {
       })),
     });
 
-    const currentBalance =
-      customer.balance_increases + customer.opening_balance;
+    const currentBalance = new Decimal(customer.balance_increases).plus(
+      new Decimal(customer.opening_balance)
+    );
+
+    const newBalance = currentBalance.plus(totalPrice);
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: currentBalance + totalPrice,
-      ending_balance: currentBalance + totalPrice,
+      balance_increases: newBalance.toString(),
+      ending_balance: newBalance.toString(),
     });
 
     const savedOrder = await newOrder.save();
 
     res.status(200).json(savedOrder);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating order:", error);
-    res.status(500).json({ message: "An error occurred" });
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
   }
 };
 

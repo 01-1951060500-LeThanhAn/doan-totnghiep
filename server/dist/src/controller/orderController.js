@@ -37,12 +37,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             return res.status(400).json({ message: "customerId not found" });
         }
         const totalQuantity = products.reduce((acc, product) => acc + Number(product.quantity), 0);
-        for (const product of products) {
-            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
-                $inc: { pendingOrderQuantity: product.quantity },
-            });
-        }
-        let totalPrice = 0;
+        let totalPrice = new decimal_js_1.Decimal(0);
         for (const product of products) {
             const productData = yield ProductModel_1.default.findById(product.productId);
             if (!productData) {
@@ -50,21 +45,29 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     .status(400)
                     .json({ message: `Product not found: ${product.productId}` });
             }
-            totalPrice = products.reduce((acc, product) => acc + Number(product.quantity) * Number(productData.export_price), 0);
+            yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
+                $inc: { pendingOrderQuantity: product.quantity },
+            });
+            const productPrice = new decimal_js_1.Decimal(productData.export_price);
+            const quantity = new decimal_js_1.Decimal(product.quantity);
+            totalPrice = totalPrice.plus(productPrice.times(quantity));
         }
         const newOrder = new OrderModel_1.default(Object.assign(Object.assign({}, req.body), { customerId: customer._id, userId,
-            totalQuantity, totalPrice: totalPrice, payment_status: "unpaid", products: products.map((product) => (Object.assign(Object.assign({}, product), { totalReturnOrders: product.quantity }))) }));
-        const currentBalance = customer.balance_increases + customer.opening_balance;
+            totalQuantity, totalPrice: totalPrice.toString(), payment_status: "unpaid", products: products.map((product) => (Object.assign(Object.assign({}, product), { totalReturnOrders: product.quantity }))) }));
+        const currentBalance = new decimal_js_1.Decimal(customer.balance_increases).plus(new decimal_js_1.Decimal(customer.opening_balance));
+        const newBalance = currentBalance.plus(totalPrice);
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: currentBalance + totalPrice,
-            ending_balance: currentBalance + totalPrice,
+            balance_increases: newBalance.toString(),
+            ending_balance: newBalance.toString(),
         });
         const savedOrder = yield newOrder.save();
         res.status(200).json(savedOrder);
     }
     catch (error) {
         console.error("Error creating order:", error);
-        res.status(500).json({ message: "An error occurred" });
+        res
+            .status(500)
+            .json({ message: "An error occurred", error: error.message });
     }
 });
 exports.createOrder = createOrder;
