@@ -126,7 +126,7 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
             const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
             const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-            const updatedBalanceDecreases = Number(currentBalanceDecreases) + Number(totalPrice);
+            const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
             const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
             yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
                 balance_decreases: updatedBalanceDecreases,
