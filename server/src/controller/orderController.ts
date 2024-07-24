@@ -163,7 +163,8 @@ const updateOrder = async (req: Request, res: Response) => {
       const remainingDecreases =
         Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
 
-      const updatedBalanceDecreases = +currentBalanceDecreases + totalPrice;
+      const updatedBalanceDecreases =
+        Number(currentBalanceDecreases) + Number(totalPrice);
 
       const updatedRemainingDecreases = Math.max(
         remainingDecreases - totalPrice,
