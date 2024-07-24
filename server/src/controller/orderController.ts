@@ -158,8 +158,8 @@ const updateOrder = async (req: Request, res: Response) => {
 
       const customer = await CustomerModel.findById(customerId);
 
-      const currentBalanceIncreases = customer?.balance_increases || 0;
-      const currentBalanceDecreases = customer?.balance_decreases || 0;
+      const currentBalanceIncreases = Number(customer?.balance_increases) || 0;
+      const currentBalanceDecreases = Number(customer?.balance_decreases) || 0;
       const remainingDecreases =
         Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
 
