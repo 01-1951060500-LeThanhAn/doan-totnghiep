@@ -74,5 +74,6 @@ export type Results = {
   address_supplier: string;
   website: string;
   desc: string;
+  tax_code: string;
   createdAt: string;
 };

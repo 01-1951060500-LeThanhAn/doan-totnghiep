@@ -7,7 +7,7 @@ import ResultsOrders from "./components/results-orders";
 
 const ReportOrderByDay = () => {
   const [orders, setOrders] = useState<OrdersData[]>([]);
-  console.log(orders);
+
   return (
     <>
       <Heading />

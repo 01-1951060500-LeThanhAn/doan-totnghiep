@@ -43,6 +43,7 @@ const FormProduct = ({ initialValues, productId }: Props) => {
       desc: initialValues?.desc ?? "",
       name_product: initialValues?.name_product ?? "",
       code: initialValues?.code ?? "",
+
       unit: initialValues?.unit ?? "",
       img: initialValues?.img ?? "",
       import_price: initialValues?.import_price ?? "",
@@ -60,10 +61,10 @@ const FormProduct = ({ initialValues, productId }: Props) => {
   useEffect(() => {
     form.setValue("name_product", defaultValues?.name_product);
     form.setValue("desc", defaultValues?.desc);
+
     form.setValue("code", defaultValues?.code);
     form.setValue("unit", defaultValues?.unit);
-    form.setValue("import_price", defaultValues?.import_price);
-    form.setValue("export_price", defaultValues?.export_price);
+
     form.setValue("inventory_number", defaultValues?.inventory_number);
   }, [form, defaultValues]);
 

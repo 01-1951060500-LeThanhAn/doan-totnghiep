@@ -18,6 +18,7 @@ export type ReceiptSupplierData = {
   _id: string;
   code: string;
   submitter: string;
+  total: string;
   supplierId: {
     _id: string;
     supplier_name: string;
@@ -31,11 +32,7 @@ export type ReceiptSupplierData = {
     phone: number;
     address: string;
   };
-  warehouseId: {
-    _id: string;
-    code: string;
-    payment_status: string;
-  };
+  products: Product[];
   receipt_type: string;
   payment_method: string;
   totalPrice: number;
@@ -45,16 +42,26 @@ export type ReceiptSupplierData = {
   updatedAt: string;
 };
 
+export interface Product {
+  warehouseId: {
+    _id: string;
+    code: string;
+
+    payment_status: string;
+  };
+  totalPrice: number;
+  _id: string;
+}
+
 export type ReceiptSupplierTableProps = {
   _id: string;
   code: string;
   submitter: string;
   customer: string;
   staff: string;
-  warehouse_code: string;
-  warehouse_id: string;
+
   receipt_type: string;
-  totalPrice: number;
+  total: string;
   payment_status: string;
   desc: string;
 };
@@ -73,13 +80,35 @@ export type DetailSupplierReceiptData = {
     username: string;
     email: string;
   };
-  warehouseId: {
-    _id: string;
-    code: string;
-  };
+  products: DetailReceiptTable[];
   receipt_type: string;
-  totalPrice: number;
+  total: number;
   payment_status: string;
   payment_method: string;
   desc: string;
+  updatedAt: string | Date;
+  createdAt: string;
+};
+
+export type DetailReceiptTable = {
+  warehouseId: {
+    _id: string;
+    code: string;
+    products: ProductReceipt[];
+    supplierId: {
+      supplier_name: string;
+      supplier_code: string;
+    };
+  };
+  totalPrice: number;
+  _id: string;
+};
+
+export type ProductReceipt = {
+  productId: {
+    _id: string;
+    name_product: string;
+    code: string;
+    img: string;
+  };
 };

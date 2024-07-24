@@ -10,8 +10,6 @@ export const customerSchema = z.object({
   specific_address: z.string().min(1, "Address customer is required"),
   type: z.string().min(1, "Type customer is required"),
   city: z.string().min(1, "City customer is required"),
-  district: z.string().min(1, "District customer is required"),
-  ward: z.string().min(1, "Ward customer is required"),
   level: z.string().min(1, "Reputation level customer is required"),
   phone: z.string().min(1, "Phone number customer is required"),
   tax_code: z.string().min(1, "Tax code number customer is required"),

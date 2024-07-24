@@ -45,7 +45,7 @@ const DetailReceiptView = ({ data }: Props) => {
               </div>
               <div className="flex items-center justify-between my-3">
                 <p>Số tiền thu: </p>
-                <span>{formatPrice(data?.totalPrice)}</span>
+                <span>{formatPrice(data?.total)}</span>
               </div>
             </div>
           </div>
@@ -66,10 +66,7 @@ const DetailReceiptView = ({ data }: Props) => {
                 <p>Mã khách hàng: </p>
                 <span>{data?.customerId?.code}</span>
               </div>
-              <div className="flex items-center justify-between my-3">
-                <p>Mã đơn hàng: </p>
-                <span>{data?.orderId?.code}</span>
-              </div>
+
               <div className="flex items-center justify-between my-3">
                 <p>Nhân viên tạo đơn: </p>
                 <span>{data?.staffId?.username}</span>

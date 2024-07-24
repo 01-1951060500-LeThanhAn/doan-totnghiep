@@ -18,7 +18,7 @@ const ReportOrderView = () => {
                 <CircleDollarSign />
                 <div className="my-2">
                   <p className="text-base text-center">
-                    Báo cáo doanh thu cửa hàng
+                    Báo cáo doanh thu kho hàng
                   </p>
                 </div>
               </div>

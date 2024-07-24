@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GoodReceivedPage = () => {
   const { goodReceivedNotes } = useGetGoodReceivedNotes();
+
   const { warehouseOrders } = useGetStatusGoodReceivedNoteOrders();
   const data = goodReceivedNotes.map((goodReceivedNote) => ({
     _id: goodReceivedNote._id,
@@ -19,6 +20,7 @@ const GoodReceivedPage = () => {
     generalId: goodReceivedNote?.generalId?.name,
     supplierId: goodReceivedNote.supplierId?.supplier_name,
     manager: goodReceivedNote?.manager?.username,
+    totalPrice: goodReceivedNote?.totalSupplierPay,
   }));
 
   const status = warehouseOrders.map((goodReceivedNote) => ({
@@ -32,6 +34,7 @@ const GoodReceivedPage = () => {
     generalId: goodReceivedNote?.generalId?.name,
     supplierId: goodReceivedNote.supplierId?.supplier_name,
     manager: goodReceivedNote?.manager?.username,
+    totalPrice: goodReceivedNote?.totalSupplierPay,
   }));
 
   return (

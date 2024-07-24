@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import { Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import useGetWarehouseByTime from "../../../hooks/use-get-warehouse-time";
 
 const RevenueTimeChart = () => {
@@ -12,7 +12,7 @@ const RevenueTimeChart = () => {
           theme === "dark" ? "bg-[#212B36] " : "shadow-lg"
         } rounded-lg p-3 w-full h-[350px]`}
       >
-        <Line
+        <Bar
           data={{
             labels: revenueTime.map((data) => data._id),
             datasets: [
@@ -21,18 +21,12 @@ const RevenueTimeChart = () => {
                 data: revenueTime.map((data) => data.totalOrders),
                 backgroundColor: "#FFA0B4",
                 borderColor: "#FF6384",
-                pointStyle: "circle",
-                pointRadius: 10,
-                pointHoverRadius: 15,
               },
               {
                 label: "SL hàng",
                 data: revenueTime.map((data) => data.totalQuantity),
                 backgroundColor: "#efba5f",
                 borderColor: "#f3b116",
-                pointStyle: "circle",
-                pointRadius: 10,
-                pointHoverRadius: 15,
               },
             ],
           }}

@@ -13,8 +13,7 @@ const FormAddCustomer = () => {
           code: "",
           type: "",
           city: "",
-          district: "",
-          ward: "",
+
           specific_address: "",
           level: "",
           phone: "",

@@ -81,9 +81,7 @@ const DetailSupplierView = ({ supplier }: Props) => {
               <p className="text-xl font-bold mb-3">Thông tin khác</p>
               <div className="flex items-center justify-between">
                 <p>Mã số thuế: </p>
-                <span className="font-bold">
-                  {supplier?.results?.supplier_name}
-                </span>
+                <span>{supplier?.results?.tax_code}</span>
               </div>
             </div>
             <div className="my-3">

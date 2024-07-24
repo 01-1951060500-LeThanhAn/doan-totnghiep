@@ -59,12 +59,12 @@ const TableGoodReceivedNoteData = ({
                     <p>{item?.inventory_number}</p>
                   </TableCell>
                   <TableCell>
-                    <p>{formatPrice(+item?.productId?.export_price)}</p>
+                    <p>{formatPrice(+item?.productId?.import_price)}</p>
                   </TableCell>
                   <TableCell>
                     <p>
                       {formatPrice(
-                        item?.inventory_number * +item?.productId?.export_price
+                        item?.inventory_number * +item?.productId?.import_price
                       )}
                     </p>
                   </TableCell>

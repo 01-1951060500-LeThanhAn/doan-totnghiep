@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -91,9 +90,13 @@ export const columns: ColumnDef<ProductTableProps>[] = [
   {
     accessorKey: "inventory_number",
     header: "Số lượng tồn kho",
-    cell: ({ row }) => (
-      <p className="capitalize">{row.getValue("inventory_number")}</p>
-    ),
+    cell: ({ row }) => {
+      return (
+        <>
+          <p className="capitalize">{row.getValue("inventory_number")}</p>
+        </>
+      );
+    },
   },
   {
     accessorKey: "general",
@@ -105,20 +108,29 @@ export const columns: ColumnDef<ProductTableProps>[] = [
     header: "Trạng thái sản phẩm",
     cell: ({ row, table }) => {
       const { theme } = table.options.meta as Data;
+      const inventoryNumber = row.getValue("inventory_number") as number;
       return (
         <p className="capitalize">
-          {(row.getValue("inventory_number") as number) > 0 ? (
-            <>
-              {theme === "light" ? (
-                <Badge variant="secondary" className="capitalize">
-                  Còn hàng
+          {inventoryNumber > 0 ? (
+            inventoryNumber < 10 ? (
+              <>
+                <Badge variant="remain" className="capitalize">
+                  Sắp hết hàng
                 </Badge>
-              ) : (
-                <Badge variant="outline" className="capitalize">
-                  Còn hàng
-                </Badge>
-              )}
-            </>
+              </>
+            ) : (
+              <>
+                {theme === "light" ? (
+                  <Badge variant="secondary" className="capitalize">
+                    Còn hàng
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="capitalize">
+                    Còn hàng
+                  </Badge>
+                )}
+              </>
+            )
           ) : (
             <Badge variant="destructive" className="capitalize">
               Hết hàng
@@ -153,7 +165,7 @@ export default function ProductTableData({ products }: Props) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

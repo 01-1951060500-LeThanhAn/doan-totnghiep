@@ -1,4 +1,3 @@
-import useGetOrders from "@/components/order/hooks/use-get-orders";
 import { useFormContext } from "react-hook-form";
 import {
   Table,
@@ -20,9 +19,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "next-themes";
 import { Badge } from "@/components/ui/badge";
+import useGetStatusOrders from "@/components/order/hooks/use-get-status-order";
 const AddReceiptTable = () => {
   const { control } = useFormContext();
-  const { orders } = useGetOrders();
+  const { statusOrders } = useGetStatusOrders({ text: "pending" });
   const { theme } = useTheme();
 
   return (
@@ -58,7 +58,7 @@ const AddReceiptTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders?.map((item, index) => (
+            {statusOrders?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.code}</p>

@@ -47,7 +47,7 @@ const getDetailUser = async (userId: string) => {
     const response = await adminApi.get<DetailUserResponse>(`/users/${userId}`);
     return response;
   } catch (error) {
-    toast.error("Error get detail user:", error!);
+    console.log("Error get detail user:", error!);
     throw error;
   }
 };

@@ -45,7 +45,7 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { Badge } from "@/components/ui/badge";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
-import { UserData, UserDataTableProps } from "@/types";
+import { UserDataTableProps } from "@/types";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 
@@ -56,7 +56,7 @@ type Data = {
   theme: string | undefined;
   dispatch: AppDispatch;
   onDeleteStaff: (id: string) => void;
-  currentUser: UserData;
+  currentUser: UserDataTableProps;
 };
 
 export const columns: ColumnDef<UserDataTableProps>[] = [
@@ -145,7 +145,7 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
     accessorKey: "action",
     header: "Hành động",
     cell: ({ row, table }) => {
-      const { onDeleteStaff } = table.options.meta as Data;
+      const { onDeleteStaff, currentUser } = table.options.meta as Data;
       const staffId = row.getValue("_id") as string;
       return (
         <div className="flex items-center gap-2">
@@ -167,20 +167,25 @@ export const columns: ColumnDef<UserDataTableProps>[] = [
               </AlertDialogContent>
             </AlertDialog>
           </div>
-          <div className="bg-yellow-500 text-white p-2">
-            <Link
-              className=""
-              to={`/dashboard/management/staff/${row.getValue("_id")}/edit`}
-            >
-              <Pencil />
-            </Link>
-          </div>
-          <div
-            onClick={() => onDeleteStaff(staffId)}
-            className="bg-red-500 cursor-pointer text-white p-2"
-          >
-            <Trash2 />
-          </div>
+
+          {currentUser?.isAdmin && (
+            <>
+              <div className="bg-yellow-500 text-white p-2">
+                <Link
+                  className=""
+                  to={`/dashboard/management/staff/${row.getValue("_id")}/edit`}
+                >
+                  <Pencil />
+                </Link>
+              </div>
+              <div
+                onClick={() => onDeleteStaff(staffId)}
+                className="bg-red-500 cursor-pointer text-white p-2"
+              >
+                <Trash2 />
+              </div>
+            </>
+          )}
         </div>
       );
     },

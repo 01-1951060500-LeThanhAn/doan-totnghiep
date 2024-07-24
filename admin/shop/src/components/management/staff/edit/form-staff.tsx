@@ -71,7 +71,7 @@ const FormStaff = ({ initialValues, id }: Props) => {
 
       const updatedStaff = {
         ...formData,
-        picture: res.data?.url ?? defaultValues?.picture,
+        picture: res.data?.url,
       } as UpdateStaffData;
 
       await dispatch(

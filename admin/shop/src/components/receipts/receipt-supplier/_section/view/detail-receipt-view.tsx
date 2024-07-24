@@ -5,6 +5,7 @@ import { DetailSupplierReceiptData } from "@/types/receipt_supplier";
 import { CircleCheck } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
+import TableOrderData from "../components/table";
 
 type Props = {
   data: DetailSupplierReceiptData;
@@ -12,7 +13,6 @@ type Props = {
 
 const DetailReceiptView = ({ data }: Props) => {
   const { theme } = useTheme();
-
   return (
     <>
       <HomeLayout>
@@ -26,7 +26,7 @@ const DetailReceiptView = ({ data }: Props) => {
               <p className="text-xl font-semibold mb-3">Thông tin phiếu thu</p>
               <div className="flex items-center justify-between">
                 <p>Mã phiếu : </p>
-                <span className="font-bold">{data?.code}</span>
+                <span className="font-bold text-base">{data?.code}</span>
               </div>
               <div className="flex items-center justify-between my-3">
                 <p>Nhóm người nộp : </p>
@@ -45,7 +45,7 @@ const DetailReceiptView = ({ data }: Props) => {
               </div>
               <div className="flex items-center justify-between my-3">
                 <p>Số tiền thu: </p>
-                <span>{formatPrice(data?.totalPrice)}</span>
+                <span>{formatPrice(data?.total)}</span>
               </div>
             </div>
           </div>
@@ -60,16 +60,15 @@ const DetailReceiptView = ({ data }: Props) => {
               </p>
               <div className="flex items-center justify-between">
                 <p>Tên nhà cung cấp : </p>
-                <span>{data?.supplierId?.supplier_name}</span>
+                <span className="font-bold">
+                  {data?.supplierId?.supplier_name}
+                </span>
               </div>
               <div className="flex items-center justify-between my-3">
                 <p>Mã nhà cung cấp: </p>
                 <span>{data?.supplierId?.supplier_code}</span>
               </div>
-              <div className="flex items-center justify-between my-3">
-                <p>Mã đơn nhập: </p>
-                <span>{data?.warehouseId?.code}</span>
-              </div>
+
               <div className="flex items-center justify-between my-3">
                 <p>Nhân viên tạo đơn: </p>
                 <span>{data?.staffId?.username}</span>
@@ -86,7 +85,7 @@ const DetailReceiptView = ({ data }: Props) => {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-x-2">
                 <CircleCheck color="green" />
-                <p className="text-lg font-semibold">Đơn hàng đã giao</p>
+                <p className="text-lg font-semibold">Phiếu nợ đã thanh toán</p>
               </div>
             </div>
           )}
@@ -95,9 +94,9 @@ const DetailReceiptView = ({ data }: Props) => {
           <div className="flex items-center gap-x-3">
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
             <p>{data?.code}</p>
-            {/* <p className="text-slate-400">
-              {new Date(data?.createdAt ?? "").toLocaleString()}
-            </p> */}
+            <p className="text-slate-400">
+              {new Date(data?.updatedAt ?? "").toLocaleString()}
+            </p>
 
             <div className="">
               {data?.payment_status === "paid" && (
@@ -109,9 +108,7 @@ const DetailReceiptView = ({ data }: Props) => {
           <div className="ml-6 my-3">
             <p>
               Mã đóng gói:{" "}
-              <Link
-                to={`/dashboard/good-received-note/${data?.warehouseId?._id}/detail`}
-              >
+              <Link to={`/dashboard/good-received-note/${data?._id}/detail`}>
                 <span className="text-blue-600  ml-3">{data?.code}</span>
               </Link>
             </p>
@@ -124,6 +121,14 @@ const DetailReceiptView = ({ data }: Props) => {
               </span>
             </p>
           </div>
+        </div>
+
+        <div
+          className={`w-full mt-4 mb-4 p-4 rounded-lg h-auto ${
+            theme === "dark" ? "bg-[#29343F]" : "shadow-md"
+          }`}
+        >
+          <TableOrderData data={data as unknown as DetailSupplierReceiptData} />
         </div>
       </HomeLayout>
     </>

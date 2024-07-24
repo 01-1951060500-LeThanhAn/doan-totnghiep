@@ -120,6 +120,7 @@ export type DetailOrderData = {
   note: string;
   total_ship: number;
   createdAt: string;
+  updatedAt: string;
 };
 
 export type Product = {

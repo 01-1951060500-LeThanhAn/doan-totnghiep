@@ -15,7 +15,7 @@ const ReceiptPage = () => {
     order_id: receipt?.products[0]?.orderId?._id,
     customer: receipt?.customerId?.username,
     staff: receipt?.staffId?.username,
-    totalPrice: receipt?.totalPrice,
+    total: receipt?.total,
     desc: receipt?.desc,
     receipt_type: receipt?.receipt_type,
   }));

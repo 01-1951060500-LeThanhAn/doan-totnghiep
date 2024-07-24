@@ -43,7 +43,7 @@ export type ReceiptData = {
     code: string;
   };
   receipt_type: string;
-  totalPrice: number;
+  total: number;
   payment_status: string;
   desc: string;
 };
@@ -57,7 +57,7 @@ export type ReceiptCustomerTableProps = {
   order_code: string;
   order_id: string;
   receipt_type: string;
-  totalPrice: number;
+  total: number;
   payment_status: string;
   desc: string;
 };
@@ -86,7 +86,7 @@ export type DetailCustomerReceiptData = {
     };
   };
   receipt_type: string;
-  totalPrice: number;
+  total: number;
   payment_status: string;
   payment_method: string;
   desc: string;

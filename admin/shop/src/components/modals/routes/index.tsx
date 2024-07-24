@@ -33,14 +33,13 @@ const ListRouteModal = () => {
 
           <div className="max-h-[400px] overflow-scroll overflow-x-hidden">
             {links.map((link, index) => (
-              <Link to={`${link.href}`}>
+              <Link key={index} to={`${link.href}`}>
                 <div
                   className={`py-3 ${
                     theme === "dark"
                       ? "hover:bg-slate-900"
                       : "hover:bg-slate-200"
                   } p-3 rounded-lg`}
-                  key={index}
                 >
                   <p className="text-sm">{link.name}</p>
                   <p className="font-semibold text-sm">{link.href}</p>

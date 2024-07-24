@@ -6,16 +6,19 @@ import { UserDataTableProps } from "@/types";
 import { useAppDispatch } from "@/hooks/hooks";
 import { toast } from "sonner";
 import { deleteStaffAsync } from "@/redux/slices/staffSlice";
-import useRefreshTable from "@/hooks/use-refresh-table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const StaffMain = () => {
   const { users } = useGetUsers();
   const dispatch = useAppDispatch();
-  const { refreshTable } = useRefreshTable(users);
+  const [listUsers, setListUsers] = useState(users);
   const [loading, setLoading] = useState(false);
 
-  const data = users.map((item) => ({
+  useEffect(() => {
+    setListUsers(users);
+  }, [users, setListUsers]);
+
+  const data = listUsers.map((item) => ({
     _id: item?._id,
     username: item?.username,
     email: item?.email,
@@ -30,9 +33,9 @@ const StaffMain = () => {
       setLoading(true);
       try {
         await dispatch(deleteStaffAsync(id));
-
+        setListUsers(listUsers.filter((item) => item._id !== id));
+        setLoading(false);
         toast.success("Xóa nhân viên thành công");
-        refreshTable();
       } catch (error) {
         console.error(error);
         setLoading(false);

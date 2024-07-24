@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -38,6 +37,7 @@ import { GoodReceivedNoteDataTableProps } from "@/types/good_received_note";
 import { Badge } from "@/components/ui/badge";
 import { CustomSkeleton } from "@/features/custom-skeleton";
 import CustomPagination from "@/features/custom-pagination";
+import { formatPrice } from "@/config/format-price";
 
 type Data = {
   theme: string | undefined;
@@ -172,6 +172,13 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
       );
     },
   },
+  {
+    accessorKey: "totalPrice",
+    header: "Tổng tiền",
+    cell: ({ row }) => (
+      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+    ),
+  },
 ];
 
 type Props = {
@@ -197,7 +204,6 @@ export default function GoodReceivedNoteTableData({ data }: Props) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

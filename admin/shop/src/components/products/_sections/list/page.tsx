@@ -8,6 +8,7 @@ import { useAppSelector } from "@/hooks/hooks";
 
 const ProductPage = () => {
   const { products } = useGetProducts();
+
   const { currentUser } = useAppSelector((state) => state.auth);
 
   const transformedProducts = products.map((product) => ({
@@ -22,7 +23,6 @@ const ProductPage = () => {
     status: product.status,
     img: product.img,
     general: product?.generalId?.name,
-    generalId: product?.generalId?._id,
   }));
 
   // const [generalIdList, setGeneralIdList] = useState<string[]>([]);

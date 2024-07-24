@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -74,14 +73,18 @@ export const columns: ColumnDef<OrdersData>[] = [
   },
   {
     accessorKey: "received_date",
-    header: "Ngày hẹn giao đơn",
+    header: "Ngày giao đơn",
     cell: ({ row }) => (
       <p className="capitalize">
         {new Date(row.getValue("received_date")).toLocaleDateString()}
       </p>
     ),
   },
-
+  {
+    accessorKey: "userId",
+    header: "Người tạo",
+    cell: ({ row }) => <p className="capitalize">{row.getValue("userId")}</p>,
+  },
   {
     accessorKey: "customerId",
     header: "Tên khách hàng",
@@ -89,26 +92,15 @@ export const columns: ColumnDef<OrdersData>[] = [
       <p className="capitalize">{row.getValue("customerId")}</p>
     ),
   },
-  {
-    accessorKey: "general",
-    header: "Kho giao dịch",
-    cell: ({ row }) => <p className="capitalize">{row.getValue("general")}</p>,
-  },
+  // {
+  //   accessorKey: "general",
+  //   header: "Kho giao dịch",
+  //   cell: ({ row }) => <p className="capitalize">{row.getValue("general")}</p>,
+  // },
   {
     accessorKey: "order_status",
     header: "Trạng thái đơn hàng",
     cell: ({ row, table }) => {
-      // const currentDate = new Date();
-
-      // let orderStatus = row.getValue("order_status");
-
-      // if (
-      //   orderStatus === "pending" &&
-      //   currentDate > new Date(row.getValue("received_date"))
-      // ) {
-      //   orderStatus = "delivered";
-      // }
-
       const { theme } = table.options.meta as Data;
       return (
         <p className="capitalize">
@@ -228,7 +220,7 @@ export default function OrderTableData({ data }: Props) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -251,7 +243,7 @@ export default function OrderTableData({ data }: Props) {
     <HomeLayout>
       <CustomScrollbarTable>
         <div
-          className={`w-full rounded-xl mt-3 mb-4 ${
+          className={`rounded-xl mt-3 mb-4 ${
             theme === "dark" ? "shadow-md bg-[#212B36]" : "shadow-md"
           }`}
         >

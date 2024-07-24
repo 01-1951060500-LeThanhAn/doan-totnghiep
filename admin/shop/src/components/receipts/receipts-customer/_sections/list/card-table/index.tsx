@@ -155,10 +155,10 @@ export const columns: ColumnDef<ReceiptCustomerTableProps>[] = [
     cell: ({ row }) => <p className="capitalize">{row.getValue("staff")}</p>,
   },
   {
-    accessorKey: "totalPrice",
+    accessorKey: "total",
     header: "Số tiền thu",
     cell: ({ row }) => (
-      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+      <p className="capitalize">{formatPrice(row.getValue("total"))}</p>
     ),
   },
 ];

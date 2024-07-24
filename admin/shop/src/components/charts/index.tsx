@@ -6,11 +6,13 @@ import TransactionTableData from "../report/transaction/list/card-table";
 import useGetTransactions from "../report/transaction/hooks/use-get-all-transaction";
 import { TransactionTableProps } from "@/types/transaction";
 import RevenueSupplierChart from "../report/good-received-note/revenue/_sections/components/revenue_supplier/chart/revenue-supplier";
+import { useAppSelector } from "@/hooks/hooks";
 defaults.maintainAspectRatio = false;
 defaults.responsive = true;
 
 const HomeChart = () => {
   const { transactions } = useGetTransactions();
+  const { currentUser } = useAppSelector((state) => state.auth);
   const data = transactions.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
@@ -47,9 +49,11 @@ const HomeChart = () => {
         <RevenueCustomerChart />
       </div>
 
-      <div className="mt-3 mb-16 lg:mb-8">
-        <RevenueSupplierChart />
-      </div>
+      {currentUser?.isAdmin && (
+        <div className="mt-3 mb-16 lg:mb-8">
+          <RevenueSupplierChart />
+        </div>
+      )}
 
       <div className="mb-16 -mt-12 md:-mt-5 lg:mb-8">
         <TransactionTableData data={data as TransactionTableProps[]} />

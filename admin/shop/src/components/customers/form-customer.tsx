@@ -48,14 +48,14 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
       code: initialValues?.code ?? "",
       type: initialValues?.type ?? "",
       city: initialValues?.city ?? "",
-      ward: initialValues?.ward ?? "",
+
       specific_address: initialValues?.specific_address ?? "",
       level: initialValues?.level ?? "",
       phone: initialValues?.phone ?? "",
       tax_code: initialValues?.tax_code ?? "",
       note: initialValues?.note ?? "",
       email: initialValues?.email ?? "",
-      district: initialValues?.district ?? "",
+
       website: initialValues?.website ?? "",
       birth: initialValues?.birth ?? "",
     }),
@@ -78,10 +78,8 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
     form.setValue("city", defaultValues?.city);
     form.setValue("birth", defaultValues?.birth);
     form.setValue("note", defaultValues?.note);
-    form.setValue("ward", defaultValues?.ward);
     form.setValue("level", defaultValues?.level);
     form.setValue("type", defaultValues?.type);
-    form.setValue("district", defaultValues?.district);
     form.setValue("specific_address", defaultValues?.specific_address);
   }, [form, defaultValues]);
   const { cities } = useGetCityandDistrict();
@@ -309,36 +307,7 @@ const FormCustomer = ({ initialValues, customerId }: Props) => {
                   )}
                 />
               </div>
-              <div>
-                <FormField
-                  control={form.control}
-                  name="district"
-                  render={({ field }) => (
-                    <FormItem>
-                      <p>Quận, huyện</p>
-                      <FormControl>
-                        <Input placeholder="Quận, huyện..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div>
-                <FormField
-                  control={form.control}
-                  name="ward"
-                  render={({ field }) => (
-                    <FormItem>
-                      <p>Thị xã</p>
-                      <FormControl>
-                        <Input placeholder="Thị xã..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+
               <div className="xl:col-span-2">
                 <FormField
                   control={form.control}

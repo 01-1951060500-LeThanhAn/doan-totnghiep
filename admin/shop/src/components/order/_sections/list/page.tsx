@@ -25,6 +25,7 @@ const OrderPage = () => {
     totalPrice: order?.totalPrice,
     totalCustomerPay: order?.totalCustomerPay,
     general: order?.generalId?.name,
+    userId: order?.userId?.username,
   }));
 
   const pending = pendingOrders.map((order) => ({
@@ -38,6 +39,7 @@ const OrderPage = () => {
     totalPrice: order?.totalPrice,
     totalCustomerPay: order?.totalCustomerPay,
     general: order?.generalId?.name,
+    userId: order?.userId?.username,
   }));
 
   const cancelled = cancelledOrders.map((order) => ({
@@ -51,6 +53,7 @@ const OrderPage = () => {
     totalPrice: order?.totalPrice,
     totalCustomerPay: order?.totalCustomerPay,
     general: order?.generalId?.name,
+    userId: order?.userId?.username,
   }));
 
   return (

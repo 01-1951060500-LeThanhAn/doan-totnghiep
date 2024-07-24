@@ -71,7 +71,7 @@ const AddPurchaseOrderTable = ({ data }: Props) => {
                   />
                 </TableCell>
                 <TableCell>
-                  <p>{formatPrice(+item?.export_price)}</p>
+                  <p>{formatPrice(+item?.import_price)}</p>
                 </TableCell>
                 <TableCell>
                   <FormField

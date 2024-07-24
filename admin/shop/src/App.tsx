@@ -21,8 +21,6 @@ const App = () => {
           const expireTime = decodedToken.exp * 1000;
 
           if (Date.now() > expireTime) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("userInfo");
             dispatch(logOut());
             navigate("/dashboard/login");
             toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
@@ -34,8 +32,6 @@ const App = () => {
         console.error("Error decoding token:", error);
       }
     } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInfo");
       dispatch(logOut());
       navigate("/dashboard/login");
       toast.warning("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
@@ -46,7 +42,9 @@ const App = () => {
     <>
       <Routes>
         {routes.map((route) => (
-          <Route key={route.path} path={route.path} element={route.element} />
+          <>
+            <Route key={route.path} path={route.path} element={route.element} />
+          </>
         ))}
       </Routes>
     </>

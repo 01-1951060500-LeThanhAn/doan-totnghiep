@@ -42,8 +42,8 @@ const OrderDetailView = ({ id }: Props) => {
           href2={`/dashboard/orders/`}
           breadcumbItem="Đơn  hàng"
           breadcumbPage="Thông tin chi tiết đơn  hàng"
-          linkBtn={`/dashboard/orders/${id}/edit`}
-          title="Chỉnh sửa đơn hàng"
+          // linkBtn={`/dashboard/orders/${id}/edit`}
+          // title="Chỉnh sửa đơn hàng"
         />
       ) : (
         <Custombreadcumb

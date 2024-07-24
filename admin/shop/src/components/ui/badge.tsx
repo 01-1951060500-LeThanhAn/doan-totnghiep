@@ -14,6 +14,7 @@ const badgeVariants = cva(
         destructive: "border-transparent bg-[#F7DDD8] text-[#B71D18]",
         outline: "bg-[#3F625B] text-[#77ED8B]",
         pending: "bg-[#89bdf4] text-[#2e4787]",
+        remain: "bg-[#df7417] text-[#fff]",
       },
     },
     defaultVariants: {

@@ -11,11 +11,10 @@ const ReceiptSupplierPage = () => {
     code: receipt?.code,
     payment_status: receipt?.payment_status,
     submitter: receipt?.submitter,
-    warehouse_code: receipt?.warehouseId?.code,
-    warehouse_id: receipt?.warehouseId?._id,
+
     customer: receipt?.supplierId?.supplier_name,
     staff: receipt?.staffId?.username,
-    totalPrice: receipt?.totalPrice,
+    total: receipt?.total,
     desc: receipt?.desc,
     receipt_type: receipt?.receipt_type,
   }));

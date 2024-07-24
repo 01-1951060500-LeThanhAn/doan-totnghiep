@@ -1,8 +1,6 @@
-export const formatPrice = (data: number) => {
-  const formatted = new Intl.NumberFormat("en-US", {
+export const formatPrice = (amount: string | number) => {
+  return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
-  }).format(data);
-
-  return formatted;
+  }).format(Number(amount));
 };

@@ -66,8 +66,6 @@ const FormPartner = ({ initialValues, shipId }: Props) => {
     form.setValue("phone", defaultValues?.phone);
     form.setValue("email", defaultValues?.email);
     form.setValue("address", defaultValues?.address);
-    form.setValue("staffIncharge", defaultValues?.staffIncharge);
-    form.setValue("payer", defaultValues?.payer);
   }, [form, defaultValues]);
 
   const handleCreatePartner = async () => {
@@ -82,11 +80,8 @@ const FormPartner = ({ initialValues, shipId }: Props) => {
         if (error.response) {
           console.error(error.response.data);
         } else {
-          toast.error("Lỗi không thêm được nhà cung cấp");
+          toast.error("Lỗi không thêm được đối tác vận chuyển");
         }
-      } else {
-        console.error("Unexpected error:", error);
-        toast.error("Lỗi không thêm được nhà cung cấp.");
       }
     }
   };
@@ -102,7 +97,7 @@ const FormPartner = ({ initialValues, shipId }: Props) => {
         })
       );
       toast.success("Cập nhật đối tác kết nối thành công");
-      navigate(`/dashboard/shipping-partner/`);
+      navigate(`/dashboard/shipping-partner`);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
@@ -110,9 +105,6 @@ const FormPartner = ({ initialValues, shipId }: Props) => {
         } else {
           toast.error("Lỗi không cập nhật được đối tác vận chuyển");
         }
-      } else {
-        console.error("Unexpected error:", error);
-        toast.error("Lỗi không cập nhật được đối tác vận chuyển.");
       }
     }
   };

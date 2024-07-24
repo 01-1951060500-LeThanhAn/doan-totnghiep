@@ -362,7 +362,7 @@ const DetailOrderView = ({ data, id }: Props) => {
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
               <p>{data?.code}</p>
               <p className="text-slate-400">
-                {new Date(data?.createdAt ?? "").toLocaleString()}
+                {new Date(data?.updatedAt ?? "").toLocaleString()}
               </p>
 
               <div className="">
@@ -387,7 +387,9 @@ const DetailOrderView = ({ data, id }: Props) => {
               </p>
               <p className="my-3">
                 Hình thức giao hàng:{" "}
-                <span className=" ml-3 text-md">Chuyển hàng </span>
+                <Badge variant="pending" className="capitalize ml-3">
+                  Chuyển hàng
+                </Badge>
               </p>
             </div>
           </div>

@@ -48,10 +48,10 @@ const AddOrderTable = ({ data }: Props) => {
                 <p>Thuộc kho</p>
               </TableHead>
               <TableHead>
-                <p>SL Tồn kho</p>
+                <p>Tồn kho</p>
               </TableHead>
               <TableHead>
-                <p>Đơn giá</p>
+                <p>Gía bán</p>
               </TableHead>
               <TableHead>
                 <p>Số lượng hàng</p>
@@ -84,7 +84,7 @@ const AddOrderTable = ({ data }: Props) => {
                   <p>{item?.inventory_number}</p>
                 </TableCell>
                 <TableCell>
-                  <p>{formatPrice(+item?.export_price)}</p>
+                  <p>{formatPrice(item?.export_price)}</p>
                 </TableCell>
                 <TableCell>
                   <FormField

@@ -56,7 +56,7 @@ const FormOrder = ({ initialValues }: Props) => {
       payment_method: initialValues?.payment_method ?? "",
 
       products: initialValues?.products.map((product) => ({
-        quantity: product?.quantity ? product?.quantity : "",
+        quantity: product?.quantity ? Number(product?.quantity) : 0,
         productId: product?.productId ?? "",
       })),
     }),
@@ -64,9 +64,7 @@ const FormOrder = ({ initialValues }: Props) => {
   );
   const form = useForm<OrderFormSchema>({
     resolver: zodResolver(orderSchema),
-    defaultValues: {
-      ...defaultValues,
-    },
+    defaultValues,
   });
 
   const dispatch = useAppDispatch();
@@ -82,12 +80,12 @@ const FormOrder = ({ initialValues }: Props) => {
   useEffect(() => {
     form.setValue("code", defaultValues?.code);
     form.setValue("total_ship", defaultValues?.total_ship);
-    form.setValue("payment_method", defaultValues?.payment_method);
+    form.setValue("payment_method", "online");
     form.setValue("customerId", defaultValues?.customerId);
     form.setValue("delivery_address", defaultValues?.delivery_address);
     form.setValue("received_date", new Date());
     form.setValue("invoice_address", defaultValues?.invoice_address);
-  }, [form, defaultValues]);
+  }, [form, defaultValues, initialValues]);
 
   const handleCreateOrder = async () => {
     try {

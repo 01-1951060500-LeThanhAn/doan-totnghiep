@@ -64,27 +64,6 @@ export const columns: ColumnDef<ReceiptSupplierTableProps>[] = [
     cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
   },
   {
-    accessorKey: "warehouse_code",
-    header: "Mã đơn nhập",
-    cell: ({ row }) => (
-      <Link
-        to={`/dashboard/good-received-note/${row.getValue(
-          "warehouse_id"
-        )}/detail`}
-      >
-        <p className="capitalize text-blue-400 ">
-          {row.getValue("warehouse_code")}
-        </p>
-      </Link>
-    ),
-  },
-  {
-    accessorKey: "warehouse_id",
-    header: "",
-    cell: ({ row }) => <p className="capitalize">{row.getValue("")}</p>,
-  },
-
-  {
     accessorKey: "receipt_type",
     header: "Loại phiếu",
     cell: ({ row }) => (
@@ -159,10 +138,10 @@ export const columns: ColumnDef<ReceiptSupplierTableProps>[] = [
     cell: ({ row }) => <p className="capitalize">{row.getValue("staff")}</p>,
   },
   {
-    accessorKey: "totalPrice",
+    accessorKey: "total",
     header: "Số tiền thu",
     cell: ({ row }) => (
-      <p className="capitalize">{formatPrice(row.getValue("totalPrice"))}</p>
+      <p className="capitalize">{formatPrice(row.getValue("total"))}</p>
     ),
   },
 ];

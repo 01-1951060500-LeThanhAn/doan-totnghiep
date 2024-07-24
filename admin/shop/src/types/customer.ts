@@ -7,8 +7,7 @@ export type CreateCustomerData = {
   code: string;
   type: string;
   city: string;
-  district: string;
-  ward: string;
+
   specific_address: string;
   phone: string;
   level: string;

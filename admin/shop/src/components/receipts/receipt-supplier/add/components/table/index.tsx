@@ -17,10 +17,13 @@ import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { formatPrice } from "@/config/format-price";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import useGetGoodReceivedNotes from "@/components/good-received-note/hooks/use-get-good-received-notes";
+import { Badge } from "@/components/ui/badge";
+import { useTheme } from "next-themes";
+import useGetStatusGoodReceivedNoteOrders from "@/components/good-received-note/hooks/use-get-status-good-received-notes";
 const AddReceiptTable = () => {
   const { control } = useFormContext();
-  const { goodReceivedNotes } = useGetGoodReceivedNotes();
+  const { warehouseOrders } = useGetStatusGoodReceivedNoteOrders();
+  const { theme } = useTheme();
   return (
     <>
       <CustomScrollbarTable>
@@ -46,12 +49,15 @@ const AddReceiptTable = () => {
                 <p>Số tiền thanh toán</p>
               </TableHead>
               <TableHead>
+                <p>Trạng thái</p>
+              </TableHead>
+              <TableHead>
                 <p>Chọn đơn nhập thanh toán</p>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {goodReceivedNotes?.map((item, index) => (
+            {warehouseOrders?.map((item, index) => (
               <TableRow key={item?._id}>
                 <TableCell>
                   <p>{item?.code}</p>
@@ -73,13 +79,42 @@ const AddReceiptTable = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input type="text" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+                <TableCell>
+                  <p className="capitalize">
+                    {item?.payment_status === "pending" ? (
+                      <>
+                        {theme === "light" ? (
+                          <Badge variant="default" className="capitalize">
+                            Chưa thanh toán
+                          </Badge>
+                        ) : (
+                          <Badge variant="default" className="capitalize">
+                            Chưa thanh toán
+                          </Badge>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {theme === "light" ? (
+                          <Badge variant="secondary" className="capitalize">
+                            Đã thanh toán
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="capitalize">
+                            Đã thanh toán
+                          </Badge>
+                        )}
+                      </>
+                    )}
+                  </p>
+                </TableCell>
                 <TableCell>
                   <FormField
                     control={control}

@@ -54,10 +54,10 @@ const links = [
         name: "Nhập hàng",
         href: "/dashboard/good-received-note",
       },
-      {
-        name: "Chuyển hàng",
-        href: "/dashboard/delivery-note",
-      },
+      // {
+      //   name: "Chuyển hàng",
+      //   href: "/dashboard/delivery-note",
+      // },
       {
         name: "Kiểm hàng",
         href: "/dashboard/stock_adjustments",
@@ -301,57 +301,57 @@ const linkSub = [
       },
     ],
   },
+  {
+    name: "Quản lý kho",
+    href: "/dashboard/management",
+    icon: Warehouse,
+    data: [
+      // {
+      //   name: "Quản lý nhập kho",
+      //   href: "/dashboard/good-received-note",
+      // },
+      {
+        name: "Quản lý xuất kho",
+        href: "/dashboard/orders",
+      },
+      // {
+      //   name: "Quản lý kiểm kê hàng hóa",
+      //   href: "/dashboard/stock_adjustments",
+      // },
+    ],
+  },
   // {
-  //   name: "Quản lý kho",
-  //   href: "/dashboard/management",
-  //   icon: Warehouse,
+  //   name: "Báo cáo",
+  //   href: "/dashboard/report",
+  //   icon: LineChart,
+  //   hideOnMobile: true,
   //   data: [
   //     {
-  //       name: "Quản lý nhập kho",
-  //       href: "/dashboard/good-received-note",
+  //       name: "Báo cáo nhập hàng",
+  //       href: "/dashboard/report/grn/analytic_grn",
   //     },
   //     {
-  //       name: "Quản lý xuất kho",
-  //       href: "/dashboard/orders",
+  //       name: "Báo cáo đặt hàng",
+  //       href: "/dashboard/report/purchase_orders/analytic_purchase_orders",
   //     },
   //     {
-  //       name: "Quản lý kiểm kê hàng hóa",
-  //       href: "/dashboard/stock_adjustments",
+  //       name: "Báo cáo bán hàng",
+  //       href: "/dashboard/report/order/analytic_orders",
+  //     },
+  //     {
+  //       name: "Báo cáo khách hàng",
+  //       href: "/dashboard/report/customer/analytic_customers",
+  //     },
+  //     {
+  //       name: "Báo cáo kho",
+  //       href: "/dashboard/report/general",
+  //     },
+  //     {
+  //       name: "Báo cáo tài chính",
+  //       href: "/dashboard/report/finance",
   //     },
   //   ],
   // },
-  {
-    name: "Báo cáo",
-    href: "/dashboard/report",
-    icon: LineChart,
-    hideOnMobile: true,
-    data: [
-      {
-        name: "Báo cáo nhập hàng",
-        href: "/dashboard/report/grn/analytic_grn",
-      },
-      {
-        name: "Báo cáo đặt hàng",
-        href: "/dashboard/report/purchase_orders/analytic_purchase_orders",
-      },
-      {
-        name: "Báo cáo bán hàng",
-        href: "/dashboard/report/order/analytic_orders",
-      },
-      {
-        name: "Báo cáo khách hàng",
-        href: "/dashboard/report/customer/analytic_customers",
-      },
-      {
-        name: "Báo cáo kho",
-        href: "/dashboard/report/general",
-      },
-      {
-        name: "Báo cáo tài chính",
-        href: "/dashboard/report/finance",
-      },
-    ],
-  },
 ];
 
 export { links, linkSub };

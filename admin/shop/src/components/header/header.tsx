@@ -37,10 +37,8 @@ const Header = () => {
               <Avatar>
                 <AvatarImage
                   className="w-12 h-12 rounded-full object-cover"
-                  src={
-                    user?.results?.picture ? user?.results?.picture : undefined
-                  }
-                  alt=""
+                  src={user?.results?.picture ? user?.results?.picture : ""}
+                  alt={user?.results?.username}
                 />
                 <AvatarFallback>{user?.results?.username}</AvatarFallback>
               </Avatar>

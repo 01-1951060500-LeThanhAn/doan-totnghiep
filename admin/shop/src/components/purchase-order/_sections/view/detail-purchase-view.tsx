@@ -9,6 +9,7 @@ import TablePurchaseOrderData from "./components/table";
 import { toast } from "sonner";
 import { updatePurchaseOrderAsync } from "@/redux/slices/purchaseOrderSlice";
 import { formatPrice } from "@/config/format-price";
+import { useEffect, useState } from "react";
 
 type Props = {
   data: DetailPurchaseData;
@@ -18,18 +19,26 @@ type Props = {
 const DetailPurchaseView = ({ data, id }: Props) => {
   const { theme } = useTheme();
   const { currentUser } = useAppSelector((state) => state.auth);
-  const { isEdit } = useAppSelector((state) => state.purchaseOrders);
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
-
+  const [orderStatus, setOrderStatus] = useState(data?.order_status);
   const handleUpdatePurchaseOrder = async () => {
     try {
+      setLoading(true);
       await dispatch(updatePurchaseOrderAsync(id));
+      setLoading(false);
+      setOrderStatus("entered");
       toast.success("Nhập kho thành công");
     } catch (error) {
       console.log(error);
+      setLoading(false);
       toast.error("Nhập kho thất bại");
     }
   };
+
+  useEffect(() => {
+    setOrderStatus(data?.order_status);
+  }, [data]);
 
   return (
     <>
@@ -67,10 +76,6 @@ const DetailPurchaseView = ({ data, id }: Props) => {
                   <span className="text-blue-600">
                     {formatPrice(data?.totalPrice)}
                   </span>
-                </div>
-                <div className="flex items-center min-w-64 my-2 gap-x-4">
-                  <p className="">Trả hàng: </p>
-                  <span className="text-red-500">0</span>
                 </div>
               </div>
             </div>
@@ -120,7 +125,7 @@ const DetailPurchaseView = ({ data, id }: Props) => {
             theme === "dark" ? "bg-[#29343F]" : "shadow-md"
           }`}
         >
-          {data?.order_status === "not-entered" ? (
+          {orderStatus === "not-entered" ? (
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-x-2">
                 <Truck color="orange" />
@@ -130,7 +135,7 @@ const DetailPurchaseView = ({ data, id }: Props) => {
               </div>
 
               <div>
-                {isEdit ? (
+                {loading ? (
                   <Button disabled>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Please wait
@@ -158,7 +163,7 @@ const DetailPurchaseView = ({ data, id }: Props) => {
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
             <p>{data?.code}</p>
             <p className="text-slate-400">
-              {new Date(data?.createdAt ?? "").toLocaleString()}
+              {new Date(data?.updatedAt ?? "").toLocaleString()}
             </p>
           </div>
           <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>

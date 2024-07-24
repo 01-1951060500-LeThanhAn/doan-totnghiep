@@ -46,7 +46,7 @@ const TableProductsData = ({ data }: Props) => {
                 <p>Hình sản phẩm</p>
               </TableHead>
               <TableHead>
-                <p>Đơn giá</p>
+                <p>Gía nhập</p>
               </TableHead>
               <TableHead>
                 <p>Số lượng đơn hàng</p>
@@ -73,7 +73,7 @@ const TableProductsData = ({ data }: Props) => {
                   />
                 </TableCell>
                 <TableCell>
-                  <p>{formatPrice(+item?.export_price)}</p>
+                  <p>{formatPrice(item?.import_price)}</p>
                 </TableCell>
                 <TableCell>
                   <FormField
@@ -83,6 +83,7 @@ const TableProductsData = ({ data }: Props) => {
                       <FormItem>
                         <FormControl>
                           <Input
+                            min={0}
                             type="number"
                             placeholder="Số lượng..."
                             {...field}

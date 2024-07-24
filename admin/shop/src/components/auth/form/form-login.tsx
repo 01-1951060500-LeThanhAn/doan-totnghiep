@@ -47,10 +47,10 @@ const LoginForm = () => {
         const users = await getUserInfo();
         if (users.data.success) {
           dispatch(loginSuccess(users.data.user));
+          setLoading(false);
+          toast.success("Đăng nhập thành công");
+          navigate(`/dashboard`);
         }
-        setLoading(false);
-        toast.success("Đăng nhập thành công");
-        navigate(`/dashboard`);
       }
     } catch (error) {
       setLoading(false);
