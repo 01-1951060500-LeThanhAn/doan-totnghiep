@@ -158,21 +158,23 @@ const updateOrder = async (req: Request, res: Response) => {
 
       const customer = await CustomerModel.findById(customerId);
 
-      const currentBalanceIncreases = customer?.balance_increases || 0;
-      const currentBalanceDecreases = customer?.balance_decreases || 0;
-      const remainingDecreases =
-        Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-      const updatedBalanceDecreases =
-        Number(currentBalanceDecreases) + Number(totalPrice);
-      const updatedRemainingDecreases = Math.max(
-        remainingDecreases - totalPrice,
-        0
-      );
-      await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_decreases: updatedBalanceDecreases,
-        remaining_decreases: updatedRemainingDecreases,
-        ending_balance: updatedRemainingDecreases,
-      });
+      if (customer) {
+        // Cập nhật balance_decreases bằng cách cộng dồn totalPrice mới
+        const updatedBalanceDecreases =
+          (customer.balance_decreases || 0) + totalPrice;
+
+        // Tính toán lại remaining_decreases
+        const updatedRemainingDecreases = Math.max(
+          (customer.balance_increases || 0) - updatedBalanceDecreases,
+          0
+        );
+
+        await CustomerModel.findByIdAndUpdate(customerId, {
+          balance_decreases: updatedBalanceDecreases,
+          remaining_decreases: updatedRemainingDecreases,
+          ending_balance: updatedRemainingDecreases,
+        });
+      }
 
       for (const product of updatedOrder.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {

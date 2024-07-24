@@ -123,16 +123,17 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             const customerId = updatedOrder.customerId;
             const totalPrice = updatedOrder.totalPrice;
             const customer = yield CustomerModel_1.default.findById(customerId);
-            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
-            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
-            const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
-            const updatedBalanceDecreases = Number(currentBalanceDecreases) + Number(totalPrice);
-            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
-            yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-                balance_decreases: updatedBalanceDecreases,
-                remaining_decreases: updatedRemainingDecreases,
-                ending_balance: updatedRemainingDecreases,
-            });
+            if (customer) {
+                // Cập nhật balance_decreases bằng cách cộng dồn totalPrice mới
+                const updatedBalanceDecreases = (customer.balance_decreases || 0) + totalPrice;
+                // Tính toán lại remaining_decreases
+                const updatedRemainingDecreases = Math.max((customer.balance_increases || 0) - updatedBalanceDecreases, 0);
+                yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+                    balance_decreases: updatedBalanceDecreases,
+                    remaining_decreases: updatedRemainingDecreases,
+                    ending_balance: updatedRemainingDecreases,
+                });
+            }
             for (const product of updatedOrder.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
                     $inc: { pendingOrderQuantity: -product.quantity },
