@@ -123,18 +123,16 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             const customerId = updatedOrder.customerId;
             const totalPrice = updatedOrder.totalPrice;
             const customer = yield CustomerModel_1.default.findById(customerId);
-            if (customer) {
-                const currentBalanceIncreases = parseFloat(customer.balance_increases || "0");
-                const currentBalanceDecreases = parseFloat(customer.balance_decreases || "0");
-                const totalPriceNumber = totalPrice;
-                const updatedBalanceDecreases = currentBalanceDecreases + totalPriceNumber;
-                const updatedRemainingDecreases = Math.max(currentBalanceIncreases - updatedBalanceDecreases, 0);
-                yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-                    balance_decreases: updatedBalanceDecreases.toString(),
-                    remaining_decreases: updatedRemainingDecreases.toString(),
-                    ending_balance: updatedRemainingDecreases.toString(),
-                });
-            }
+            const currentBalanceIncreases = (customer === null || customer === void 0 ? void 0 : customer.balance_increases) || 0;
+            const currentBalanceDecreases = (customer === null || customer === void 0 ? void 0 : customer.balance_decreases) || 0;
+            const remainingDecreases = Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+            const updatedBalanceDecreases = Number(currentBalanceDecreases) + Number(totalPrice);
+            const updatedRemainingDecreases = Math.max(remainingDecreases - totalPrice, 0);
+            yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
+                balance_decreases: updatedBalanceDecreases,
+                remaining_decreases: updatedRemainingDecreases,
+                ending_balance: updatedRemainingDecreases,
+            });
             for (const product of updatedOrder.products) {
                 yield ProductModel_1.default.findByIdAndUpdate(product.productId, {
                     $inc: { pendingOrderQuantity: -product.quantity },
@@ -215,15 +213,15 @@ const deleteOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!customer) {
             throw new Error(`Customer not found: ${customerId}`);
         }
-        const updatedBalanceIncreases = Math.max(parseFloat(customer.balance_increases) - orderTotalPrice, 0);
+        const updatedBalanceIncreases = Math.max(customer.balance_increases - orderTotalPrice, 0);
         const updatedRemainingDecreases = customer.opening_balance +
             updatedBalanceIncreases -
-            parseFloat(customer.balance_decreases);
+            customer.balance_decreases;
         const updatedEndingBalance = updatedRemainingDecreases;
         yield CustomerModel_1.default.findByIdAndUpdate(customerId, {
-            balance_increases: updatedBalanceIncreases.toString(),
-            remaining_decreases: updatedRemainingDecreases.toString(),
-            ending_balance: updatedEndingBalance.toString(),
+            balance_increases: updatedBalanceIncreases,
+            remaining_decreases: updatedRemainingDecreases,
+            ending_balance: updatedEndingBalance,
         });
         res.status(200).json({
             message: "Sản phẩm đã được xóa khỏi giỏ hàng.",

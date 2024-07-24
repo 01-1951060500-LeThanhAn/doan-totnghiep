@@ -18,23 +18,23 @@ const CustomerSchema = new mongoose.Schema(
     note: { type: String },
     opening_balance: {
       type: Number,
-      default: "",
+      default: 0,
     },
     balance_increases: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 0,
     },
     balance_decreases: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 0,
     },
     remaining_decreases: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 0,
     },
     ending_balance: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 0,
     },
   },
   {

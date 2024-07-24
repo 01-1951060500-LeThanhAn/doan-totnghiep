@@ -24,8 +24,8 @@ const ReceiptCustomerSchema = new mongoose.Schema(
           required: true,
         },
         totalPrice: {
-          type: String,
-          default: "",
+          type: Number,
+          default: 0,
           required: true,
         },
       },

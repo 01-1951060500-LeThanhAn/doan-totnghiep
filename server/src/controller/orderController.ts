@@ -158,28 +158,21 @@ const updateOrder = async (req: Request, res: Response) => {
 
       const customer = await CustomerModel.findById(customerId);
 
-      if (customer) {
-        const currentBalanceIncreases = parseFloat(
-          customer.balance_increases || "0"
-        );
-        const currentBalanceDecreases = parseFloat(
-          customer.balance_decreases || "0"
-        );
-        const totalPriceNumber = totalPrice;
-
-        const updatedBalanceDecreases =
-          currentBalanceDecreases + totalPriceNumber;
-        const updatedRemainingDecreases = Math.max(
-          currentBalanceIncreases - updatedBalanceDecreases,
-          0
-        );
-
-        await CustomerModel.findByIdAndUpdate(customerId, {
-          balance_decreases: updatedBalanceDecreases.toString(),
-          remaining_decreases: updatedRemainingDecreases.toString(),
-          ending_balance: updatedRemainingDecreases.toString(),
-        });
-      }
+      const currentBalanceIncreases = customer?.balance_increases || 0;
+      const currentBalanceDecreases = customer?.balance_decreases || 0;
+      const remainingDecreases =
+        Number(currentBalanceIncreases) - Number(currentBalanceDecreases);
+      const updatedBalanceDecreases =
+        Number(currentBalanceDecreases) + Number(totalPrice);
+      const updatedRemainingDecreases = Math.max(
+        remainingDecreases - totalPrice,
+        0
+      );
+      await CustomerModel.findByIdAndUpdate(customerId, {
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
+      });
 
       for (const product of updatedOrder.products) {
         await ProductModel.findByIdAndUpdate(product.productId, {
@@ -275,19 +268,19 @@ const deleteOrder = async (req: Request, res: Response) => {
     }
 
     const updatedBalanceIncreases = Math.max(
-      parseFloat(customer.balance_increases) - orderTotalPrice,
+      customer.balance_increases - orderTotalPrice,
       0
     );
     const updatedRemainingDecreases =
       customer.opening_balance +
       updatedBalanceIncreases -
-      parseFloat(customer.balance_decreases);
+      customer.balance_decreases;
     const updatedEndingBalance = updatedRemainingDecreases;
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: updatedBalanceIncreases.toString(),
-      remaining_decreases: updatedRemainingDecreases.toString(),
-      ending_balance: updatedEndingBalance.toString(),
+      balance_increases: updatedBalanceIncreases,
+      remaining_decreases: updatedRemainingDecreases,
+      ending_balance: updatedEndingBalance,
     });
 
     res.status(200).json({
