@@ -3,73 +3,74 @@ import ReceiptModel from "../model/ReceiptCustomerModel";
 import CustomerModel from "../model/CustomerModel";
 import OrderModel from "../model/OrderModel";
 import { Decimal } from "decimal.js";
+
 const createReceipt = async (req: Request, res: Response) => {
   try {
     const { customerId, products } = req.body;
 
     if (!customerId || products.length === 0) {
-      return res.status(400).json("Missing customerId or orderId");
-    }
-    const customer = await CustomerModel.findById(customerId);
-    if (!customer) {
-      return res.status(400).json("Customer not found");
+      return res
+        .status(400)
+        .json({ message: "Missing customerId or products" });
     }
 
-    const productUpdates = products?.map(async (product: any) => {
+    const customer = await CustomerModel.findById(customerId);
+    if (!customer) {
+      return res.status(400).json({ message: "Customer not found" });
+    }
+
+    let totalReceiptPrice = new Decimal(0);
+
+    for (const product of products) {
       const { totalPrice, orderId } = product;
 
       if (!orderId || !totalPrice) {
-        return res.status(400).json({ message: "Missing receipt  details" });
+        return res.status(400).json({ message: "Missing receipt details" });
       }
 
-      const currentBalanceIncreases = customer?.balance_increases || 0;
-      const currentBalanceDecreases = customer?.balance_decreases || 0;
-      const remainingDecreases =
-        +currentBalanceIncreases - +currentBalanceDecreases;
-      const updatedBalanceDecreases = currentBalanceDecreases + totalPrice;
-      const updatedRemainingDecreases = Math.max(
-        remainingDecreases - totalPrice,
-        0
+      const decimalTotalPrice = new Decimal(totalPrice);
+      totalReceiptPrice = totalReceiptPrice.plus(decimalTotalPrice);
+
+      const currentBalanceIncreases = new Decimal(
+        customer.balance_increases || "0"
       );
+      const currentBalanceDecreases = new Decimal(
+        customer.balance_decreases || "0"
+      );
+      const remainingDecreases = Decimal.max(
+        currentBalanceIncreases.minus(currentBalanceDecreases),
+        new Decimal(0)
+      );
+
+      const updatedBalanceDecreases =
+        currentBalanceDecreases.plus(decimalTotalPrice);
+      const updatedRemainingDecreases = Decimal.max(
+        remainingDecreases.minus(decimalTotalPrice),
+        new Decimal(0)
+      );
+
       await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_decreases: updatedBalanceDecreases,
-        remaining_decreases: updatedRemainingDecreases,
-        ending_balance: updatedRemainingDecreases,
+        balance_decreases: updatedBalanceDecreases.toString(),
+        remaining_decreases: updatedRemainingDecreases.toString(),
+        ending_balance: updatedRemainingDecreases.toString(),
       });
 
       await OrderModel.findByIdAndUpdate(orderId, {
-        $inc: { totalPrice: -totalPrice },
+        $inc: { totalPrice: -decimalTotalPrice.toNumber() },
       });
-    });
-
-    await Promise.all([productUpdates]);
-
-    let totalPrice = 0;
-
-    for (const product of products) {
-      const productData = await OrderModel.findById(product.orderId);
-      if (!productData) {
-        return res
-          .status(400)
-          .json({ message: `Product not found: ${product.orderId}` });
-      }
-
-      totalPrice = products.reduce(
-        (acc: number, product: any) => acc + Number(product.totalPrice),
-        0
-      );
     }
 
     const receiptOrder = new ReceiptModel({
       ...req.body,
       customerId: customer._id,
-      total: totalPrice,
+      total: totalReceiptPrice.toString(),
     });
 
     await receiptOrder.save();
     return res.status(200).json(receiptOrder);
   } catch (error: any) {
-    res.status(500).json("Server error: " + error.message);
+    console.error("Error creating receipt:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
