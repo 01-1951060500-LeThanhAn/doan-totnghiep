@@ -36,9 +36,9 @@ const createReceipt = async (req: Request, res: Response) => {
         0
       );
       await CustomerModel.findByIdAndUpdate(customerId, {
-        balance_decreases: updatedBalanceDecreases.toString(),
-        remaining_decreases: updatedRemainingDecreases.toString(),
-        ending_balance: updatedRemainingDecreases.toString(),
+        balance_decreases: updatedBalanceDecreases,
+        remaining_decreases: updatedRemainingDecreases,
+        ending_balance: updatedRemainingDecreases,
       });
 
       await OrderModel.findByIdAndUpdate(orderId, {
