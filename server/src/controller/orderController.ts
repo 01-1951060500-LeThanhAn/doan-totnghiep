@@ -40,7 +40,7 @@ const createOrder = async (req: Request, res: Response) => {
       });
     }
 
-    let totalPrice = new Decimal(0);
+    let totalPrice = 0;
     for (const product of products) {
       const productData = await ProductModel.findById(product.productId);
       if (!productData) {
@@ -69,15 +69,12 @@ const createOrder = async (req: Request, res: Response) => {
       })),
     });
 
-    const currentBalance = new Decimal(customer.balance_increases).plus(
-      new Decimal(customer.opening_balance)
-    );
-
-    const newBalance = currentBalance.plus(totalPrice);
+    const currentBalance =
+      customer.balance_increases + customer.opening_balance;
 
     await CustomerModel.findByIdAndUpdate(customerId, {
-      balance_increases: newBalance.toString(),
-      ending_balance: newBalance.toString(),
+      balance_increases: currentBalance + totalPrice,
+      ending_balance: currentBalance + totalPrice,
     });
 
     const savedOrder = await newOrder.save();
