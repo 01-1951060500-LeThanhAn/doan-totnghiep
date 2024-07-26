@@ -110,11 +110,9 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         for (const returnProduct of updatedReturnOrderData.products) {
             const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
-            if (orderProductIndex !== -1) {
-                order.products[orderProductIndex].quantity -= returnProduct.quantity;
-                order.products[orderProductIndex].totalReturnOrders =
-                    returnProduct.quantity;
-            }
+            order.products[orderProductIndex].quantity -= returnProduct.quantity;
+            order.products[orderProductIndex].totalReturnOrders +=
+                returnProduct.quantity;
         }
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);

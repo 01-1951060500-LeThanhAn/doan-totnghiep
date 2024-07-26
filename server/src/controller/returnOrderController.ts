@@ -123,12 +123,10 @@ const updateReturnOrders = async (req: Request, res: Response) => {
         (p) => p.productId === returnProduct.productId
       );
 
-      if (orderProductIndex !== -1) {
-        order.products[orderProductIndex].quantity -= returnProduct.quantity;
+      order.products[orderProductIndex].quantity -= returnProduct.quantity;
 
-        order.products[orderProductIndex].totalReturnOrders =
-          returnProduct.quantity;
-      }
+      order.products[orderProductIndex].totalReturnOrders +=
+        returnProduct.quantity;
     }
 
     order.totalReturnOrders = order.products.reduce(
