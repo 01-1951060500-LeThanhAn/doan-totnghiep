@@ -17,7 +17,6 @@ const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
-const decimal_js_1 = __importDefault(require("decimal.js"));
 const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId, products } = req.body;
@@ -115,6 +114,14 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!customer) {
             return res.status(400).json({ message: "Customer not found" });
         }
+        if (statusOrder) {
+            const currentBalance = Number(customer.balance_increases) + Number(customer.opening_balance);
+            const refundAmount = (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) || 0;
+            yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+                balance_increases: currentBalance - refundAmount,
+                balance_decreases: currentBalance - refundAmount,
+            });
+        }
         for (const returnProduct of updatedReturnOrderData.products) {
             const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
             order.products[orderProductIndex].quantity -= returnProduct.quantity;
@@ -123,14 +130,6 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
-        if (statusOrder) {
-            const currentBalance = new decimal_js_1.default(customer.balance_increases);
-            const refundAmount = new decimal_js_1.default((updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) || 0);
-            yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-                balance_increases: currentBalance.minus(refundAmount).toString(),
-                balance_decreases: currentBalance.minus(refundAmount).toString(),
-            });
-        }
         yield order.save();
         res.status(200).json(updatedReturnOrderData);
     }

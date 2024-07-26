@@ -3,7 +3,6 @@ import OrderModel from "../model/OrderModel";
 import ReturnOrderModel from "../model/ReturnOrderModel";
 import ProductModel from "../model/ProductModel";
 import CustomerModel from "../model/CustomerModel";
-import Decimal from "decimal.js";
 
 const createReturnOrder = async (req: Request, res: Response) => {
   try {
@@ -115,7 +114,6 @@ const updateReturnOrders = async (req: Request, res: Response) => {
     }
 
     const statusOrder = updatedReturnOrderData?.refund_status === "refunded";
-
     const order = await OrderModel.findById(updatedReturnOrderData.orderId);
 
     const customer = await CustomerModel.findById(
@@ -128,6 +126,17 @@ const updateReturnOrders = async (req: Request, res: Response) => {
 
     if (!customer) {
       return res.status(400).json({ message: "Customer not found" });
+    }
+
+    if (statusOrder) {
+      const currentBalance =
+        Number(customer.balance_increases) + Number(customer.opening_balance);
+      const refundAmount = updatedReturnOrderData?.totalPrice || 0;
+
+      await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+        balance_increases: currentBalance - refundAmount,
+        balance_decreases: currentBalance - refundAmount,
+      });
     }
 
     for (const returnProduct of updatedReturnOrderData.products) {
@@ -150,17 +159,6 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       (sum, product) => sum + product.quantity,
       0
     );
-
-    if (statusOrder) {
-      const currentBalance = new Decimal(customer.balance_increases);
-
-      const refundAmount = new Decimal(updatedReturnOrderData?.totalPrice || 0);
-
-      await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-        balance_increases: currentBalance.minus(refundAmount).toString(),
-        balance_decreases: currentBalance.minus(refundAmount).toString(),
-      });
-    }
 
     await order.save();
 
