@@ -114,7 +114,7 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
     }
 
-    const statusOrder = updatedReturnOrderData?.refund_status !== "refunded";
+    const statusOrder = updatedReturnOrderData?.refund_status === "refunded";
 
     const order = await OrderModel.findById(updatedReturnOrderData.orderId);
 

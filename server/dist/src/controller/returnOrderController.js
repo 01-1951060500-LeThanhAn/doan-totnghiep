@@ -106,7 +106,7 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!updatedReturnOrderData) {
             return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
         }
-        const statusOrder = (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) !== "refunded";
+        const statusOrder = (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) === "refunded";
         const order = yield OrderModel_1.default.findById(updatedReturnOrderData.orderId);
         const customer = yield CustomerModel_1.default.findById(updatedReturnOrderData.customerId);
         if (!order) {
