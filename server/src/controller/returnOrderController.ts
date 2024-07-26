@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import OrderModel from "../model/OrderModel";
 import ReturnOrderModel from "../model/ReturnOrderModel";
 import ProductModel from "../model/ProductModel";
+import CustomerModel from "../model/CustomerModel";
 
 const createReturnOrder = async (req: Request, res: Response) => {
   try {
@@ -114,8 +115,16 @@ const updateReturnOrders = async (req: Request, res: Response) => {
 
     const order = await OrderModel.findById(updatedReturnOrderData.orderId);
 
+    const customer = await CustomerModel.findById(
+      updatedReturnOrderData.customerId
+    );
+
     if (!order) {
       return res.status(400).json({ message: "Order not found" });
+    }
+
+    if (!customer) {
+      return res.status(400).json({ message: "Customer not found" });
     }
 
     for (const returnProduct of updatedReturnOrderData.products) {
@@ -138,6 +147,14 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       (sum, product) => sum + product.quantity,
       0
     );
+
+    const currentBalance =
+      Number(customer.balance_increases) + Number(customer.opening_balance);
+
+    await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+      balance_increases: currentBalance - updatedReturnOrderData?.totalPrice,
+      balance_decreases: currentBalance - updatedReturnOrderData?.totalPrice,
+    });
 
     await order.save();
 

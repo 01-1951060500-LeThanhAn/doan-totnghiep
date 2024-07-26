@@ -16,6 +16,7 @@ exports.getIncomeReturnOrderByProduct = exports.updateReturnOrders = exports.del
 const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
+const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId, products } = req.body;
@@ -105,8 +106,12 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
         }
         const order = yield OrderModel_1.default.findById(updatedReturnOrderData.orderId);
+        const customer = yield CustomerModel_1.default.findById(updatedReturnOrderData.customerId);
         if (!order) {
             return res.status(400).json({ message: "Order not found" });
+        }
+        if (!customer) {
+            return res.status(400).json({ message: "Customer not found" });
         }
         for (const returnProduct of updatedReturnOrderData.products) {
             const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
@@ -116,6 +121,11 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
+        const currentBalance = Number(customer.balance_increases) + Number(customer.opening_balance);
+        yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+            balance_increases: currentBalance - (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice),
+            balance_decreases: currentBalance - (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice),
+        });
         yield order.save();
         res.status(200).json(updatedReturnOrderData);
     }
