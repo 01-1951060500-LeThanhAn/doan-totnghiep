@@ -124,11 +124,11 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
         if (statusOrder) {
-            const currentBalance = new decimal_js_1.default(customer.balance_increases).add(new decimal_js_1.default(customer.opening_balance));
+            const currentBalance = new decimal_js_1.default(customer.balance_increases);
             const refundAmount = new decimal_js_1.default((updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) || 0);
             yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-                balance_increases: currentBalance.sub(refundAmount).toString(),
-                balance_decreases: currentBalance.sub(refundAmount).toString(),
+                balance_increases: currentBalance.minus(refundAmount).toString(),
+                balance_decreases: currentBalance.minus(refundAmount).toString(),
             });
         }
         yield order.save();

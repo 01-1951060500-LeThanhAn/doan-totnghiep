@@ -152,15 +152,13 @@ const updateReturnOrders = async (req: Request, res: Response) => {
     );
 
     if (statusOrder) {
-      const currentBalance = new Decimal(customer.balance_increases).add(
-        new Decimal(customer.opening_balance)
-      );
+      const currentBalance = new Decimal(customer.balance_increases);
 
       const refundAmount = new Decimal(updatedReturnOrderData?.totalPrice || 0);
 
       await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-        balance_increases: currentBalance.sub(refundAmount).toString(),
-        balance_decreases: currentBalance.sub(refundAmount).toString(),
+        balance_increases: currentBalance.minus(refundAmount).toString(),
+        balance_decreases: currentBalance.minus(refundAmount).toString(),
       });
     }
 
