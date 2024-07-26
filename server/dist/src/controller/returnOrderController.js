@@ -112,7 +112,7 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
             if (orderProductIndex !== -1) {
                 order.products[orderProductIndex].quantity -= returnProduct.quantity;
-                order.products[orderProductIndex].totalReturnOrders +=
+                order.products[orderProductIndex].totalReturnOrders =
                     returnProduct.quantity;
             }
         }
