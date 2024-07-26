@@ -126,7 +126,7 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       if (orderProductIndex !== -1) {
         order.products[orderProductIndex].quantity -= returnProduct.quantity;
 
-        order.products[orderProductIndex].totalReturnOrders =
+        order.products[orderProductIndex].totalReturnOrders +=
           returnProduct.quantity;
       }
     }
