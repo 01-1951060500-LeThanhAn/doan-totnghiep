@@ -112,12 +112,11 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
             const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
             if (orderProductIndex !== -1) {
                 order.products[orderProductIndex].quantity -= returnProduct.quantity;
-                order.products[orderProductIndex].totalReturnOrders +=
+                order.products[orderProductIndex].totalReturnOrders =
                     returnProduct.quantity;
             }
         }
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
-        // Cập nhật tổng số lượng sản phẩm còn lại trong đơn hàng
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
         yield order.save();
         res.status(200).json(updatedReturnOrderData);

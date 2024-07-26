@@ -126,7 +126,7 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       if (orderProductIndex !== -1) {
         order.products[orderProductIndex].quantity -= returnProduct.quantity;
 
-        order.products[orderProductIndex].totalReturnOrders +=
+        order.products[orderProductIndex].totalReturnOrders =
           returnProduct.quantity;
       }
     }
@@ -136,7 +136,6 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       0
     );
 
-    // Cập nhật tổng số lượng sản phẩm còn lại trong đơn hàng
     order.totalQuantity = order.products.reduce(
       (sum, product) => sum + product.quantity,
       0
