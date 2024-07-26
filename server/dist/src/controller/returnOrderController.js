@@ -17,6 +17,7 @@ const OrderModel_1 = __importDefault(require("../model/OrderModel"));
 const ReturnOrderModel_1 = __importDefault(require("../model/ReturnOrderModel"));
 const ProductModel_1 = __importDefault(require("../model/ProductModel"));
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
+const decimal_js_1 = __importDefault(require("decimal.js"));
 const createReturnOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { orderId, products } = req.body;
@@ -105,6 +106,7 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         if (!updatedReturnOrderData) {
             return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
         }
+        const statusOrder = (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.refund_status) !== "refunded";
         const order = yield OrderModel_1.default.findById(updatedReturnOrderData.orderId);
         const customer = yield CustomerModel_1.default.findById(updatedReturnOrderData.customerId);
         if (!order) {
@@ -121,11 +123,14 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         }
         order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
         order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
-        const currentBalance = Number(customer.balance_increases) + Number(customer.opening_balance);
-        yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-            balance_increases: currentBalance - (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice),
-            balance_decreases: currentBalance - (updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice),
-        });
+        if (statusOrder) {
+            const currentBalance = new decimal_js_1.default(customer.balance_increases).add(new decimal_js_1.default(customer.opening_balance));
+            const refundAmount = new decimal_js_1.default((updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.totalPrice) || 0);
+            yield CustomerModel_1.default.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+                balance_increases: currentBalance.sub(refundAmount).toString(),
+                balance_decreases: currentBalance.sub(refundAmount).toString(),
+            });
+        }
         yield order.save();
         res.status(200).json(updatedReturnOrderData);
     }

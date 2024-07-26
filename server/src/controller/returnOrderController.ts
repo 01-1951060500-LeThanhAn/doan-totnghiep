@@ -3,6 +3,7 @@ import OrderModel from "../model/OrderModel";
 import ReturnOrderModel from "../model/ReturnOrderModel";
 import ProductModel from "../model/ProductModel";
 import CustomerModel from "../model/CustomerModel";
+import Decimal from "decimal.js";
 
 const createReturnOrder = async (req: Request, res: Response) => {
   try {
@@ -113,6 +114,8 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
     }
 
+    const statusOrder = updatedReturnOrderData?.refund_status !== "refunded";
+
     const order = await OrderModel.findById(updatedReturnOrderData.orderId);
 
     const customer = await CustomerModel.findById(
@@ -148,13 +151,18 @@ const updateReturnOrders = async (req: Request, res: Response) => {
       0
     );
 
-    const currentBalance =
-      Number(customer.balance_increases) + Number(customer.opening_balance);
+    if (statusOrder) {
+      const currentBalance = new Decimal(customer.balance_increases).add(
+        new Decimal(customer.opening_balance)
+      );
 
-    await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
-      balance_increases: currentBalance - updatedReturnOrderData?.totalPrice,
-      balance_decreases: currentBalance - updatedReturnOrderData?.totalPrice,
-    });
+      const refundAmount = new Decimal(updatedReturnOrderData?.totalPrice || 0);
+
+      await CustomerModel.findByIdAndUpdate(updatedReturnOrderData.customerId, {
+        balance_increases: currentBalance.sub(refundAmount).toString(),
+        balance_decreases: currentBalance.sub(refundAmount).toString(),
+      });
+    }
 
     await order.save();
 
