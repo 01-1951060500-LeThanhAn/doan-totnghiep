@@ -100,29 +100,26 @@ const updateReturnOrders = (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.status(400).json({ message: "Id Return Order not found" });
     }
     try {
-        const updatedReturnOrderData = yield ReturnOrderModel_1.default.findByIdAndUpdate(returnOrderId, {
-            refund_status: "refunded",
-        }, {
-            new: true,
-        });
+        const updatedReturnOrderData = yield ReturnOrderModel_1.default.findByIdAndUpdate(returnOrderId, { refund_status: "refunded" }, { new: true });
         if (!updatedReturnOrderData) {
             return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
         }
-        const order = yield OrderModel_1.default.findById(updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.orderId);
+        const order = yield OrderModel_1.default.findById(updatedReturnOrderData.orderId);
         if (!order) {
             return res.status(400).json({ message: "Order not found" });
         }
-        for (let results of updatedReturnOrderData === null || updatedReturnOrderData === void 0 ? void 0 : updatedReturnOrderData.products) {
-            const updatedReturnOrders = order === null || order === void 0 ? void 0 : order.products.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-                const matchingProductIndex = order.products.findIndex((p) => results.productId === item.productId);
-                if (matchingProductIndex !== -1) {
-                    order.products[matchingProductIndex].quantity -=
-                        order === null || order === void 0 ? void 0 : order.totalReturnOrders;
-                }
-                yield order.save();
-            }));
-            yield Promise.all(updatedReturnOrders);
+        for (const returnProduct of updatedReturnOrderData.products) {
+            const orderProductIndex = order.products.findIndex((p) => p.productId === returnProduct.productId);
+            if (orderProductIndex !== -1) {
+                order.products[orderProductIndex].quantity -= returnProduct.quantity;
+                order.products[orderProductIndex].totalReturnOrders +=
+                    returnProduct.quantity;
+            }
         }
+        order.totalReturnOrders = order.products.reduce((sum, product) => sum + product.totalReturnOrders, 0);
+        // Cập nhật tổng số lượng sản phẩm còn lại trong đơn hàng
+        order.totalQuantity = order.products.reduce((sum, product) => sum + product.quantity, 0);
+        yield order.save();
         res.status(200).json(updatedReturnOrderData);
     }
     catch (error) {

@@ -104,39 +104,45 @@ const updateReturnOrders = async (req: Request, res: Response) => {
   try {
     const updatedReturnOrderData = await ReturnOrderModel.findByIdAndUpdate(
       returnOrderId,
-      {
-        refund_status: "refunded",
-      },
-      {
-        new: true,
-      }
+      { refund_status: "refunded" },
+      { new: true }
     );
 
     if (!updatedReturnOrderData) {
       return res.status(404).json({ message: "Không tìm thấy đơn trả hàng" });
     }
 
-    const order = await OrderModel.findById(updatedReturnOrderData?.orderId);
+    const order = await OrderModel.findById(updatedReturnOrderData.orderId);
 
     if (!order) {
       return res.status(400).json({ message: "Order not found" });
     }
 
-    for (let results of updatedReturnOrderData?.products) {
-      const updatedReturnOrders = order?.products.map(async (item) => {
-        const matchingProductIndex = order.products.findIndex(
-          (p) => results.productId === item.productId
-        );
+    for (const returnProduct of updatedReturnOrderData.products) {
+      const orderProductIndex = order.products.findIndex(
+        (p) => p.productId === returnProduct.productId
+      );
 
-        if (matchingProductIndex !== -1) {
-          order.products[matchingProductIndex].quantity -=
-            order?.totalReturnOrders;
-        }
+      if (orderProductIndex !== -1) {
+        order.products[orderProductIndex].quantity -= returnProduct.quantity;
 
-        await order.save();
-      });
-      await Promise.all(updatedReturnOrders);
+        order.products[orderProductIndex].totalReturnOrders +=
+          returnProduct.quantity;
+      }
     }
+
+    order.totalReturnOrders = order.products.reduce(
+      (sum, product) => sum + product.totalReturnOrders,
+      0
+    );
+
+    // Cập nhật tổng số lượng sản phẩm còn lại trong đơn hàng
+    order.totalQuantity = order.products.reduce(
+      (sum, product) => sum + product.quantity,
+      0
+    );
+
+    await order.save();
 
     res.status(200).json(updatedReturnOrderData);
   } catch (error) {
