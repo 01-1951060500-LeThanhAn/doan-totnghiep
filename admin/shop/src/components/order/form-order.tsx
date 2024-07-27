@@ -2,7 +2,7 @@ import { OrderFormSchema, orderSchema } from "@/schema/orderSchema";
 import HomeLayout from "@/layouts/home-layout";
 import { CreateOrders } from "@/types/orders";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ControllerRenderProps, FieldValues, useForm } from "react-hook-form";
 import {
   Form,
@@ -75,7 +75,8 @@ const FormOrder = ({ initialValues }: Props) => {
   const { partners } = useGetStatusPartners();
   const { theme } = useTheme();
   const { users } = useGetUsers();
-  const { loading, isEdit } = useAppSelector((state) => state.orders);
+  const { isEdit } = useAppSelector((state) => state.orders);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     form.setValue("code", defaultValues?.code);
@@ -89,23 +90,27 @@ const FormOrder = ({ initialValues }: Props) => {
 
   const handleCreateOrder = async () => {
     try {
+      setLoading(true);
       const formData = form.getValues() as CreateOrders;
       formData.products = formData.products.filter(
         (product) => product.productId || product.quantity
       );
 
       await dispatch(createOrderAsync(formData));
+      setLoading(false);
       toast.success("Tạo đơn hàng thành công");
       navigate(`/dashboard/orders`);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
           console.error(error.response.data);
+          setLoading(false);
         } else {
           toast.error("Tạo đơn hàng thất bại");
         }
       } else {
         console.error("Unexpected error:", error);
+        setLoading(false);
         toast.error("Tạo đơn hàng thất bại");
       }
     }

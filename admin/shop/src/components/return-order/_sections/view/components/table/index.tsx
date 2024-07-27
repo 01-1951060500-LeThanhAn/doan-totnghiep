@@ -77,12 +77,7 @@ const TableReturnOrderData = ({ data }: Props) => {
                 <p>{results}</p>
               </TableCell>
             </TableRow>
-            <TableRow>
-              <TableCell colSpan={6}>Chiết khấu</TableCell>
-              <TableCell>
-                <p>0</p>
-              </TableCell>
-            </TableRow>
+
             <TableRow>
               <TableCell colSpan={6}>Tổng tiền cần hoàn trả khách</TableCell>
               <TableCell>

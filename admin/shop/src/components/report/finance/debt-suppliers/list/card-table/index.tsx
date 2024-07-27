@@ -40,16 +40,13 @@ const DebtSupplierTableData = ({ data }: Props) => {
                     <p>Tên nhà cung cấp</p>{" "}
                   </TableHead>
                   <TableHead>
-                    <p>Nợ đầu kỳ</p>
+                    <p>Tổng nợ</p>
                   </TableHead>
                   <TableHead>
-                    <p>Nợ tăng trong kỳ</p>
+                    <p>Nợ đã thanh toán</p>
                   </TableHead>
                   <TableHead>
-                    <p>Nợ giảm trong kỳ</p>
-                  </TableHead>
-                  <TableHead>
-                    <p>Nợ còn trong kỳ</p>
+                    <p>Nợ còn lại</p>
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -66,9 +63,7 @@ const DebtSupplierTableData = ({ data }: Props) => {
                       <TableCell>
                         <p>{item?.supplier_name}</p>
                       </TableCell>
-                      <TableCell>
-                        <p>{formatPrice(item?.opening_balance)}</p>
-                      </TableCell>
+
                       <TableCell>
                         <p>{formatPrice(item?.balance_increases)}</p>
                       </TableCell>

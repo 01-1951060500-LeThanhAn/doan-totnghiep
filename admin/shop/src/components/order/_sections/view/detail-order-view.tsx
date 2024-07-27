@@ -36,8 +36,8 @@ const DetailOrderView = ({ data, id }: Props) => {
           },
         })
       );
-      setLoading(false);
       setPaymentStatus("paid");
+      setLoading(false);
       toast.success(" Đơn hàng thanh toán thành công");
     } catch (error) {
       console.log(error);
@@ -231,69 +231,103 @@ const DetailOrderView = ({ data, id }: Props) => {
               }`}
             >
               {paymentStatus === "unpaid" ? (
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-x-2">
-                    <Truck color="orange" />
-                    <p className="text-lg font-semibold">
-                      Đơn hàng chưa được thanh toán
+                <>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-x-2">
+                      <Truck color="orange" />
+                      <p className="text-lg font-semibold">
+                        Đơn hàng chưa được thanh toán
+                      </p>
+                    </div>
+
+                    <div>
+                      {loading ? (
+                        <Button disabled>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Please wait
+                        </Button>
+                      ) : (
+                        <Button onClick={handleUpdatePaymentStatus}>
+                          <p>Thanh toán</p>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <Separator className="my-3" />
+                  <div className="flex items-center gap-x-3">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <p>{data?.code}</p>
+                    <p className="text-slate-400">
+                      {new Date(data?.createdAt ?? "").toLocaleString()}
                     </p>
                   </div>
-
-                  <div>
-                    {loading ? (
-                      <Button disabled>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Please wait
-                      </Button>
-                    ) : (
-                      <Button onClick={handleUpdatePaymentStatus}>
-                        <p>Thanh toán</p>
-                      </Button>
-                    )}
+                  <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+                  <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
+                    <div className="flex items-center gap-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <p>Số tiền khách hàng cần trả: </p>
+                      <p className="font-semibold">
+                        {formatPrice(data?.totalCustomerPay)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-x-3">
+                      <p>Đã trả : </p>
+                      <p className="text-slate-400">
+                        {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-x-3">
+                      <p>Còn phải trả :</p>
+                      <p className="text-slate-400">
+                        {formatPrice(data?.totalPrice)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                  <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+                </>
               ) : (
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-x-2">
-                    <CircleCheck color="green" />
-                    <p className="text-lg font-semibold">
-                      Đơn hàng đã được thanh toán
+                <>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-x-2">
+                      <CircleCheck color="green" />
+                      <p className="text-lg font-semibold">
+                        Đơn hàng đã được thanh toán
+                      </p>
+                    </div>
+                  </div>
+                  <Separator className="my-3" />
+                  <div className="flex items-center gap-x-3">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <p>{data?.code}</p>
+                    <p className="text-slate-400">
+                      {new Date(data?.createdAt ?? "").toLocaleString()}
                     </p>
                   </div>
-                </div>
+                  <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+                  <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
+                    <div className="flex items-center gap-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <p>Số tiền khách hàng cần trả: </p>
+                      <p className="font-semibold">
+                        {formatPrice(data?.totalCustomerPay)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-x-3">
+                      <p>Đã trả : </p>
+                      <p className="text-slate-400">
+                        {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-x-3">
+                      <p>Còn phải trả :</p>
+                      <p className="text-slate-400">
+                        {formatPrice(data?.totalPrice)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
+                </>
               )}
-
-              <Separator className="my-3" />
-              <div className="flex items-center gap-x-3">
-                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                <p>{data?.code}</p>
-                <p className="text-slate-400">
-                  {new Date(data?.createdAt ?? "").toLocaleString()}
-                </p>
-              </div>
-              <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
-              <div className="flex my-5 flex-nowrap  justify-between items-center w-full gap-x-3">
-                <div className="flex items-center gap-x-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <p>Số tiền khách hàng cần trả: </p>
-                  <p className="font-semibold">
-                    {formatPrice(data?.totalCustomerPay)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-3">
-                  <p>Đã trả : </p>
-                  <p className="text-slate-400">
-                    {formatPrice(data?.totalCustomerPay - data?.totalPrice)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-3">
-                  <p>Còn phải trả :</p>
-                  <p className="text-slate-400">
-                    {formatPrice(data?.totalPrice)}
-                  </p>
-                </div>
-              </div>
-              <div className="w-full h-[1px] mt-3 border border-dashed text-slate-400"></div>
             </div>
           )}
 
@@ -366,11 +400,11 @@ const DetailOrderView = ({ data, id }: Props) => {
               </p>
 
               <div className="">
-                {data?.order_status === "pending" ? (
+                {orderStatus === "pending" ? (
                   <p className="text-blue-600 text-sm">Đóng gói và giao hàng</p>
                 ) : (
                   <>
-                    {data?.order_status === "cancelled" ? (
+                    {orderStatus === "cancelled" ? (
                       <p className="text-red-600 text-sm">Đã hủy hàng</p>
                     ) : (
                       <p className="text-green-600 text-sm">Đã giao hàng</p>

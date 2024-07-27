@@ -46,10 +46,10 @@ const TableOrderCustomer = ({ orders }: Props) => {
                   <p>Trạng thái</p>
                 </TableHead>
                 <TableHead>
-                  <p>Tổng tiền</p>
+                  <p>Thành tiền</p>
                 </TableHead>
                 <TableHead className="text-right">
-                  <p>Tổng SL đơn hàng</p>
+                  <p>Tổng SL hàng</p>
                 </TableHead>
                 <TableHead className="text-right">
                   <p> Nhân viên xử lý đơn</p>{" "}
@@ -146,7 +146,7 @@ const TableOrderCustomer = ({ orders }: Props) => {
             <TableFooter>
               <TableRow>
                 <TableCell colSpan={5}>
-                  <p>Total</p>
+                  <p>Tổng </p>
                 </TableCell>
                 <TableCell className="text-right">
                   <p>

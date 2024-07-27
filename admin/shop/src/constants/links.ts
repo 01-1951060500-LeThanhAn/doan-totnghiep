@@ -54,10 +54,10 @@ const links = [
         name: "Nhập hàng",
         href: "/dashboard/good-received-note",
       },
-      // {
-      //   name: "Chuyển hàng",
-      //   href: "/dashboard/delivery-note",
-      // },
+      {
+        name: "Chuyển hàng",
+        href: "/dashboard/delivery-note",
+      },
       {
         name: "Kiểm hàng",
         href: "/dashboard/stock_adjustments",

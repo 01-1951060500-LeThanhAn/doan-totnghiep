@@ -89,7 +89,7 @@ export const columns: ColumnDef<ProductTableProps>[] = [
 
   {
     accessorKey: "inventory_number",
-    header: "Số lượng tồn kho",
+    header: "Số lượng",
     cell: ({ row }) => {
       return (
         <>

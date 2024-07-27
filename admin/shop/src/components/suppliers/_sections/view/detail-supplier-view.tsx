@@ -2,6 +2,7 @@ import HomeLayout from "@/layouts/home-layout";
 import { Historywarehouse, SupplierDetailData } from "@/types/supplier";
 import { useTheme } from "next-themes";
 import TableWarehouseSupplier from "../components/table/table-warehouse-supplier";
+import { formatPrice } from "@/config/format-price";
 
 type Props = {
   supplier: SupplierDetailData;
@@ -111,7 +112,12 @@ const DetailSupplierView = ({ supplier }: Props) => {
             <div className="my-3">
               <div className="flex items-center justify-between">
                 <p className="">Công nợ:</p>
-                <span>0</span>
+                <span>
+                  {formatPrice(
+                    Number(supplier?.results?.balance_increases) -
+                      Number(supplier?.results?.balance_decreases)
+                  )}
+                </span>
               </div>
             </div>
           </div>

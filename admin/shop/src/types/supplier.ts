@@ -72,6 +72,8 @@ export type Results = {
   phone: string;
   email_supplier: string;
   address_supplier: string;
+  balance_increases: string;
+  balance_decreases: string;
   website: string;
   desc: string;
   tax_code: string;

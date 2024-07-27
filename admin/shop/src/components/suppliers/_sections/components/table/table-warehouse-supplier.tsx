@@ -44,7 +44,9 @@ export const columns: ColumnDef<Historywarehouse>[] = [
   {
     accessorKey: "code",
     header: "Mã đơn nhập",
-    cell: ({ row }) => <p className="capitalize">{row.getValue("code")}</p>,
+    cell: ({ row }) => (
+      <p className="capitalize text-blue-500">{row.getValue("code")}</p>
+    ),
   },
   {
     accessorKey: "_id",
