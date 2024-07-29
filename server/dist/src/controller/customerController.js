@@ -366,7 +366,10 @@ const getReceiptHistoryCustomer = (req, res) => __awaiter(void 0, void 0, void 0
                 },
             },
         ]);
-        return res.status(200).json(customer);
+        return res.status(200).json({
+            results,
+            receipts: customer,
+        });
     }
     catch (error) {
         console.error("Error fetching receipts customer", error);
