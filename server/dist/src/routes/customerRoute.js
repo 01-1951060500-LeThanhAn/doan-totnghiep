@@ -13,5 +13,6 @@ router.get("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.getI
 router.patch("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.updateCustomer);
 router.delete("/:id", auth_1.verifyTokenAndAuthorization, customerController_1.deleteCustomer);
 router.get("/history/:id", auth_1.verifyTokenAndAuthorization, customerController_1.getHistoryOrder);
+router.get("/history-receipts/:id", auth_1.verifyTokenAndAuthorization, customerController_1.getReceiptHistoryCustomer);
 router.get("/income/total-customer", auth_1.verifyTokenAndAdmin, customerController_1.getTotalCustomer);
 exports.default = router;

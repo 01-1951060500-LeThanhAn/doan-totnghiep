@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCustomer = exports.getTotalCustomer = exports.getHistoryOrder = exports.deleteCustomer = exports.getInfoCustomer = exports.getListCustomer = exports.createCustomer = void 0;
+exports.getReceiptHistoryCustomer = exports.updateCustomer = exports.getTotalCustomer = exports.getHistoryOrder = exports.deleteCustomer = exports.getInfoCustomer = exports.getListCustomer = exports.createCustomer = void 0;
 const CustomerModel_1 = __importDefault(require("../model/CustomerModel"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const createCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -296,3 +296,81 @@ const updateCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateCustomer = updateCustomer;
+const getReceiptHistoryCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const customerId = req.params.id;
+        if (!customerId) {
+            return res.status(400).json({ message: "Customer not found" });
+        }
+        const results = yield CustomerModel_1.default.findById(customerId);
+        const customer = yield CustomerModel_1.default.aggregate([
+            {
+                $match: {
+                    _id: new mongoose_1.default.Types.ObjectId(customerId),
+                },
+            },
+            {
+                $lookup: {
+                    from: "receipt_orders",
+                    localField: "_id",
+                    foreignField: "customerId",
+                    as: "receipt_orders",
+                },
+            },
+            {
+                $unwind: "$receipt_orders",
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "receipt_orders.staffId",
+                    foreignField: "_id",
+                    as: "receipt_orders.user",
+                },
+            },
+            {
+                $unwind: "$receipt_orders",
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    totalSpending: {
+                        $sum: "$receipt_orders.total",
+                    },
+                    totalOrders: {
+                        $sum: 1,
+                    },
+                    receipts: {
+                        $push: "$receipt_orders",
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    totalSpending: 1,
+                    totalOrders: 1,
+                    receipts: {
+                        _id: 1,
+                        products: 1,
+                        user: {
+                            username: 1,
+                            email: 1,
+                        },
+                        totalPrice: 1,
+                        payment_status: 1,
+                        code: 1,
+                        createdAt: 1,
+                        receipt_type: 1,
+                    },
+                },
+            },
+        ]);
+        return res.status(200).json(customer);
+    }
+    catch (error) {
+        console.error("Error fetching receipts customer", error);
+        return res.status(500).json({ message: "An error occurred" });
+    }
+});
+exports.getReceiptHistoryCustomer = getReceiptHistoryCustomer;

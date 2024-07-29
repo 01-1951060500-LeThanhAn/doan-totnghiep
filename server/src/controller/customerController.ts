@@ -301,6 +301,90 @@ const updateCustomer = async (req: Request, res: Response) => {
   }
 };
 
+const getReceiptHistoryCustomer = async (req: Request, res: Response) => {
+  try {
+    const customerId = req.params.id;
+
+    if (!customerId) {
+      return res.status(400).json({ message: "Customer not found" });
+    }
+
+    const results = await CustomerModel.findById(customerId);
+
+    const customer = await CustomerModel.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(customerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "receipt_orders",
+          localField: "_id",
+          foreignField: "customerId",
+          as: "receipt_orders",
+        },
+      },
+      {
+        $unwind: "$receipt_orders",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "receipt_orders.staffId",
+          foreignField: "_id",
+          as: "receipt_orders.user",
+        },
+      },
+      {
+        $unwind: "$receipt_orders",
+      },
+
+      {
+        $group: {
+          _id: "$_id",
+          totalSpending: {
+            $sum: "$receipt_orders.total",
+          },
+          totalOrders: {
+            $sum: 1,
+          },
+
+          receipts: {
+            $push: "$receipt_orders",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          totalSpending: 1,
+          totalOrders: 1,
+          receipts: {
+            _id: 1,
+            products: 1,
+
+            user: {
+              username: 1,
+              email: 1,
+            },
+            totalPrice: 1,
+            payment_status: 1,
+            code: 1,
+            createdAt: 1,
+            receipt_type: 1,
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json(customer);
+  } catch (error) {
+    console.error("Error fetching receipts customer", error);
+    return res.status(500).json({ message: "An error occurred" });
+  }
+};
+
 export {
   createCustomer,
   getListCustomer,
@@ -309,4 +393,5 @@ export {
   getHistoryOrder,
   getTotalCustomer,
   updateCustomer,
+  getReceiptHistoryCustomer,
 };

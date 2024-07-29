@@ -11,6 +11,7 @@ import {
   getListCustomer,
   getTotalCustomer,
   updateCustomer,
+  getReceiptHistoryCustomer,
 } from "../controller/customerController";
 
 const router = express.Router();
@@ -26,6 +27,12 @@ router.patch("/:id", verifyTokenAndAuthorization, updateCustomer);
 router.delete("/:id", verifyTokenAndAuthorization, deleteCustomer);
 
 router.get("/history/:id", verifyTokenAndAuthorization, getHistoryOrder);
+
+router.get(
+  "/history-receipts/:id",
+  verifyTokenAndAuthorization,
+  getReceiptHistoryCustomer
+);
 
 router.get("/income/total-customer", verifyTokenAndAdmin, getTotalCustomer);
 
