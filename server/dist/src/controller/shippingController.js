@@ -177,61 +177,64 @@ const updateShippets = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const data = yield ShippingWarehouseModel_1.default.findByIdAndUpdate(shippId, req.body, {
             new: true,
         });
-        const targetWarehouse = yield GeneralDepotModel_1.default.findOne({
-            type: "sub",
-            _id: ships.toGeneralId,
-        });
-        const mainWarehouse = yield GeneralDepotModel_1.default.findOne({
-            type: "main",
-            _id: ships.fromGeneralId,
-        });
-        if (!targetWarehouse) {
-            return res.status(400).json({ message: "Warehouse not found" });
-        }
-        if (!mainWarehouse) {
-            return res.status(400).json({ message: "Warehouse not found" });
-        }
-        for (let product of ships.products) {
-            const { inventory_number, productId } = product;
-            const results = yield ProductModel_1.default.findById(product.productId);
-            if (!results) {
-                return res.status(400).json({ message: "Product not found" });
-            }
-            if (!productId) {
-                return res.status(400).json({ message: "Product not found" });
-            }
-            const subProduct = yield ProductModel_1.default.findOne({
-                generalId: targetWarehouse._id,
-                manager: ships === null || ships === void 0 ? void 0 : ships.manager,
-            });
-            const mainProduct = yield ProductModel_1.default.findOne({
-                _id: productId,
-                generalId: mainWarehouse._id,
-            });
-            if (mainProduct) {
-                mainProduct.inventory_number -= inventory_number;
-                yield mainProduct.save();
-            }
-            if (subProduct) {
-                yield ProductModel_1.default.findOneAndUpdate({ _id: productId }, { $inc: { inventory_number } }, { upsert: true, new: true });
-            }
-            else {
-                const newProduct = new ProductModel_1.default({
-                    name_product: results === null || results === void 0 ? void 0 : results.name_product,
-                    desc: results === null || results === void 0 ? void 0 : results.desc,
-                    img: results === null || results === void 0 ? void 0 : results.img,
-                    export_price: results === null || results === void 0 ? void 0 : results.export_price,
-                    import_price: results === null || results === void 0 ? void 0 : results.import_price,
-                    unit: results === null || results === void 0 ? void 0 : results.unit,
-                    type: results === null || results === void 0 ? void 0 : results.type,
-                    status: "stocking",
-                    code: results === null || results === void 0 ? void 0 : results.code,
-                    inventory_number: inventory_number,
-                    generalId: targetWarehouse._id,
-                });
-                yield newProduct.save();
-            }
-        }
+        // const targetWarehouse = await GeneralDepotModel.findOne({
+        //   type: "sub",
+        //   _id: ships.toGeneralId,
+        // });
+        // const mainWarehouse = await GeneralDepotModel.findOne({
+        //   type: "main",
+        //   _id: ships.fromGeneralId,
+        // });
+        // if (!targetWarehouse) {
+        //   return res.status(400).json({ message: "Warehouse not found" });
+        // }
+        // if (!mainWarehouse) {
+        //   return res.status(400).json({ message: "Warehouse not found" });
+        // }
+        // for (let product of ships.products) {
+        //   const { inventory_number, productId } = product;
+        //   const results = await ProductModel.findById(product.productId);
+        //   if (!results) {
+        //     return res.status(400).json({ message: "Product not found" });
+        //   }
+        //   if (!productId) {
+        //     return res.status(400).json({ message: "Product not found" });
+        //   }
+        //   const subProduct = await ProductModel.findOne({
+        //     generalId: targetWarehouse._id,
+        //     manager: ships?.manager,
+        //   });
+        //   const mainProduct = await ProductModel.findOne({
+        //     _id: productId,
+        //     generalId: mainWarehouse._id,
+        //   });
+        //   if (mainProduct) {
+        //     mainProduct.inventory_number -= inventory_number;
+        //     await mainProduct.save();
+        //   }
+        //   if (subProduct) {
+        //     await ProductModel.findOneAndUpdate(
+        //       { _id: productId },
+        //       { $inc: { inventory_number } },
+        //       { upsert: true, new: true }
+        //     );
+        //   } else {
+        //     const newProduct = new ProductModel({
+        //       name_product: results?.name_product,
+        //       desc: results?.desc,
+        //       img: results?.img,
+        //       export_price: results?.export_price,
+        //       import_price: results?.import_price,
+        //       unit: results?.unit,
+        //       type: results?.type,
+        //       status: "stocking",
+        //       code: results?.code,
+        //       inventory_number: inventory_number,
+        //       generalId: targetWarehouse._id,
+        //     });
+        //     await newProduct.save();
+        //   }
+        // }
         const transactionHistory = new TransactionModel_1.default({
             transaction_type: "export",
             transaction_date: Date.now(),

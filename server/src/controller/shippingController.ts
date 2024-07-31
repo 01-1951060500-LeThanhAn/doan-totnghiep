@@ -200,74 +200,74 @@ const updateShippets = async (req: Request, res: Response) => {
       }
     );
 
-    const targetWarehouse = await GeneralDepotModel.findOne({
-      type: "sub",
-      _id: ships.toGeneralId,
-    });
+    // const targetWarehouse = await GeneralDepotModel.findOne({
+    //   type: "sub",
+    //   _id: ships.toGeneralId,
+    // });
 
-    const mainWarehouse = await GeneralDepotModel.findOne({
-      type: "main",
-      _id: ships.fromGeneralId,
-    });
+    // const mainWarehouse = await GeneralDepotModel.findOne({
+    //   type: "main",
+    //   _id: ships.fromGeneralId,
+    // });
 
-    if (!targetWarehouse) {
-      return res.status(400).json({ message: "Warehouse not found" });
-    }
-    if (!mainWarehouse) {
-      return res.status(400).json({ message: "Warehouse not found" });
-    }
+    // if (!targetWarehouse) {
+    //   return res.status(400).json({ message: "Warehouse not found" });
+    // }
+    // if (!mainWarehouse) {
+    //   return res.status(400).json({ message: "Warehouse not found" });
+    // }
 
-    for (let product of ships.products) {
-      const { inventory_number, productId } = product;
-      const results = await ProductModel.findById(product.productId);
+    // for (let product of ships.products) {
+    //   const { inventory_number, productId } = product;
+    //   const results = await ProductModel.findById(product.productId);
 
-      if (!results) {
-        return res.status(400).json({ message: "Product not found" });
-      }
+    //   if (!results) {
+    //     return res.status(400).json({ message: "Product not found" });
+    //   }
 
-      if (!productId) {
-        return res.status(400).json({ message: "Product not found" });
-      }
+    //   if (!productId) {
+    //     return res.status(400).json({ message: "Product not found" });
+    //   }
 
-      const subProduct = await ProductModel.findOne({
-        generalId: targetWarehouse._id,
-        manager: ships?.manager,
-      });
+    //   const subProduct = await ProductModel.findOne({
+    //     generalId: targetWarehouse._id,
+    //     manager: ships?.manager,
+    //   });
 
-      const mainProduct = await ProductModel.findOne({
-        _id: productId,
-        generalId: mainWarehouse._id,
-      });
+    //   const mainProduct = await ProductModel.findOne({
+    //     _id: productId,
+    //     generalId: mainWarehouse._id,
+    //   });
 
-      if (mainProduct) {
-        mainProduct.inventory_number -= inventory_number;
-        await mainProduct.save();
-      }
+    //   if (mainProduct) {
+    //     mainProduct.inventory_number -= inventory_number;
+    //     await mainProduct.save();
+    //   }
 
-      if (subProduct) {
-        await ProductModel.findOneAndUpdate(
-          { _id: productId },
-          { $inc: { inventory_number } },
-          { upsert: true, new: true }
-        );
-      } else {
-        const newProduct = new ProductModel({
-          name_product: results?.name_product,
-          desc: results?.desc,
-          img: results?.img,
-          export_price: results?.export_price,
-          import_price: results?.import_price,
-          unit: results?.unit,
-          type: results?.type,
-          status: "stocking",
-          code: results?.code,
-          inventory_number: inventory_number,
-          generalId: targetWarehouse._id,
-        });
+    //   if (subProduct) {
+    //     await ProductModel.findOneAndUpdate(
+    //       { _id: productId },
+    //       { $inc: { inventory_number } },
+    //       { upsert: true, new: true }
+    //     );
+    //   } else {
+    //     const newProduct = new ProductModel({
+    //       name_product: results?.name_product,
+    //       desc: results?.desc,
+    //       img: results?.img,
+    //       export_price: results?.export_price,
+    //       import_price: results?.import_price,
+    //       unit: results?.unit,
+    //       type: results?.type,
+    //       status: "stocking",
+    //       code: results?.code,
+    //       inventory_number: inventory_number,
+    //       generalId: targetWarehouse._id,
+    //     });
 
-        await newProduct.save();
-      }
-    }
+    //     await newProduct.save();
+    //   }
+    // }
 
     const transactionHistory = new TransactionModel({
       transaction_type: "export",
