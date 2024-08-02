@@ -78,3 +78,32 @@ export type CustomerDetailResponse = {
   results: CustomerData;
   orders: DetailCustomerAndOrders[];
 };
+
+export type HistoryReceiptsCustomer = {
+  results: CustomerData;
+  receipts: DetailCustomerReceipts[];
+};
+
+export type DetailCustomerReceipts = {
+  _id: string;
+  totalSpending: number;
+  totalOrders: number;
+  receipts: Receipt[];
+};
+
+export type Receipt = {
+  _id: string;
+  code: string;
+  products: {
+    orderId: string;
+    totalPrice: number;
+    _id: string;
+  }[];
+  receipt_type: string;
+  payment_status: string;
+  createdAt: string;
+  user: {
+    username: string;
+    email: string;
+  }[];
+};

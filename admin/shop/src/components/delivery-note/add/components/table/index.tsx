@@ -46,6 +46,12 @@ const TableDeliveryData = ({ data }: Props) => {
                 <p>Hình sản phẩm</p>
               </TableHead>
               <TableHead>
+                <p>Thuộc kho</p>
+              </TableHead>
+              <TableHead>
+                <p>SL Hàng</p>
+              </TableHead>
+              <TableHead>
                 <p>Đơn giá</p>
               </TableHead>
               <TableHead>
@@ -71,6 +77,12 @@ const TableDeliveryData = ({ data }: Props) => {
                     alt=""
                     className="w-24 h-12 object-contain"
                   />
+                </TableCell>
+                <TableCell>
+                  <p>{item?.generalId?.name}</p>
+                </TableCell>
+                <TableCell>
+                  <p>{item?.inventory_number}</p>
                 </TableCell>
                 <TableCell>
                   <p>{formatPrice(+item?.export_price)}</p>

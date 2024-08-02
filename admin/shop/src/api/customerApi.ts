@@ -1,6 +1,7 @@
 import {
   CustomerDataResponse,
   CustomerDetailResponse,
+  HistoryReceiptsCustomer,
   UpdateCustomerData,
 } from "@/types/customer";
 import { adminApi } from ".";
@@ -62,10 +63,24 @@ const updateCustomer = async (customerId: string, data: UpdateCustomerData) => {
   }
 };
 
+const getHistoryReceiptsCustomer = async (customerId: string | undefined) => {
+  try {
+    const response = await adminApi.get<HistoryReceiptsCustomer>(
+      `/customer/history-receipts/${customerId}`
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
 export {
   createCustomer,
   getListCustomers,
   updateCustomer,
   getDetailCustomer,
   deleteCustomer,
+  getHistoryReceiptsCustomer,
 };

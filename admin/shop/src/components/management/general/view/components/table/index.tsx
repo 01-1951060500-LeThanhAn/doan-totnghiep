@@ -79,18 +79,14 @@ export const columns: ColumnDef<ProductTableGeneral>[] = [
     accessorKey: "unit",
     header: "Đơn vị sản phẩm",
     cell: ({ row }) => {
-      return row.getValue("unit") === "box" ? <p>Thùng</p> : <p>Cái</p>;
+      return (
+        <>
+          <p>{row.getValue("unit")}</p>
+        </>
+      );
     },
   },
-  // {
-  //   accessorKey: "type",
-  //   header: "Loại sản phẩm",
-  //   cell: async ({ table }) => {
-  //     const { type } = table.options.meta as Data;
-  //     const data = await getDetailCategorys(type as string);
-  //     return <p>{data}</p>;
-  //   },
-  // },
+
   {
     accessorKey: "export_price",
     header: "Gía bán",

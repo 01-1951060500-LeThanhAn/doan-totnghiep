@@ -14,7 +14,7 @@ const RevenueCustomerChart = () => {
       >
         <Bar
           data={{
-            labels: revenueCustomer.map((item) => item.name),
+            labels: revenueCustomer?.map((item) => item.name),
             datasets: [
               {
                 label: "SL Đơn hàng",

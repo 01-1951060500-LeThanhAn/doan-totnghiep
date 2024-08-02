@@ -9,7 +9,7 @@ import { saveAs } from "file-saver";
 
 const ViewReportTransactionPage = () => {
   const { transactions } = useGetTransactions();
-  const data = transactions.map((transaction) => ({
+  const data = transactions?.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
     general:

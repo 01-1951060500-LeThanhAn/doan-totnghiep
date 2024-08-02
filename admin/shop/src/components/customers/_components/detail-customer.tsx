@@ -2,12 +2,17 @@ import HomeLayout from "@/layouts/home-layout";
 import { CustomerDetailResponse } from "@/types/customer";
 import TableOrderCustomer from "../detail/table/table-customer";
 import { useTheme } from "next-themes";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useHistoryReceiptsCustomer from "../hooks/use-get-history-receipts";
+import TableReceiptsCustomer from "../detail/table/table-receipts";
 
 type Props = {
   customer: CustomerDetailResponse;
+  id?: string;
 };
-const DetailCustomerPage = ({ customer }: Props) => {
+const DetailCustomerPage = ({ customer, id }: Props) => {
   const { theme } = useTheme();
+  const { receiptsCustomer } = useHistoryReceiptsCustomer({ id });
 
   return (
     <>
@@ -100,7 +105,23 @@ const DetailCustomerPage = ({ customer }: Props) => {
             </div>
           </div>
         </div>
-        <TableOrderCustomer orders={customer?.orders} />
+
+        <Tabs defaultValue="buy">
+          <TabsList className="mt-4">
+            <TabsTrigger value="buy">
+              <p>Lịch sử mua hàng</p>
+            </TabsTrigger>
+            <TabsTrigger value="receipts">
+              <p>Lịch sử công nợ</p>
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="buy">
+            <TableOrderCustomer orders={customer?.orders} />
+          </TabsContent>
+          <TabsContent value="receipts">
+            <TableReceiptsCustomer data={receiptsCustomer} />
+          </TabsContent>
+        </Tabs>
       </HomeLayout>
     </>
   );

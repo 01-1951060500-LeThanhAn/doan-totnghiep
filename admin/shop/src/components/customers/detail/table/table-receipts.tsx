@@ -1,4 +1,5 @@
-import { DetailCustomerAndOrders } from "@/types/customer";
+import CustomScrollbarTable from "@/features/custom-scrollbar";
+import { HistoryReceiptsCustomer } from "@/types/customer";
 import {
   Table,
   TableBody,
@@ -10,16 +11,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTheme } from "next-themes";
-import { formatPrice } from "@/config/format-price";
-import { Badge } from "@/components/ui/badge";
-import CustomScrollbarTable from "@/features/custom-scrollbar";
 import { Link } from "react-router-dom";
-
+import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/config/format-price";
 type Props = {
-  orders: DetailCustomerAndOrders[];
+  data: HistoryReceiptsCustomer | undefined;
 };
 
-const TableOrderCustomer = ({ orders }: Props) => {
+const TableReceiptsCustomer = ({ data }: Props) => {
   const { theme } = useTheme();
 
   return (
@@ -32,39 +31,45 @@ const TableOrderCustomer = ({ orders }: Props) => {
         >
           <Table className="mb-3">
             <TableCaption>
-              <p>Bảng lịch sử mua hàng</p>
+              <p>Bảng lịch sử công nợ</p>
             </TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-auto">
-                  <p>Mã đơn hàng</p>
+                  <p>Mã phiếu công nợ</p>
                 </TableHead>
-                <TableHead>
-                  <p>Thanh toán</p>
+                <TableHead className="w-auto">
+                  <p>Loại phiếu</p>
                 </TableHead>
                 <TableHead>
                   <p>Trạng thái</p>
                 </TableHead>
                 <TableHead>
+                  <p>Ngày thu</p>
+                </TableHead>
+                <TableHead>
                   <p>Thành tiền</p>
                 </TableHead>
+
                 <TableHead className="text-right">
-                  <p>Tổng SL hàng</p>
-                </TableHead>
-                <TableHead className="text-right">
-                  <p> Nhân viên xử lý đơn</p>{" "}
+                  <p> Nhân viên thu</p>{" "}
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders &&
-                orders[0]?.orders?.map((order) => {
+              {data &&
+                data?.receipts[0]?.receipts?.map((order) => {
                   return (
                     <TableRow key={order._id}>
-                      <TableCell className="font-medium">
-                        <Link to={`/dashboard/orders/${order?._id}/detail`}>
+                      <TableCell className="font-medium text-blue-500">
+                        <Link
+                          to={`/dashboard/receipt_vouchers/customers/${order?._id}/detail`}
+                        >
                           <p>{order?.code}</p>
                         </Link>
+                      </TableCell>
+                      <TableCell>
+                        <p>Phiếu công nợ khách hàng</p>
                       </TableCell>
                       <TableCell>
                         {order?.payment_status === "unpaid" ? (
@@ -94,48 +99,12 @@ const TableOrderCustomer = ({ orders }: Props) => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <p>
-                          {order?.order_status === "pending" ? (
-                            <>
-                              {theme === "light" ? (
-                                <Badge variant="default" className="capitalize">
-                                  <p>Đang giao</p>
-                                </Badge>
-                              ) : (
-                                <Badge variant="default" className="capitalize">
-                                  <p>Đang giao</p>
-                                </Badge>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              {theme === "light" ? (
-                                <Badge
-                                  variant="secondary"
-                                  className="capitalize"
-                                >
-                                  <p>Đã giao</p>
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="capitalize">
-                                  <p>Đã giao</p>
-                                </Badge>
-                              )}
-                            </>
-                          )}
-                        </p>
+                        <p>{new Date(order?.createdAt).toLocaleDateString()}</p>
                       </TableCell>
                       <TableCell>
-                        <p>{formatPrice(order?.totalCustomerPay)}</p>
+                        <p>{formatPrice(order?.products[0]?.totalPrice)}</p>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <p>
-                          {order?.products.reduce(
-                            (acc, total) => acc + Number(total.quantity),
-                            0
-                          )}
-                        </p>
-                      </TableCell>
+
                       <TableCell className="text-right">
                         <p> {order?.user[0]?.username}</p>
                       </TableCell>
@@ -149,10 +118,7 @@ const TableOrderCustomer = ({ orders }: Props) => {
                   <p>Tổng </p>
                 </TableCell>
                 <TableCell className="text-right">
-                  <p>
-                    {" "}
-                    {orders?.map((item) => formatPrice(item?.totalSpending))}
-                  </p>
+                  <p>{formatPrice(data?.receipts[0]?.totalSpending)}</p>
                 </TableCell>
               </TableRow>
             </TableFooter>
@@ -163,4 +129,4 @@ const TableOrderCustomer = ({ orders }: Props) => {
   );
 };
 
-export default TableOrderCustomer;
+export default TableReceiptsCustomer;

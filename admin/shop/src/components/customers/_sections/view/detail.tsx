@@ -41,7 +41,7 @@ const CustomerDetailView = ({ id }: Props) => {
         linkBtn={`/dashboard/customer/${id}/edit`}
         title="Chỉnh sửa khách hàng"
       />
-      <DetailCustomerPage customer={customer!} />
+      <DetailCustomerPage customer={customer!} id={id} />
     </>
   );
 };

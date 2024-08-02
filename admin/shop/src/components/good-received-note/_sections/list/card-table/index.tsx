@@ -73,7 +73,7 @@ export const columns: ColumnDef<GoodReceivedNoteDataTableProps>[] = [
   },
   {
     accessorKey: "delivery_date",
-    header: "Ngày hẹn giao đơn",
+    header: "Ngày giao đơn",
     cell: ({ row }) => (
       <p className="capitalize">
         {new Date(row.getValue("delivery_date")).toLocaleDateString()}

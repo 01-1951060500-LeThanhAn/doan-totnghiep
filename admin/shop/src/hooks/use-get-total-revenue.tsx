@@ -10,7 +10,7 @@ const useGetTotalRevenue = () => {
     try {
       const getRevenueMonth = async () => {
         const response = await getOrderRevenueByMonth();
-        response.incomeData.map((item) =>
+        response?.incomeData?.map((item) =>
           setRevenueMonth((prev) => {
             return [
               ...prev,

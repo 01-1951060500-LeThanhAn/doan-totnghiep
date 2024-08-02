@@ -13,7 +13,7 @@ defaults.responsive = true;
 const HomeChart = () => {
   const { transactions } = useGetTransactions();
   const { currentUser } = useAppSelector((state) => state.auth);
-  const data = transactions.map((transaction) => ({
+  const data = transactions?.map((transaction) => ({
     transaction_type: transaction?.transaction_type,
     transaction_date: transaction?.transaction_date,
     general:
